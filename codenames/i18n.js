@@ -55,6 +55,12 @@ window.CODENAMES_I18N = {
     'share.copied': 'Copié !',
     'share.send': 'Envoyer',
     'share.close': 'Fermer',
+    'share.scan': 'Scannez avec l\'appareil photo pour rejoindre la partie',
+    'share.qrPlayer': 'QR code du lien joueur',
+    'share.qrSpy': 'QR code du lien espion',
+    'share.showSpyQr': 'QR espion',
+    'share.hideSpyQr': 'Masquer le QR',
+    'share.spyQrWarn': 'Ne le montrez qu\'à l\'autre maître-espion',
     cancel: 'Annuler',
     confirm: 'Confirmer'
   },
@@ -113,6 +119,12 @@ window.CODENAMES_I18N = {
     'share.copied': 'Copied!',
     'share.send': 'Send',
     'share.close': 'Close',
+    'share.scan': 'Scan with your camera to join the game',
+    'share.qrPlayer': 'Player link QR code',
+    'share.qrSpy': 'Spy link QR code',
+    'share.showSpyQr': 'Spy QR',
+    'share.hideSpyQr': 'Hide QR',
+    'share.spyQrWarn': 'Only show it to the other spymaster',
     cancel: 'Cancel',
     confirm: 'Confirm'
   }

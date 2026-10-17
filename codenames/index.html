@@ -8,8 +8,12 @@
 <meta name="referrer" content="no-referrer">
 <title data-i18n="title">CodeName</title>
 <meta name="description" content="CodeName : jeu d'espions en équipes, avec vue espion et vue joueur synchronisées en temps réel.">
-<link rel="stylesheet" href="../commun/base.css?v=9">
-<script src="../commun/commun.js?v=5"></script>
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" type="image/png" href="../commun/icons/favicon.png">
+<link rel="apple-touch-icon" href="../commun/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#150c0a">
+<link rel="stylesheet" href="../commun/base.css?v=10">
+<script src="../commun/commun.js?v=6"></script>
 <style>
 main { width: 100%; max-width: 720px; margin: 0 auto; padding: 0 12px calc(env(safe-area-inset-bottom, 0px) + 40px); }
 h1 { font-family: var(--f-display); font-weight: 800; font-size: clamp(2rem, 8vw, 2.6rem); line-height: 1; margin: .4rem 0 .5rem; }
@@ -86,6 +90,12 @@ input:focus { outline: none; border-color: var(--accent); }
 .leave { display: block; margin: 1rem auto 0; background: none; border: 0; color: var(--muted); text-decoration: underline; padding: .4rem; }
 
 /* ---------- Fenêtres ---------- */
+.qr { margin: .2rem 0 .8rem; display: grid; justify-items: center; gap: .4rem; }
+.qr canvas { border-radius: 12px; background: var(--qr-bg); max-width: 100%; }
+.qr figcaption { color: var(--muted); font-size: .85rem; text-align: center; }
+.spy-qr { margin-top: .8rem; }
+.spy-qr figcaption { color: var(--danger); font-weight: 600; }
+dialog { max-height: calc(100dvh - 24px); overflow-y: auto; }
 dialog { width: min(480px, calc(100% - 24px)); border: 1px solid var(--line); border-radius: 20px; background: var(--surface-2); color: var(--ink); padding: 1.2rem; }
 dialog::backdrop { background: var(--overlay); backdrop-filter: blur(3px); }
 dialog h2 { margin-bottom: .6rem; }
@@ -113,6 +123,10 @@ dialog .actions { justify-content: flex-end; margin-top: .6rem; }
 
 <dialog id="shareDlg">
   <h2 data-i18n="share.title">Inviter les joueurs</h2>
+  <figure class="qr">
+    <canvas id="playerQr" role="img" aria-label="QR code du lien joueur" data-i18n-aria-label="share.qrPlayer"></canvas>
+    <figcaption data-i18n="share.scan">Scannez avec l'appareil photo pour rejoindre la partie</figcaption>
+  </figure>
   <div class="share-item">
     <b data-i18n="share.player">Lien joueur</b>
     <p data-i18n="share.playerHint">Pour tout le monde : on voit les mots, pas les couleurs.</p>
@@ -123,7 +137,11 @@ dialog .actions { justify-content: flex-end; margin-top: .6rem; }
     <b data-i18n="share.spy">Lien espion</b>
     <p data-i18n="share.spyHint">Uniquement pour les deux maîtres-espions : il révèle toutes les couleurs.</p>
     <input type="text" id="spyLink" readonly aria-label="Lien espion" data-i18n-aria-label="share.spy">
-    <div class="row"><button class="btn small" type="button" id="copySpy" data-i18n="share.copy">Copier</button><button class="btn small" type="button" id="sendSpy" data-i18n="share.send" hidden>Envoyer</button></div>
+    <div class="row"><button class="btn small" type="button" id="copySpy" data-i18n="share.copy">Copier</button><button class="btn small" type="button" id="sendSpy" data-i18n="share.send" hidden>Envoyer</button><button class="btn small" type="button" id="toggleSpyQr" data-i18n="share.showSpyQr">QR espion</button></div>
+    <figure class="qr spy-qr" id="spyQrBox" hidden>
+      <canvas id="spyQr" role="img" aria-label="QR code du lien espion" data-i18n-aria-label="share.qrSpy"></canvas>
+      <figcaption data-i18n="share.spyQrWarn">Ne le montrez qu'à l'autre maître-espion</figcaption>
+    </figure>
   </div>
   <!-- autofocus : à l'ouverture, le focus va sur « Fermer » et pas sur un champ (évite le zoom iPhone) -->
   <div class="actions"><button class="btn" type="button" id="shareClose" data-i18n="share.close" autofocus>Fermer</button></div>
@@ -140,8 +158,9 @@ dialog .actions { justify-content: flex-end; margin-top: .6rem; }
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js" integrity="sha384-WgXwGL6fUsYJWNaKJgVbrJKGRQwc1vieh2oy4kw9nXqpNDz3tdSsqEYUgeHD/NuF" crossorigin="anonymous"></script>
 <script src="../commun/supabase-config.js?v=1"></script>
 <script src="mots.js?v=1"></script>
-<script src="i18n.js?v=2"></script>
+<script src="i18n.js?v=3"></script>
+<script src="../commun/vendor/qrcode.js?v=2.0.4"></script>
 <script src="donnees.js?v=1"></script>
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

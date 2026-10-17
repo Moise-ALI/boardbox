@@ -5,6 +5,9 @@
 (function () {
   'use strict';
 
+  // Racine du site, déduite de l'emplacement de ce fichier (commun/commun.js) : fonctionne à toute profondeur
+  const ROOT = new URL('../', document.currentScript.src);
+
   function createStore(prefix) {
     const full = k => prefix + '.' + k;
     return {
@@ -29,6 +32,13 @@
     // Pour les éléments dessinés en JS (canvas, WebGL) qui lisent les couleurs via cssVar()
     document.dispatchEvent(new CustomEvent('outils:theme'));
   }
+  // Barre du téléphone (et de l'appli installée) à la couleur du fond, selon le thème réellement affiché
+  function syncThemeColor() {
+    let meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) { meta = document.createElement('meta'); meta.name = 'theme-color'; document.head.append(meta); }
+    meta.content = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#150c0a';
+  }
+  document.addEventListener('outils:theme', syncThemeColor);
   // Thème système modifié pendant l'utilisation (si aucun thème n'est forcé)
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
     if (!document.documentElement.dataset.theme) document.dispatchEvent(new CustomEvent('outils:theme'));
@@ -38,6 +48,16 @@
       || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   }
   applyTheme(prefs.get('theme', null));
+  syncThemeColor();
+
+  /* ---------- Appli installable (PWA) : service worker à la racine du site ---------- */
+  if ('serviceWorker' in navigator && window.isSecureContext) {
+    addEventListener('load', () => {
+      navigator.serviceWorker.register(new URL('sw.js', ROOT), { scope: ROOT.pathname, updateViaCache: 'none' })
+        .catch(() => { /* navigation privée, stockage bloqué… : le site fonctionne sans */ });
+    });
+  }
+  const isInstalled = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 
   function bindThemeButton(button) {
     if (!button) return;
@@ -100,5 +120,5 @@
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
 
-  window.Outils = { createStore, bindThemeButton, bindLangButton, initTopbar, lang, i18n, applyI18n, cssVar };
+  window.Outils = { createStore, bindThemeButton, bindLangButton, initTopbar, lang, i18n, applyI18n, cssVar, isInstalled };
 })();

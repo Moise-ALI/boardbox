@@ -16,6 +16,11 @@ const t = Outils.i18n({
     title: 'Boîte à outils',
     lead: 'Mes petites applis du quotidien, utilisables depuis n\'importe quel appareil. Les données restent dans votre navigateur.',
     count: '{n} outils',
+    'install.title': 'Installer l\'appli',
+    'install.android': 'Une icône sur l\'écran d\'accueil, en plein écran, et ça marche même hors connexion.',
+    'install.ios': 'Sur iPhone : touchez Partager (carré avec une flèche), puis « Sur l\'écran d\'accueil ».',
+    'install.button': 'Installer',
+    'install.dismiss': 'Masquer',
     'tirage.name': 'Tirage & Équipes',
     'tirage.desc': 'Tirez au sort dans une liste ou répartissez-la en équipes équilibrées.',
     'compteur.name': 'Compteur de points',
@@ -29,6 +34,11 @@ const t = Outils.i18n({
     title: 'Toolbox',
     lead: 'My everyday little apps, available from any device. Your data stays in your browser.',
     count: '{n} tools',
+    'install.title': 'Install the app',
+    'install.android': 'An icon on your home screen, full screen, and it even works offline.',
+    'install.ios': 'On iPhone: tap Share (square with an arrow), then "Add to Home Screen".',
+    'install.button': 'Install',
+    'install.dismiss': 'Hide',
     'tirage.name': 'Draw & Teams',
     'tirage.desc': 'Draw random picks from a list or split it into balanced teams.',
     'compteur.name': 'Score counter',
@@ -43,6 +53,39 @@ const t = Outils.i18n({
 Outils.initTopbar();
 Outils.applyI18n(t);
 document.getElementById('count').textContent = t('count', { n: TOOLS.length });
+
+/* ---------- Encart « Installer l'appli » ---------- */
+(function installPrompt() {
+  const prefs = Outils.createStore('outils');
+  const box = document.getElementById('install');
+  const btn = document.getElementById('installBtn');
+  const text = document.getElementById('installText');
+  if (Outils.isInstalled() || prefs.get('installDismissed', false)) return;
+  const hide = () => { box.hidden = true; };
+  document.getElementById('installClose').onclick = () => { prefs.set('installDismissed', true); hide(); };
+  addEventListener('appinstalled', hide);
+
+  // iPhone/iPad : Safari n'a pas de bouton d'installation, on explique le geste
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (isIOS) { text.textContent = t('install.ios'); box.hidden = false; return; }
+
+  // Android / ordinateur : le navigateur propose l'installation quand l'appli est éligible
+  let deferred = null;
+  addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferred = e;
+    text.textContent = t('install.android');
+    btn.hidden = false;
+    box.hidden = false;
+  });
+  btn.onclick = async () => {
+    if (!deferred) return;
+    deferred.prompt();
+    await deferred.userChoice;
+    deferred = null;
+    hide();
+  };
+})();
 
 const list = document.getElementById('tools');
 for (const tool of TOOLS) {

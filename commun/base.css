@@ -122,6 +122,8 @@
 :root {
   --on-color: #ffffff;                        /* texte sur une pastille colorée (avatars) */
   --on-signal: #1d1400;                       /* texte sur --signal (gagnant, meneur) */
+  /* QR codes : toujours sombre sur clair, quel que soit le thème (certains lecteurs ne lisent pas l'inverse) */
+  --qr-fg: #000000; --qr-bg: #ffffff;
   --shadow-lg: 0 30px 80px var(--shadow-color);
   --scrollbar: color-mix(in srgb, var(--ink) 20%, transparent);
   /* Bouton principal : même rendu dans tous les outils */
