@@ -571,6 +571,8 @@
             let mode = 'idle';          // idle | drag | spin | settle
             let vel = { x: 0, y: 0 };   // vitesse angulaire (rad/frame)
             let last = { x: 0, y: 0 };  // dernière position du pointeur
+            let lastMoveAt = 0;         // instant du dernier mouvement (lâcher sans élan = pas de rotation)
+            const STILL_MS = 90;        // pointeur immobile depuis plus longtemps : on lâche sans élan
             let targetQuat = new THREE.Quaternion();
             let t = 0;
 
@@ -581,22 +583,10 @@
                 die.quaternion.premultiply(_q);
             }
 
-            // Orientations cibles : amener chaque face vers la caméra (+Z)
-            const FACE_TARGETS = [
-                new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, 0)),
-                new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI, 0)),
-                new THREE.Quaternion().setFromEuler(new THREE.Euler(0, -Math.PI / 2, 0)),
-                new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI / 2, 0)),
-                new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI / 2, 0, 0)),
-                new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0))
-            ];
+            // Position de repos : la face déjà la plus tournée vers nous, atteinte par le plus petit
+            // mouvement possible (voir de.js) — le résultat correspond à la façon dont le dé a été lancé.
             function nearestFace() {
-                let best = FACE_TARGETS[0], bestDot = -2;
-                for (const f of FACE_TARGETS) {
-                    const d = Math.abs(die.quaternion.dot(f));
-                    if (d > bestDot) { bestDot = d; best = f; }
-                }
-                return best;
+                return DieMath.restingOrientation(die.quaternion, THREE).target;
             }
 
             function animate() {
@@ -654,10 +644,13 @@
                 spinBy(dy * K, dx * K);
                 vel.x = clamp(dy * K, -0.5, 0.5);
                 vel.y = clamp(dx * K, -0.5, 0.5);
+                lastMoveAt = performance.now();
             }
             function onUp() {
                 if (mode !== 'drag') return;
                 el.style.cursor = 'grab';
+                // Doigt resté immobile avant de lâcher : comme un vrai dé posé, il ne repart pas
+                if (performance.now() - lastMoveAt > STILL_MS) vel.x = vel.y = 0;
                 if (Math.abs(vel.x) + Math.abs(vel.y) < SETTLE_SPEED) {
                     targetQuat = nearestFace();
                     mode = 'settle';
