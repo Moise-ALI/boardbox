@@ -1,6 +1,6 @@
-# Boîte à outils — conventions
+# BoardBox — conventions
 
-Petites applis web personnelles publiées sur GitHub Pages : https://moise-ali.github.io/outils/
+Petites applis web personnelles publiées sur GitHub Pages : https://moise-ali.github.io/boardbox/
 
 ## Principes
 - **Statique uniquement** : HTML, CSS, JavaScript natif. Pas de build, pas de framework, pas de npm. Un fichier ouvert dans le navigateur doit fonctionner.
@@ -35,9 +35,9 @@ supabase/           Scripts SQL à exécuter dans Supabase > SQL Editor (underco
 ## Règles
 - **Stockage** : tous les outils partagent le même `localStorage` (même domaine). Chaque clé est préfixée par le nom du dossier de l'outil : utiliser `Outils.createStore('<dossier>')`, ou à défaut des clés `'<dossier>.xxx'`. Ne jamais renommer une clé existante sans migration (les utilisateurs perdraient leurs données). Pour renommer des clés, ne modifier que les appels `localStorage.*` : un remplacement global touche aussi les `id` HTML et les `getElementById` du même nom.
 - **Avant chaque push** : charger l'outil modifié et exercer ses actions principales en vérifiant la console (une erreur JS en début de script casse tout ce qui suit, ex. le dé 3D de `tirage/`).
-- **Lien de retour** : chaque outil affiche un lien `← Boîte à outils` vers `../`.
+- **Lien de retour** : chaque outil affiche un lien `← BoardBox` vers `../`.
 - **Cache** : GitHub Pages sert les fichiers avec `max-age=600`. Les scripts/styles propres à un outil sont inclus avec `?v=N` (ex. `app.js?v=2`) : incrémenter N dans les `<script>` à chaque modification du fichier, sinon les visiteurs gardent l'ancienne version jusqu'à 10 min (cas vécu : config.js vide en cache).
-- **Chemins relatifs** uniquement (`../commun/...`), le site est servi sous `/outils/`.
+- **Chemins relatifs** uniquement (`../commun/...`), le site est servi sous `/boardbox/`.
 - **Dépendances externes** : seulement via CDN avec une version figée (ex. `three.js/r128`), et un repli si elles ne chargent pas.
 - **Design system** (`commun/base.css`, style « aurora ») commun à tous les outils : palette chaude rouge/orange : `--accent` (orange brûlé, boutons/liens), `--accent-2` (orange), `--accent-3` (rouge), contrastes WCAG vérifiés, dégradé `--grad` (boutons) et `.grad-text` (titres), verre via `.card` / `.glass`, polices Sora (titres) + Inter (texte). Toujours utiliser les variables (jamais de couleur en dur) pour que les thèmes clair et sombre fonctionnent.
 - **Tout le design est piloté par `base.css`** : couleurs, ombres (`--shadow`, `--shadow-lg`, `--shadow-color`), voile des fenêtres (`--overlay`), bouton principal (classe `.btn-primary` ou jetons `--btn-primary-bg/-ink/-shadow`), textes sur couleur (`--on-color`, `--on-signal`), couleurs des joueurs (`--player-1…12`). Aucune couleur en dur dans les outils, CSS comme JS (seule exception : l'éclairage blanc neutre de la scène 3D).
@@ -64,7 +64,7 @@ supabase/           Scripts SQL à exécuter dans Supabase > SQL Editor (underco
 
 ## Appli installable (PWA)
 - `manifest.webmanifest` (racine) + icônes dans `commun/icons/` (générées aux couleurs de la charte). Chaque page a dans son `<head>` : `rel="manifest"`, favicon, apple-touch-icon, `meta theme-color` (mise à jour par commun.js selon le thème).
-- `sw.js` (racine, portée `/outils/`, enregistré par commun.js) : pages en réseau d'abord, fichiers statiques et CDN en mémoire d'abord (le `?v=N` garantit les mises à jour), Supabase jamais en mémoire.
+- `sw.js` (racine, portée `/boardbox/`, enregistré par commun.js) : pages en réseau d'abord, fichiers statiques et CDN en mémoire d'abord (le `?v=N` garantit les mises à jour), Supabase jamais en mémoire.
 - **Tout nouveau fichier nécessaire hors connexion va dans `PRECACHE` de sw.js** (chemins sans `?v=`), et tout nouvel outil dans `shortcuts` du manifeste. Incrémenter `CACHE_VERSION` seulement pour forcer un re-téléchargement complet.
 - Bibliothèques tierces : hébergées dans `commun/vendor/` avec leur licence quand elles doivent marcher hors ligne (ex. qrcode-generator).
 

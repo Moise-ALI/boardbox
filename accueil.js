@@ -13,7 +13,7 @@ const TOOLS = [
 
 const t = Outils.i18n({
   fr: {
-    title: 'Boîte à outils',
+    title: 'BoardBox',
     lead: 'Mes petites applis du quotidien, utilisables depuis n\'importe quel appareil. Les données restent dans votre navigateur.',
     count: '{n} outils',
     'install.title': 'Installer l\'appli',
@@ -31,7 +31,7 @@ const t = Outils.i18n({
     'codenames.desc': 'Jeu d\'espions en équipes : vue espion et vue joueur synchronisées en direct sur vos téléphones.'
   },
   en: {
-    title: 'Toolbox',
+    title: 'BoardBox',
     lead: 'My everyday little apps, available from any device. Your data stays in your browser.',
     count: '{n} tools',
     'install.title': 'Install the app',

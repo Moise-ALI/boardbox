@@ -77,8 +77,8 @@
 
   // Textes communs à toutes les pages (barre du haut)
   const COMMON = {
-    fr: { 'common.back': '← Boîte à outils', 'common.theme': 'Changer de thème', 'common.lang': 'Switch to English' },
-    en: { 'common.back': '← Toolbox', 'common.theme': 'Change theme', 'common.lang': 'Passer en français' }
+    fr: { 'common.back': '← BoardBox', 'common.theme': 'Changer de thème', 'common.lang': 'Switch to English' },
+    en: { 'common.back': '← BoardBox', 'common.theme': 'Change theme', 'common.lang': 'Passer en français' }
   };
 
   /** Crée la fonction de traduction d'une page : t('cle', { variable: valeur }).

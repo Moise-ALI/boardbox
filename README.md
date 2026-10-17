@@ -1,15 +1,15 @@
-# Boîte à outils
+# BoardBox
 
 Mes petites applis du quotidien, utilisables depuis n'importe quel appareil, en français et en anglais.
 
-**➡️ https://moise-ali.github.io/outils/**
+**➡️ https://moise-ali.github.io/boardbox/**
 
 | Outil | Description |
 |---|---|
-| [🎲 Tirage & Équipes](https://moise-ali.github.io/outils/tirage/) | Tirer au sort dans une liste, répartir en équipes équilibrées, dé 3D |
-| [🏆 Compteur de points](https://moise-ali.github.io/outils/compteur/) | Scores des soirées jeux : classement animé, objectif, manches, annulation |
-| [🕵️ Undercover](https://moise-ali.github.io/outils/undercover/) | Jeu d'ambiance sur un seul téléphone, avec associations proposées par les joueurs et modérées |
-| [🗝️ CodeName](https://moise-ali.github.io/outils/codenames/) | Jeu d'espions en équipes : salle partagée par lien, vue espion et vue joueur synchronisées en direct |
+| [🎲 Tirage & Équipes](https://moise-ali.github.io/boardbox/tirage/) | Tirer au sort dans une liste, répartir en équipes équilibrées, dé 3D |
+| [🏆 Compteur de points](https://moise-ali.github.io/boardbox/compteur/) | Scores des soirées jeux : classement animé, objectif, manches, annulation |
+| [🕵️ Undercover](https://moise-ali.github.io/boardbox/undercover/) | Jeu d'ambiance sur un seul téléphone, avec associations proposées par les joueurs et modérées |
+| [🗝️ CodeName](https://moise-ali.github.io/boardbox/codenames/) | Jeu d'espions en équipes : salle partagée par lien, vue espion et vue joueur synchronisées en direct |
 
 Tout fonctionne dans le navigateur, sans compte : les données restent sur votre appareil.
 Seuls les éléments partagés sont stockés en ligne (Supabase) : les associations d'Undercover validées, et les parties de CodeName en cours (supprimées après 3 jours d'inactivité).

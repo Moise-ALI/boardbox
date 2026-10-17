@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "Boîte à outils",
-  "short_name": "Outils",
-  "description": "Mes petites applis du quotidien : tirage au sort, compteur de points, Undercover, CodeName.",
+  "name": "BoardBox",
+  "short_name": "BoardBox",
+  "description": "BoardBox : tirage au sort, compteur de points, Undercover, CodeName — vos soirées jeux dans la poche.",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",
