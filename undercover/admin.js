@@ -20,8 +20,13 @@ if (!window.supabase) {
   return;
 }
 
+// Session admin limitée à l'onglet (sessionStorage) : elle disparaît à la fermeture et n'est pas
+// lisible depuis les autres outils du domaine. On efface l'ancienne session gardée en localStorage.
+try { localStorage.removeItem('undercover.admin.auth'); } catch (e) { /* stockage bloqué */ }
 const db = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey, {
-  auth: { storageKey: 'undercover.admin.auth', persistSession: true, detectSessionInUrl: true }
+  // flowType 'implicit' (explicite) : le lien reçu par e-mail s'ouvre dans un NOUVEL onglet ; en PKCE il lui
+  // manquerait le code stocké dans le sessionStorage de l'onglet d'origine et la connexion échouerait.
+  auth: { storageKey: 'undercover.admin.auth', storage: window.sessionStorage, persistSession: true, detectSessionInUrl: true, flowType: 'implicit' }
 });
 const TABLE = 'undercover_pairs';
 const LANGS = ['fr', 'en'];

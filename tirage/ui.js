@@ -231,7 +231,6 @@
                 team.forEach(value => {
                     const li = document.createElement('li');
                     li.className = 'member';
-                    li.draggable = true;
                     const avatar = document.createElement('span');
                     avatar.className = 'avatar';
                     avatar.textContent = value.slice(0, 2).toUpperCase();
@@ -270,43 +269,56 @@
             });
         }
 
-        // --- Drag & drop des membres entre équipes ---
+        // --- Déplacement des membres entre équipes (souris, doigt, stylet) ---
+        // Événements « pointer » plutôt que le drag & drop HTML5, qui ne fonctionne pas au doigt.
+        // Au doigt, on attrape par la poignée ⠿ (touch-action: none) pour garder le défilement ailleurs.
         function initDragDrop(grid) {
-            let dragged = null;
+            let drag = null; // { member, ghost, dx, dy, over }
 
-            grid.querySelectorAll('.member').forEach(member => {
-                member.addEventListener('dragstart', e => {
-                    dragged = member;
-                    member.classList.add('dragging');
-                    e.dataTransfer.effectAllowed = 'move';
-                    e.dataTransfer.setData('text/plain', '');
-                });
-                member.addEventListener('dragend', () => {
-                    member.classList.remove('dragging');
-                    dragged = null;
-                    grid.querySelectorAll('.team-card').forEach(c => c.classList.remove('drag-over'));
-                    updateBadges(grid);
-                });
-            });
+            const cardAt = (x, y) => document.elementFromPoint(x, y)?.closest('.team-card') || null;
+            function setOver(card) {
+                if (drag.over === card) return;
+                drag.over?.classList.remove('drag-over');
+                card?.classList.add('drag-over');
+                drag.over = card;
+            }
+            function end(drop) {
+                if (!drag) return;
+                const { member, ghost, over } = drag;
+                if (drop && over) over.querySelector('ul').appendChild(member);
+                over?.classList.remove('drag-over');
+                member.classList.remove('dragging');
+                ghost.remove();
+                drag = null;
+                updateBadges(grid);
+            }
 
-            grid.querySelectorAll('.team-card').forEach(card => {
-                card.addEventListener('dragover', e => {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'move';
-                    card.classList.add('drag-over');
-                });
-                card.addEventListener('dragleave', e => {
-                    if (!card.contains(e.relatedTarget)) card.classList.remove('drag-over');
-                });
-                card.addEventListener('drop', e => {
-                    e.preventDefault();
-                    card.classList.remove('drag-over');
-                    if (!dragged) return;
-                    const ul = card.querySelector('ul');
-                    ul.appendChild(dragged);
-                    updateBadges(grid);
-                });
+            grid.addEventListener('pointerdown', e => {
+                const member = e.target.closest('.member');
+                if (!member || e.button > 0 || drag) return;
+                if (e.pointerType !== 'mouse' && !e.target.closest('.grip')) return;
+                e.preventDefault();
+                // Capture : le geste reste suivi même hors de la grille. Facultative (peut échouer
+                // selon le navigateur) : sans elle, les événements remontent quand même jusqu'à la grille.
+                try { member.setPointerCapture(e.pointerId); } catch (err) { /* sans capture */ }
+                const r = member.getBoundingClientRect();
+                const ghost = member.cloneNode(true);
+                ghost.classList.add('drag-ghost');
+                ghost.style.width = r.width + 'px';
+                ghost.style.left = r.left + 'px';
+                ghost.style.top = r.top + 'px';
+                document.body.appendChild(ghost);
+                member.classList.add('dragging');
+                drag = { member, ghost, dx: e.clientX - r.left, dy: e.clientY - r.top, over: null };
             });
+            grid.addEventListener('pointermove', e => {
+                if (!drag) return;
+                drag.ghost.style.left = (e.clientX - drag.dx) + 'px';
+                drag.ghost.style.top = (e.clientY - drag.dy) + 'px';
+                setOver(cardAt(e.clientX, e.clientY));
+            });
+            grid.addEventListener('pointerup', () => end(true));
+            grid.addEventListener('pointercancel', () => end(false));
         }
 
         function updateBadges(grid) {

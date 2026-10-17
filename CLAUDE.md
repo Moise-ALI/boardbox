@@ -53,6 +53,9 @@ supabase/           Scripts SQL à exécuter dans Supabase > SQL Editor (schéma
 - **Aucun script en ligne** (`<script>…</script>`, `onclick=`) : tout dans des fichiers `.js`. Chaque page a une **CSP** en `<meta>` (`script-src 'self'` + CDN strictement nécessaires, `connect-src` limité) ; la recopier depuis une page existante.
 - Scripts de CDN : version figée + **SRI** (`integrity` + `crossorigin="anonymous"`).
 - Limiter la taille des entrées (longueur, nombre d'éléments), surtout celles venant d'un lien ou d'un fichier.
+- **Aucun service tiers au chargement** : polices auto-hébergées dans `commun/fonts/` (WOFF2 variables + licences OFL, déclarées en `@font-face` dans `base.css`). Ne pas réintroduire Google Fonts ; la CSP n'autorise que `'self'` pour les polices et styles.
+- Session admin Supabase en `sessionStorage` (fin de session à la fermeture de l'onglet), `flowType: 'implicit'` obligatoire (le lien e-mail s'ouvre dans un nouvel onglet).
+- Glisser-déposer : événements pointer (pas le drag & drop HTML5, inopérant au doigt) ; au doigt, poignée dédiée en `touch-action: none` pour préserver le défilement.
 - Pages sensibles (actions admin) : protection anti-clickjacking en JS (`window.top !== window.self`), GitHub Pages ne pouvant pas envoyer `X-Frame-Options` / `frame-ancestors`.
 - Lire le localStorage avec garde (`try/catch`, vérifier le type) : une donnée corrompue ne doit pas casser la page.
 

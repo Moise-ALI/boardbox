@@ -2,7 +2,7 @@
 window.TIRAGE_I18N = {
   fr: {
     title: 'Tirage & Équipes',
-    subtitle: 'Tirez un ou plusieurs éléments au hasard, ou répartissez-les en équipes équilibrées. Glissez-déposez pour réorganiser.',
+    subtitle: 'Tirez un ou plusieurs éléments au hasard, ou répartissez-les en équipes équilibrées, puis glissez les membres (⠿) d\'une équipe à l\'autre.',
     'add.title': 'Ajouter des éléments',
     'add.placeholder': 'Entrez une valeur...',
     'add.button': 'Ajouter',
@@ -50,7 +50,7 @@ window.TIRAGE_I18N = {
   },
   en: {
     title: 'Draw & Teams',
-    subtitle: 'Draw one or more random picks, or split them into balanced teams. Drag and drop to rearrange.',
+    subtitle: 'Draw one or more random picks, or split them into balanced teams, then drag members (⠿) between teams.',
     'add.title': 'Add items',
     'add.placeholder': 'Enter a value...',
     'add.button': 'Add',

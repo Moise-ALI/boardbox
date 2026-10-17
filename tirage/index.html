@@ -3,13 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <title data-i18n="title">Tirage &amp; Équipes</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../commun/base.css?v=6">
+    <link rel="stylesheet" href="../commun/base.css?v=7">
 <script src="../commun/commun.js?v=5"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -417,7 +414,11 @@
             color: var(--on-color);
             flex-shrink: 0;
         }
-        .member .grip { margin-left: auto; color: var(--muted); font-size: 0.8rem; }
+        /* Poignée : zone tactile de 44px, et touch-action: none pour qu'au doigt elle déplace au lieu de faire défiler */
+        .member .grip { margin: -9px -12px -9px auto; width: 44px; height: 44px; display: grid; place-items: center; color: var(--muted); font-size: 1rem; touch-action: none; cursor: grab; }
+        /* Copie qui suit le pointeur pendant le déplacement */
+        .drag-ghost { position: fixed; z-index: 1000; margin: 0; pointer-events: none; list-style: none; opacity: 0.95;
+                      transform: scale(1.04) rotate(-2deg); box-shadow: var(--shadow-lg); background: var(--surface-2); }
 
         /* ---------- Historique ---------- */
         .history-list { max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
@@ -583,7 +584,7 @@
         <header>
             <div class="die-3d" id="die3d"></div>
             <h1 data-i18n="title">Tirage &amp; Équipes</h1>
-            <p class="subtitle" data-i18n="subtitle">Tirez un ou plusieurs éléments au hasard, ou répartissez-les en équipes équilibrées. Glissez-déposez pour réorganiser.</p>
+            <p class="subtitle" data-i18n="subtitle">Tirez un ou plusieurs éléments au hasard, ou répartissez-les en équipes équilibrées, puis glissez les membres (⠿) d'une équipe à l'autre.</p>
         </header>
 
         <!-- Ajout d'éléments -->
@@ -662,8 +663,8 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="app.js?v=3"></script>
-    <script src="i18n.js?v=1"></script>
+    <script src="i18n.js?v=2"></script>
     <script src="de.js?v=1"></script>
-    <script src="ui.js?v=3"></script>
+    <script src="ui.js?v=4"></script>
 </body>
 </html>
