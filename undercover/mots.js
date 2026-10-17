@@ -86,6 +86,12 @@ window.UNDERCOVER_PAIRS = {
       ['Dark Vador', 'Madara'], ['Maître Yoda', 'Tortue Géniale'], ['Hermione', 'Sakura'], ['Luffy', 'Jack Sparrow'],
       ['Sauron', 'Sukuna'], ['Gollum', 'Dobby'], ['L', 'Sherlock Holmes'], ['Saitama', 'Hulk'],
       ['Poudlard', 'Académie de Konoha'], ['Sabre laser', 'Zanpakutō']
+    ],
+    // Notions, sentiments et tout ce qui n'entre dans aucun autre thème
+    divers: [
+      ['Amour', 'Amitié'], ['Secret', 'Mensonge'], ['Chance', 'Destin'], ['Silence', 'Calme'], ['Rire', 'Sourire'],
+      ['Colère', 'Rage'], ['Cadeau', 'Surprise'], ['Promesse', 'Serment'], ['Argent', 'Or'], ['Souvenir', 'Nostalgie'],
+      ['Courage', 'Témérité'], ['Jalousie', 'Envie']
     ]
   },
 
@@ -173,6 +179,11 @@ window.UNDERCOVER_PAIRS = {
       ['Darth Vader', 'Madara'], ['Yoda', 'Master Roshi'], ['Hermione', 'Sakura'], ['Luffy', 'Jack Sparrow'],
       ['Sauron', 'Sukuna'], ['Gollum', 'Dobby'], ['L', 'Sherlock Holmes'], ['Saitama', 'Hulk'],
       ['Hogwarts', 'Hidden Leaf Village'], ['Lightsaber', 'Zanpakuto']
+    ],
+    divers: [
+      ['Love', 'Friendship'], ['Secret', 'Lie'], ['Luck', 'Fate'], ['Silence', 'Calm'], ['Laugh', 'Smile'],
+      ['Anger', 'Rage'], ['Gift', 'Surprise'], ['Promise', 'Oath'], ['Money', 'Gold'], ['Memory', 'Nostalgia'],
+      ['Courage', 'Recklessness'], ['Jealousy', 'Envy']
     ]
   }
 };
