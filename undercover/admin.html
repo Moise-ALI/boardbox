@@ -84,11 +84,11 @@ input:focus { outline: none; border-color: var(--accent); }
     <ul class="list" id="list"></ul>
   </div>
 
-  <p class="card msg err" id="noConfig" hidden>Supabase n'est pas configuré (voir undercover/config.js).</p>
+  <p class="card msg err" id="noConfig" hidden>Supabase n'est pas configuré, ou une ancienne version est en cache : rechargez avec Ctrl + F5.</p>
 </main>
 
 <script src="../commun/commun.js"></script>
-<script src="config.js"></script>
+<script src="config.js?v=2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
 <script>
 (() => {
@@ -97,7 +97,12 @@ Outils.bindThemeButton(document.getElementById('themeBtn'));
 const $ = id => document.getElementById(id);
 const cfg = window.UNDERCOVER_CONFIG || {};
 
-if (!cfg.supabaseUrl || !cfg.supabaseKey || !window.supabase) { $('noConfig').hidden = false; return; }
+if (!cfg.supabaseUrl || !cfg.supabaseKey) { $('noConfig').hidden = false; return; }
+if (!window.supabase) {
+  $('noConfig').textContent = 'La bibliothèque Supabase n\'a pas pu être chargée (connexion, ou bloqueur de publicités : autorisez cdn.jsdelivr.net sur cette page).';
+  $('noConfig').hidden = false;
+  return;
+}
 
 const db = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey, {
   auth: { storageKey: 'undercover.admin.auth', persistSession: true, detectSessionInUrl: true }
