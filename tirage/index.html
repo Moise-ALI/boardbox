@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tirage &amp; Équipes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-0: #0a0a14;
+            --bg-1: #12122a;
+            --glass: rgba(255, 255, 255, 0.06);
+            --glass-strong: rgba(255, 255, 255, 0.10);
+            --border: rgba(255, 255, 255, 0.12);
+            --text: #f4f5fb;
+            --text-dim: #a7abc9;
+            --accent-1: #7c5cff;
+            --accent-2: #ff5ca8;
+            --accent-3: #22d3ee;
+            --success: #34d399;
+            --error: #fb7185;
+            --grad: linear-gradient(135deg, #7c5cff 0%, #ff5ca8 50%, #22d3ee 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+            background: var(--bg-0);
+            overflow-x: hidden;
+            position: relative;
+            padding: 40px 20px 80px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* ---------- Fond aurora animé ---------- */
+        .aurora {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background:
+                radial-gradient(60% 55% at 15% 15%, rgba(124, 92, 255, 0.35), transparent 60%),
+                radial-gradient(55% 50% at 85% 20%, rgba(255, 92, 168, 0.28), transparent 60%),
+                radial-gradient(60% 55% at 75% 85%, rgba(34, 211, 238, 0.25), transparent 60%),
+                var(--bg-0);
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0.55;
+            z-index: -1;
+            will-change: transform;
+        }
+        .orb-1 { width: 420px; height: 420px; background: #7c5cff; top: -120px; left: -100px; animation: float1 18s ease-in-out infinite; }
+        .orb-2 { width: 380px; height: 380px; background: #ff5ca8; top: 40%; right: -140px; animation: float2 22s ease-in-out infinite; }
+        .orb-3 { width: 360px; height: 360px; background: #22d3ee; bottom: -140px; left: 30%; animation: float3 26s ease-in-out infinite; }
+
+        @keyframes float1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(60px, 80px) scale(1.15); } }
+        @keyframes float2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-80px, -50px) scale(1.1); } }
+        @keyframes float3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(50px, -70px) scale(1.2); } }
+
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 44px 44px;
+            mask-image: radial-gradient(circle at 50% 30%, black, transparent 75%);
+            -webkit-mask-image: radial-gradient(circle at 50% 30%, black, transparent 75%);
+        }
+
+        /* ---------- Conteneur ---------- */
+        .container {
+            width: 100%;
+            max-width: 860px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        /* ---------- Retour à la boîte à outils ---------- */
+        .back-link {
+            align-self: flex-start;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 36px;
+            padding: 0 14px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--glass);
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .back-link:hover { background: var(--glass-strong); border-color: var(--accent-1); }
+
+        /* ---------- Header ---------- */
+        header { text-align: center; margin-bottom: 8px; animation: fadeUp 0.7s ease both; }
+
+        .die-3d {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 4px;
+            display: grid;
+            place-items: center;
+            filter: drop-shadow(0 14px 28px rgba(124,92,255,0.55));
+        }
+        .die-3d canvas { display: block; }
+        .logo-fallback {
+            font-size: 3.4rem;
+            display: inline-block;
+            animation: spin 6s linear infinite;
+            filter: drop-shadow(0 0 18px rgba(124,92,255,0.6));
+        }
+        @keyframes spin { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
+
+        h1 {
+            font-family: 'Sora', sans-serif;
+            font-weight: 800;
+            font-size: clamp(2rem, 6vw, 3rem);
+            letter-spacing: -0.02em;
+            background: var(--grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shimmer 5s linear infinite;
+        }
+        @keyframes shimmer { to { background-position: 200% center; } }
+
+        .subtitle {
+            color: var(--text-dim);
+            margin-top: 10px;
+            font-size: 1rem;
+            max-width: 520px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ---------- Cartes / sections ---------- */
+        .card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+            animation: fadeUp 0.7s ease both;
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        }
+        .card:nth-child(2) { animation-delay: 0.08s; }
+        .card:nth-child(3) { animation-delay: 0.16s; }
+        .card:nth-child(4) { animation-delay: 0.24s; }
+        .card:nth-child(5) { animation-delay: 0.32s; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-title {
+            font-family: 'Sora', sans-serif;
+            font-weight: 700;
+            font-size: 1.15rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title .dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: var(--grad);
+            box-shadow: 0 0 12px rgba(124,92,255,0.8);
+        }
+        .count-pill {
+            margin-left: auto;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            background: var(--glass-strong);
+            border: 1px solid var(--border);
+            padding: 3px 12px;
+            border-radius: 999px;
+            transition: transform 0.2s;
+        }
+        .count-pill.bump { animation: bump 0.4s ease; }
+        @keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.25); } 100% { transform: scale(1); } }
+
+        /* ---------- Input ---------- */
+        .input-group { display: flex; gap: 12px; }
+        #valueInput {
+            flex: 1;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(0,0,0,0.25);
+            color: var(--text);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        #valueInput::placeholder { color: #6b6f8f; }
+        #valueInput:focus {
+            outline: none;
+            border-color: var(--accent-1);
+            box-shadow: 0 0 0 4px rgba(124,92,255,0.18);
+        }
+
+        /* ---------- Boutons ---------- */
+        button {
+            font-family: 'Sora', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #fff;
+            border: none;
+            padding: 13px 22px;
+            border-radius: 12px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s;
+        }
+        button:hover { transform: translateY(-2px); }
+        button:active { transform: translateY(0) scale(0.98); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .btn-primary {
+            background: var(--grad);
+            background-size: 200% auto;
+            box-shadow: 0 8px 24px rgba(124,92,255,0.4);
+        }
+        .btn-primary:hover { background-position: right center; box-shadow: 0 12px 30px rgba(255,92,168,0.5); }
+
+        .btn-ghost {
+            background: var(--glass-strong);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+        .btn-ghost:hover { background: rgba(255,255,255,0.16); }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #22d3ee);
+            box-shadow: 0 8px 24px rgba(16,185,129,0.4);
+        }
+        .btn-success:hover { box-shadow: 0 12px 30px rgba(34,211,238,0.5); }
+
+        /* Effet "onde" au clic */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            transform: scale(0);
+            animation: ripple 0.6s ease-out;
+            pointer-events: none;
+        }
+        @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+
+        .btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+
+        /* ---------- Liste d'éléments (chips) ---------- */
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            max-height: 260px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+        .chips::-webkit-scrollbar { width: 8px; }
+        .chips::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 8px; }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 8px 8px 16px;
+            background: var(--glass-strong);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            font-size: 0.92rem;
+            animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+            transition: transform 0.15s, border-color 0.2s;
+        }
+        .chip:hover { transform: translateY(-2px); border-color: var(--accent-1); }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: scale(1); } }
+
+        .chip .label {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .chip .label:hover { color: var(--accent-3); text-decoration: underline dotted; }
+        .chip-edit {
+            width: 130px;
+            padding: 4px 8px;
+            border-radius: 8px;
+            border: 1px solid var(--accent-1);
+            background: rgba(0,0,0,0.35);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.92rem;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(124,92,255,0.2);
+        }
+
+        .chip .remove {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(251,113,133,0.2);
+            color: var(--error);
+            font-size: 1rem;
+            line-height: 1;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: background 0.2s, transform 0.2s;
+            padding: 0;
+        }
+        .chip .remove:hover { background: var(--error); color: #fff; transform: rotate(90deg); }
+
+        .empty {
+            text-align: center;
+            color: #6b6f8f;
+            padding: 28px;
+            font-style: italic;
+        }
+
+        /* ---------- Résultat du tirage ---------- */
+        .result-box {
+            margin-top: 16px;
+            padding: 22px;
+            border-radius: 14px;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid var(--border);
+            text-align: center;
+            min-height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            font-weight: 600;
+            font-family: 'Sora', sans-serif;
+            transition: all 0.3s;
+        }
+        .result-box.success {
+            background: rgba(52,211,153,0.12);
+            border-color: rgba(52,211,153,0.4);
+            box-shadow: 0 0 30px rgba(52,211,153,0.2) inset;
+        }
+        .result-box.error {
+            background: rgba(251,113,133,0.12);
+            border-color: rgba(251,113,133,0.4);
+        }
+        .result-box .win {
+            background: var(--grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: winPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes winPop { 0% { transform: scale(0.4); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* ---------- Contrôles équipes ---------- */
+        .teams-controls {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .teams-controls label { font-weight: 500; color: var(--text-dim); }
+        #teamCount {
+            width: 80px;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(0,0,0,0.25);
+            color: var(--text);
+            font-size: 1.1rem;
+            font-family: 'Sora', sans-serif;
+            font-weight: 700;
+            text-align: center;
+        }
+        #teamCount:focus { outline: none; border-color: var(--accent-3); box-shadow: 0 0 0 4px rgba(34,211,238,0.18); }
+
+        .teams-info {
+            margin-top: 16px;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        /* ---------- Grille d'équipes 3D ---------- */
+        .teams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 18px;
+            margin-top: 18px;
+            perspective: 1400px;
+        }
+
+        .team-card {
+            background: var(--glass-strong);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 16px;
+            transform-style: preserve-3d;
+            transition: transform 0.15s ease-out, box-shadow 0.2s, border-color 0.2s;
+            animation: cardIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+            will-change: transform;
+            position: relative;
+        }
+        @keyframes cardIn { from { opacity: 0; transform: translateY(30px) rotateX(-12deg); } to { opacity: 1; transform: translateY(0) rotateX(0); } }
+
+        .team-card.drag-over {
+            border-color: var(--accent-3);
+            box-shadow: 0 0 0 3px rgba(34,211,238,0.3), 0 20px 40px rgba(0,0,0,0.4);
+            transform: scale(1.03);
+        }
+
+        .team-card h4 {
+            font-family: 'Sora', sans-serif;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transform: translateZ(30px);
+        }
+        .team-card h4 .team-name {
+            background: var(--grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .badge {
+            background: rgba(34,211,238,0.18);
+            color: var(--accent-3);
+            border: 1px solid rgba(34,211,238,0.3);
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .team-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+
+        .member {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            background: rgba(0,0,0,0.28);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: grab;
+            font-size: 0.9rem;
+            transition: transform 0.15s, border-color 0.2s, background 0.2s;
+            transform: translateZ(20px);
+            user-select: none;
+        }
+        .member:hover { border-color: var(--accent-1); background: rgba(124,92,255,0.12); transform: translateZ(20px) translateX(3px); }
+        .member:active { cursor: grabbing; }
+        .member.dragging { opacity: 0.4; transform: scale(0.96); }
+        .member .avatar {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            background: var(--grad);
+            display: grid;
+            place-items: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .member .grip { margin-left: auto; color: #555a7a; font-size: 0.8rem; }
+
+        /* ---------- Historique ---------- */
+        .history-list { max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .history-list::-webkit-scrollbar { width: 8px; }
+        .history-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 8px; }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 14px;
+            background: rgba(0,0,0,0.22);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            animation: fadeUp 0.4s ease both;
+        }
+        .history-item .time { color: var(--text-dim); white-space: nowrap; }
+        .history-item .vals { color: var(--text); text-align: right; }
+
+        /* ---------- Partage ---------- */
+        .share-box {
+            margin-top: 14px;
+            padding: 14px;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            animation: fadeUp 0.4s ease both;
+        }
+        #shareUrl {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: rgba(0,0,0,0.3);
+            color: var(--text-dim);
+            font-family: monospace;
+            font-size: 0.82rem;
+        }
+
+        /* ---------- Confettis ---------- */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 14px;
+            top: -20px;
+            z-index: 999;
+            pointer-events: none;
+            animation: confettiFall linear forwards;
+        }
+        @keyframes confettiFall {
+            to { transform: translateY(110vh) rotate(720deg); opacity: 0.9; }
+        }
+
+        /* ---------- Modale tirage multiple (glassmorphism + tilt 3D) ---------- */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 20, 0.55);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: grid;
+            place-items: center;
+            animation: fadeIn 0.25s ease;
+            perspective: 1100px;
+        }
+        .modal-backdrop[hidden] { display: none; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-card {
+            width: min(90vw, 380px);
+            padding: 30px 28px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            backdrop-filter: blur(26px);
+            -webkit-backdrop-filter: blur(26px);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.22);
+            transform-style: preserve-3d;
+            transition: transform 0.15s ease-out;
+            animation: modalIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .modal-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(24px) scale(0.9) rotateX(-10deg); }
+            to { opacity: 1; transform: translateY(0) scale(1) rotateX(0); }
+        }
+
+        .modal-card h3 {
+            font-family: 'Sora', sans-serif;
+            font-weight: 700;
+            font-size: 1.35rem;
+            margin-bottom: 6px;
+            transform: translateZ(30px);
+        }
+        .modal-sub {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            transform: translateZ(20px);
+        }
+        .modal-card input[type=number] {
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: rgba(0,0,0,0.3);
+            color: var(--text);
+            font-size: 1.5rem;
+            font-family: 'Sora', sans-serif;
+            font-weight: 700;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            transform: translateZ(25px);
+        }
+        .modal-card input[type=number]:focus {
+            border-color: var(--accent-1);
+            box-shadow: 0 0 0 4px rgba(124,92,255,0.2);
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 22px;
+            transform: translateZ(20px);
+        }
+        .modal-actions button { flex: 1; }
+
+        @media (max-width: 600px) {
+            body { padding: 24px 14px 60px; }
+            .card { padding: 18px; }
+            .input-group { flex-direction: column; }
+            .btn-row { flex-direction: column; }
+            .btn-row button { width: 100%; }
+            .teams-controls { justify-content: center; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="aurora"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="container">
+        <a class="back-link" href="../">← Boîte à outils</a>
+        <header>
+            <div class="die-3d" id="die3d"></div>
+            <h1>Tirage &amp; Équipes</h1>
+            <p class="subtitle">Tirez un ou plusieurs éléments au hasard, ou répartissez-les en équipes équilibrées. Glissez-déposez pour réorganiser.</p>
+        </header>
+
+        <!-- Ajout d'éléments -->
+        <div class="card">
+            <div class="section-title"><span class="dot"></span> Ajouter des éléments</div>
+            <div class="input-group">
+                <input type="text" id="valueInput" placeholder="Entrez une valeur...">
+                <button id="addBtn" class="btn-primary">Ajouter</button>
+            </div>
+        </div>
+
+        <!-- Liste -->
+        <div class="card">
+            <div class="section-title">
+                <span class="dot"></span> Liste des éléments
+                <span class="count-pill" id="countItems">0</span>
+            </div>
+            <div class="chips" id="itemsList">
+                <div class="empty">Votre liste est vide. Ajoutez des éléments pour commencer !</div>
+            </div>
+            <div class="btn-row">
+                <button id="resetBtn" class="btn-ghost">Réinitialiser</button>
+                <button id="exportBtn" class="btn-ghost">Exporter (JSON)</button>
+                <button id="importBtn" class="btn-ghost">Importer (JSON)</button>
+                <button id="shareBtn" class="btn-ghost">Partager</button>
+            </div>
+            <div class="share-box" id="shareContainer" style="display:none;">
+                <input type="text" id="shareUrl" readonly>
+            </div>
+        </div>
+
+        <!-- Tirage au sort -->
+        <div class="card">
+            <div class="section-title"><span class="dot"></span> Tirage au sort</div>
+            <div class="btn-row" style="margin-top:0;">
+                <button id="drawOneBtn" class="btn-primary">Tirer 1 élément</button>
+                <button id="drawManyBtn" class="btn-ghost">Tirer plusieurs</button>
+            </div>
+            <div class="result-box" id="drawResult">
+                <span id="pickedItems" style="color:#6b6f8f;">Aucun tirage effectué.</span>
+            </div>
+        </div>
+
+        <!-- Création d'équipes -->
+        <div class="card">
+            <div class="section-title"><span class="dot"></span> Création d'équipes</div>
+            <div class="teams-controls">
+                <label for="teamCount">Nombre d'équipes :</label>
+                <input type="number" id="teamCount" min="1" max="50" value="2">
+                <button id="createTeamsBtn" class="btn-success">🎲 Créer les équipes</button>
+            </div>
+            <div id="teamsResult"></div>
+        </div>
+
+        <!-- Historique -->
+        <div class="card">
+            <div class="section-title"><span class="dot"></span> Derniers tirages</div>
+            <div class="history-list" id="drawHistory">
+                <div class="empty">Aucun tirage enregistré.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale tirage multiple -->
+    <div class="modal-backdrop" id="drawModal" hidden>
+        <div class="modal-card" id="drawModalCard">
+            <h3>Tirer plusieurs éléments</h3>
+            <p class="modal-sub">Combien d'éléments voulez-vous tirer ?</p>
+            <input type="number" id="drawCountInput" min="1" max="100" value="3" inputmode="numeric">
+            <div class="modal-actions">
+                <button id="drawCancelBtn" class="btn-ghost">Annuler</button>
+                <button id="drawConfirmBtn" class="btn-primary">Tirer</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="app.js"></script>
+    <script>
+        const selector = new RandomSelector();
+        let items = selector.getElements();
+        let history = JSON.parse(localStorage.getItem('tirage.drawHistory')) || [];
+
+        // --- Éléments DOM ---
+        const valueInput = document.getElementById('valueInput');
+        const addBtn = document.getElementById('addBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const drawOneBtn = document.getElementById('drawOneBtn');
+        const drawManyBtn = document.getElementById('drawManyBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const importBtn = document.getElementById('importBtn');
+        const shareBtn = document.getElementById('shareBtn');
+        const createTeamsBtn = document.getElementById('createTeamsBtn');
+        const teamCountInput = document.getElementById('teamCount');
+        const itemsListDiv = document.getElementById('itemsList');
+        const countItems = document.getElementById('countItems');
+        const drawResultDiv = document.getElementById('drawResult');
+        const pickedItemsDiv = document.getElementById('pickedItems');
+        const teamsResultDiv = document.getElementById('teamsResult');
+        const historyDiv = document.getElementById('tirage.drawHistory');
+        const shareContainer = document.getElementById('shareContainer');
+        const shareUrl = document.getElementById('shareUrl');
+
+        // --- Effet "onde" sur les boutons ---
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                const rect = this.getBoundingClientRect();
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // --- Confettis ---
+        function confetti() {
+            const colors = ['#7c5cff', '#ff5ca8', '#22d3ee', '#34d399', '#fbbf24', '#f472b6'];
+            for (let i = 0; i < 90; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.background = colors[Math.floor(Math.random() * colors.length)];
+                c.style.animationDuration = (2 + Math.random() * 2) + 's';
+                c.style.animationDelay = Math.random() * 0.4 + 's';
+                c.style.transform = `rotate(${Math.random() * 360}deg)`;
+                if (Math.random() > 0.5) c.style.borderRadius = '50%';
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 4500);
+            }
+        }
+
+        // --- Fonctions d'affichage ---
+        function showMessage(type, message, highlight) {
+            drawResultDiv.className = 'result-box ' + type;
+            if (highlight) {
+                pickedItemsDiv.innerHTML = `<span class="win">${message}</span>`;
+            } else {
+                pickedItemsDiv.textContent = message;
+            }
+            clearTimeout(showMessage._t);
+            showMessage._t = setTimeout(() => {
+                drawResultDiv.className = 'result-box';
+                pickedItemsDiv.textContent = 'Aucun tirage effectué.';
+                pickedItemsDiv.style.color = '#6b6f8f';
+            }, 4000);
+        }
+
+        function bumpCount() {
+            countItems.textContent = items.length;
+            countItems.classList.remove('bump');
+            void countItems.offsetWidth;
+            countItems.classList.add('bump');
+        }
+
+        function renderList() {
+            bumpCount();
+            if (items.length === 0) {
+                itemsListDiv.innerHTML = '<div class="empty">Votre liste est vide. Ajoutez des éléments pour commencer !</div>';
+                return;
+            }
+            itemsListDiv.innerHTML = '';
+            items.forEach((value, i) => {
+                const chip = document.createElement('div');
+                chip.className = 'chip';
+                chip.style.animationDelay = (i * 0.03) + 's';
+                const label = document.createElement('span');
+                label.className = 'label';
+                label.textContent = value;
+                label.title = 'Cliquer pour modifier';
+                label.addEventListener('click', () => startEdit(chip, label, i));
+                chip.appendChild(label);
+                const btn = document.createElement('button');
+                btn.className = 'remove';
+                btn.textContent = '×';
+                btn.onclick = () => {
+                    selector.removeElement(i);
+                    items = selector.getElements();
+                    renderList();
+                };
+                chip.appendChild(btn);
+                itemsListDiv.appendChild(chip);
+            });
+        }
+
+        // --- Édition en direct d'un élément ---
+        function startEdit(chip, label, index) {
+            if (chip.querySelector('input')) return;
+            const original = items[index];
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'chip-edit';
+            input.value = original;
+            label.replaceWith(input);
+            input.focus();
+            input.select();
+
+            let done = false;
+            function commit() {
+                if (done) return; done = true;
+                const v = input.value.trim();
+                if (v && v !== original) {
+                    try {
+                        selector.updateElement(index, v);
+                        items = selector.getElements();
+                    } catch (e) {
+                        showMessage('error', e.message);
+                    }
+                }
+                renderList();
+            }
+            function cancel() {
+                if (done) return; done = true;
+                renderList();
+            }
+            input.addEventListener('blur', commit);
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+                else if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+            });
+        }
+
+        function renderHistory() {
+            if (history.length === 0) {
+                historyDiv.innerHTML = '<div class="empty">Aucun tirage enregistré.</div>';
+                return;
+            }
+            historyDiv.innerHTML = '';
+            history.slice(-10).reverse().forEach((t, idx) => {
+                const row = document.createElement('div');
+                row.className = 'history-item';
+                row.style.animationDelay = (idx * 0.04) + 's';
+                const time = document.createElement('span');
+                time.className = 'time';
+                time.textContent = new Date(t.date).toLocaleTimeString();
+                const vals = document.createElement('span');
+                vals.className = 'vals';
+                vals.textContent = t.items.join(', ');
+                row.appendChild(time);
+                row.appendChild(vals);
+                historyDiv.appendChild(row);
+            });
+        }
+
+        function renderTeams(teams, teamCount) {
+            teamsResultDiv.innerHTML = '';
+
+            const total = items.length;
+            const base = Math.floor(total / teamCount);
+            const remainder = total % teamCount;
+
+            let distribution;
+            if (remainder === 0) {
+                distribution = `${teamCount} équipes de ${base} élément${base > 1 ? 's' : ''} chacune`;
+            } else {
+                const bigTeams = remainder;
+                const smallTeams = teamCount - remainder;
+                const parts = [];
+                if (bigTeams > 0) parts.push(`${bigTeams} équipe${bigTeams > 1 ? 's' : ''} de ${base + 1}`);
+                if (smallTeams > 0) parts.push(`${smallTeams} équipe${smallTeams > 1 ? 's' : ''} de ${base}`);
+                distribution = parts.join(', ');
+            }
+
+            const info = document.createElement('div');
+            info.className = 'teams-info';
+            info.textContent = `${total} éléments répartis en ${teamCount} équipes (${distribution})`;
+            teamsResultDiv.appendChild(info);
+
+            const grid = document.createElement('div');
+            grid.className = 'teams-grid';
+
+            teams.forEach((team, i) => {
+                const card = document.createElement('div');
+                card.className = 'team-card';
+                card.style.animationDelay = (i * 0.08) + 's';
+
+                const h4 = document.createElement('h4');
+                const name = document.createElement('span');
+                name.className = 'team-name';
+                name.textContent = `Équipe ${i + 1}`;
+                const badge = document.createElement('span');
+                badge.className = 'badge';
+                badge.textContent = `${team.length} él.`;
+                h4.appendChild(name);
+                h4.appendChild(badge);
+                card.appendChild(h4);
+
+                const ul = document.createElement('ul');
+                team.forEach(value => {
+                    const li = document.createElement('li');
+                    li.className = 'member';
+                    li.draggable = true;
+                    const avatar = document.createElement('span');
+                    avatar.className = 'avatar';
+                    avatar.textContent = value.slice(0, 2).toUpperCase();
+                    const label = document.createElement('span');
+                    label.textContent = value;
+                    const grip = document.createElement('span');
+                    grip.className = 'grip';
+                    grip.textContent = '⠿';
+                    li.appendChild(avatar);
+                    li.appendChild(label);
+                    li.appendChild(grip);
+                    ul.appendChild(li);
+                });
+                card.appendChild(ul);
+                grid.appendChild(card);
+            });
+
+            teamsResultDiv.appendChild(grid);
+            initTilt(grid);
+            initDragDrop(grid);
+            confetti();
+        }
+
+        // --- Effet 3D (tilt) sur les cartes d'équipe ---
+        function initTilt(grid) {
+            grid.querySelectorAll('.team-card').forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+                    card.style.transform = `rotateY(${x * 14}deg) rotateX(${-y * 14}deg) translateZ(0)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'rotateY(0) rotateX(0)';
+                });
+            });
+        }
+
+        // --- Drag & drop des membres entre équipes ---
+        function initDragDrop(grid) {
+            let dragged = null;
+
+            grid.querySelectorAll('.member').forEach(member => {
+                member.addEventListener('dragstart', e => {
+                    dragged = member;
+                    member.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', '');
+                });
+                member.addEventListener('dragend', () => {
+                    member.classList.remove('dragging');
+                    dragged = null;
+                    grid.querySelectorAll('.team-card').forEach(c => c.classList.remove('drag-over'));
+                    updateBadges(grid);
+                });
+            });
+
+            grid.querySelectorAll('.team-card').forEach(card => {
+                card.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    card.classList.add('drag-over');
+                });
+                card.addEventListener('dragleave', e => {
+                    if (!card.contains(e.relatedTarget)) card.classList.remove('drag-over');
+                });
+                card.addEventListener('drop', e => {
+                    e.preventDefault();
+                    card.classList.remove('drag-over');
+                    if (!dragged) return;
+                    const ul = card.querySelector('ul');
+                    ul.appendChild(dragged);
+                    updateBadges(grid);
+                });
+            });
+        }
+
+        function updateBadges(grid) {
+            grid.querySelectorAll('.team-card').forEach(card => {
+                const count = card.querySelectorAll('.member').length;
+                const badge = card.querySelector('.badge');
+                if (badge) badge.textContent = `${count} él.`;
+            });
+        }
+
+        // --- Écouteurs d'événements ---
+        function addValue() {
+            try {
+                const value = valueInput.value.trim();
+                if (!value) throw new Error('Veuillez entrer une valeur.');
+                selector.addElement(value);
+                items = selector.getElements();
+                renderList();
+                valueInput.value = '';
+                valueInput.focus();
+            } catch (e) {
+                showMessage('error', e.message);
+            }
+        }
+
+        addBtn.addEventListener('click', addValue);
+        valueInput.addEventListener('keydown', e => { if (e.key === 'Enter') addValue(); });
+
+        resetBtn.addEventListener('click', () => {
+            selector.resetList();
+            items = selector.getElements();
+            renderList();
+            teamsResultDiv.innerHTML = '';
+            showMessage('success', 'Liste réinitialisée.');
+        });
+
+        drawOneBtn.addEventListener('click', () => {
+            try {
+                selector.drawRandom(1, true);
+                history = JSON.parse(localStorage.getItem('tirage.drawHistory')) || [];
+                showMessage('success', `🎯 ${selector.getPicked()[0]}`, true);
+                renderHistory();
+            } catch (e) {
+                showMessage('error', e.message);
+            }
+        });
+
+        // --- Modale tirage multiple ---
+        const drawModal = document.getElementById('drawModal');
+        const drawModalCard = document.getElementById('drawModalCard');
+        const drawCountInput = document.getElementById('drawCountInput');
+        const drawCancelBtn = document.getElementById('drawCancelBtn');
+        const drawConfirmBtn = document.getElementById('drawConfirmBtn');
+
+        function openDrawModal() {
+            drawCountInput.value = 3;
+            drawModal.hidden = false;
+            requestAnimationFrame(() => drawCountInput.focus());
+        }
+        function closeDrawModal() {
+            drawModal.hidden = true;
+        }
+        function confirmDraw() {
+            const count = parseInt(drawCountInput.value);
+            if (!count || count < 1) return;
+            closeDrawModal();
+            try {
+                selector.drawRandom(count, true);
+                history = JSON.parse(localStorage.getItem('tirage.drawHistory')) || [];
+                showMessage('success', `🎯 ${selector.getPicked().join(', ')}`, true);
+                renderHistory();
+            } catch (e) {
+                showMessage('error', e.message);
+            }
+        }
+
+        drawManyBtn.addEventListener('click', openDrawModal);
+        drawCancelBtn.addEventListener('click', closeDrawModal);
+        drawConfirmBtn.addEventListener('click', confirmDraw);
+        drawCountInput.addEventListener('keydown', e => { if (e.key === 'Enter') confirmDraw(); });
+        drawModal.addEventListener('click', e => { if (e.target === drawModal) closeDrawModal(); });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && !drawModal.hidden) closeDrawModal();
+        });
+
+        // Tilt 3D au survol de la carte de la modale
+        drawModalCard.addEventListener('mousemove', e => {
+            const rect = drawModalCard.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            drawModalCard.style.transform = `rotateY(${x * 10}deg) rotateX(${-y * 10}deg)`;
+        });
+        drawModalCard.addEventListener('mouseleave', () => {
+            drawModalCard.style.transform = 'rotateY(0) rotateX(0)';
+        });
+
+        exportBtn.addEventListener('click', () => {
+            const data = selector.exportList();
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'liste_elements.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        importBtn.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    try {
+                        const count = selector.importList(ev.target.result);
+                        items = selector.getElements();
+                        renderList();
+                        showMessage('success', `${count} élément(s) importé(s).`);
+                    } catch (err) {
+                        showMessage('error', err.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        });
+
+        shareBtn.addEventListener('click', () => {
+            shareUrl.value = selector.generateShareLink();
+            shareContainer.style.display = 'block';
+            shareUrl.select();
+        });
+
+        createTeamsBtn.addEventListener('click', () => {
+            try {
+                const count = parseInt(teamCountInput.value);
+                if (count < 1) throw new Error('Le nombre d\'équipes doit être au moins 1.');
+                const teams = selector.generateBalancedTeams(count);
+                renderTeams(teams, count);
+            } catch (e) {
+                showMessage('error', e.message);
+            }
+        });
+
+        // --- Chargement initial ---
+        const params = new URLSearchParams(window.location.search);
+        const itemsUrl = params.get('items');
+        if (itemsUrl) {
+            itemsUrl.split(',').forEach(value => {
+                const trimmed = value.trim();
+                if (trimmed && !items.includes(trimmed)) {
+                    selector.addElement(trimmed);
+                }
+            });
+            items = selector.getElements();
+        }
+
+        renderList();
+        renderHistory();
+
+        // --- Dé 3D (Three.js) ---
+        (function initDie() {
+            const container = document.getElementById('die3d');
+            if (!container || typeof THREE === 'undefined') {
+                if (container) {
+                    const fb = document.createElement('span');
+                    fb.className = 'logo-fallback';
+                    fb.textContent = '🎲';
+                    container.appendChild(fb);
+                }
+                return;
+            }
+
+            const SIZE = 150;
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+            camera.position.set(0, 0, 5.2);
+
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(SIZE, SIZE);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+            container.appendChild(renderer.domElement);
+
+            // Halo lumineux derrière le dé
+            const glow = document.createElement('div');
+            glow.style.cssText = 'position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(124,92,255,0.5),transparent 65%);filter:blur(10px);z-index:-1;';
+            container.style.position = 'relative';
+            container.insertBefore(glow, renderer.domElement);
+
+            // Textures des faces (pips)
+            function faceTexture(n) {
+                const c = document.createElement('canvas');
+                c.width = c.height = 256;
+                const ctx = c.getContext('2d');
+                const g = ctx.createLinearGradient(0, 0, 256, 256);
+                g.addColorStop(0, '#8b6bff');
+                g.addColorStop(0.5, '#ff5ca8');
+                g.addColorStop(1, '#22d3ee');
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, 256, 256);
+                ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+                ctx.lineWidth = 10;
+                ctx.strokeRect(8, 8, 240, 240);
+                const P = {
+                    1: [[128, 128]],
+                    2: [[72, 72], [184, 184]],
+                    3: [[72, 72], [128, 128], [184, 184]],
+                    4: [[72, 72], [184, 72], [72, 184], [184, 184]],
+                    5: [[72, 72], [184, 72], [128, 128], [72, 184], [184, 184]],
+                    6: [[72, 64], [184, 64], [72, 128], [184, 128], [72, 192], [184, 192]]
+                };
+                ctx.fillStyle = 'rgba(255,255,255,0.95)';
+                (P[n] || []).forEach(([x, y]) => {
+                    ctx.beginPath();
+                    ctx.arc(x, y, 26, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                const tex = new THREE.CanvasTexture(c);
+                tex.anisotropy = 4;
+                return tex;
+            }
+
+            const geo = new THREE.BoxGeometry(2, 2, 2, 4, 4, 4);
+            const mats = [1, 6, 3, 4, 2, 5].map(n => new THREE.MeshStandardMaterial({
+                map: faceTexture(n),
+                roughness: 0.35,
+                metalness: 0.15
+            }));
+            const die = new THREE.Mesh(geo, mats);
+            die.rotation.set(0.5, 0.7, 0);
+            scene.add(die);
+
+            scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+            const key = new THREE.PointLight(0xffffff, 1.1);
+            key.position.set(3, 4, 5);
+            scene.add(key);
+            const rim = new THREE.PointLight(0x7c5cff, 0.8);
+            rim.position.set(-4, -2, 3);
+            scene.add(rim);
+
+            // --- Rotation par drag + inertie + snap fluide sur une face ---
+            const K = 0.012;            // radians par pixel
+            const FRICTION = 0.95;      // décélération par frame
+            const SETTLE_SPEED = 0.004; // seuil de vitesse pour passer au snap
+            const SNAPEASE = 0.16;      // vitesse de slerp vers la face
+            const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+            let mode = 'idle';          // idle | drag | spin | settle
+            let vel = { x: 0, y: 0 };   // vitesse angulaire (rad/frame)
+            let last = { x: 0, y: 0 };  // dernière position du pointeur
+            let targetQuat = new THREE.Quaternion();
+            let t = 0;
+
+            const _q = new THREE.Quaternion();
+            const _e = new THREE.Euler();
+            function spinBy(ax, ay) {   // ax = axe X, ay = axe Y (radians)
+                _q.setFromEuler(_e.set(ax, ay, 0));
+                die.quaternion.premultiply(_q);
+            }
+
+            // Orientations cibles : amener chaque face vers la caméra (+Z)
+            const FACE_TARGETS = [
+                new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, 0)),
+                new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI, 0)),
+                new THREE.Quaternion().setFromEuler(new THREE.Euler(0, -Math.PI / 2, 0)),
+                new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI / 2, 0)),
+                new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI / 2, 0, 0)),
+                new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0))
+            ];
+            function nearestFace() {
+                let best = FACE_TARGETS[0], bestDot = -2;
+                for (const f of FACE_TARGETS) {
+                    const d = Math.abs(die.quaternion.dot(f));
+                    if (d > bestDot) { bestDot = d; best = f; }
+                }
+                return best;
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+                t += 0.016;
+
+                if (mode === 'spin') {
+                    spinBy(vel.x, vel.y);
+                    vel.x *= FRICTION;
+                    vel.y *= FRICTION;
+                    if (Math.abs(vel.x) + Math.abs(vel.y) < SETTLE_SPEED) {
+                        vel.x = vel.y = 0;
+                        targetQuat = nearestFace();
+                        mode = 'settle';
+                    }
+                } else if (mode === 'settle') {
+                    die.quaternion.slerp(targetQuat, SNAPEASE);
+                    if (die.quaternion.dot(targetQuat) > 0.9999) {
+                        die.quaternion.copy(targetQuat);
+                        mode = 'idle';
+                    }
+                }
+
+                // flottement doux en idle, retour à 0 sinon
+                const targetY = (mode === 'idle') ? Math.sin(t * 1.4) * 0.06 : 0;
+                die.position.y += (targetY - die.position.y) * 0.08;
+
+                // léger zoom pendant le drag
+                const targetScale = (mode === 'drag') ? 1.08 : 1.0;
+                die.scale.x += (targetScale - die.scale.x) * 0.15;
+                die.scale.y = die.scale.z = die.scale.x;
+
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            const el = renderer.domElement;
+            el.style.cursor = 'grab';
+            el.style.touchAction = 'none';
+
+            function onDown(e) {
+                mode = 'drag';
+                vel.x = vel.y = 0;
+                last.x = e.clientX;
+                last.y = e.clientY;
+                el.style.cursor = 'grabbing';
+                e.preventDefault();
+            }
+            function onMove(e) {
+                if (mode !== 'drag') return;
+                const dx = e.clientX - last.x;
+                const dy = e.clientY - last.y;
+                last.x = e.clientX;
+                last.y = e.clientY;
+                spinBy(dy * K, dx * K);
+                vel.x = clamp(dy * K, -0.5, 0.5);
+                vel.y = clamp(dx * K, -0.5, 0.5);
+            }
+            function onUp() {
+                if (mode !== 'drag') return;
+                el.style.cursor = 'grab';
+                if (Math.abs(vel.x) + Math.abs(vel.y) < SETTLE_SPEED) {
+                    targetQuat = nearestFace();
+                    mode = 'settle';
+                } else {
+                    mode = 'spin';
+                }
+            }
+
+            el.addEventListener('pointerdown', onDown);
+            window.addEventListener('pointermove', onMove);
+            window.addEventListener('pointerup', onUp);
+        })();
+    </script>
+</body>
+</html>
