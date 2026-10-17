@@ -1,41 +1,144 @@
-/* Base commune de la boîte à outils : couleurs (clair/sombre), reset, lien de retour.
-   Chaque outil peut l'utiliser ou garder son propre style ; le lien .back-link est le seul élément imposé. */
+/* Design system de la boîte à outils — style « aurora » : fond lumineux animé, cartes en verre,
+   titres en dégradé. Bleu = couleur principale, orange = accent. Thèmes clair et sombre.
+   Les pages chargent Sora + Inter (Google Fonts) et ce fichier, puis leur propre CSS. */
+
+/* ---------- Couleurs : thème clair (par défaut) ---------- */
 :root {
-  --bg: #e8ebf3; --surface: #f7f8fc; --surface-2: #dde2ef; --ink: #0b0f2e; --muted: #4f5779; --line: rgba(11, 15, 46, .13);
-  --accent: #1f2fd6; --on-accent: #ffffff; --signal: #e08a00; --signal-soft: #ffe7b3; --signal-ink: #2b1b00;
-  --ok: #0d8a5c; --danger: #c3283a;
-  --f-display: "Archivo", "Arial Black", system-ui, sans-serif;
-  --f-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --bg: #eef2f9;
+  --surface: rgba(255, 255, 255, .62);      /* verre */
+  --surface-2: rgba(255, 255, 255, .85);    /* verre plus opaque */
+  --field: rgba(255, 255, 255, .9);         /* fond des champs */
+  --ink: #12203a;
+  --muted: #56627e;
+  --line: rgba(18, 32, 58, .12);
+  --accent: #2f6fe4;                        /* bleu */
+  --accent-2: #f08a24;                      /* orange */
+  --accent-3: #0ea5e9;                      /* bleu ciel */
+  --on-accent: #ffffff;
+  --grad: linear-gradient(135deg, #2f6fe4 0%, #0ea5e9 45%, #f08a24 100%);
+  --signal: #f08a24; --signal-soft: #ffe6cc; --signal-ink: #5a2d00;
+  --ok: #0f9a6c; --danger: #d6334a;
+  --shadow: 0 18px 40px -18px rgba(18, 32, 58, .25);
+  --orb-1: rgba(47, 111, 228, .28); --orb-2: rgba(240, 138, 36, .22); --orb-3: rgba(14, 165, 233, .2);
+  --grid-line: rgba(18, 32, 58, .05);
+
+  --f-display: "Sora", system-ui, sans-serif;
+  --f-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --ease: cubic-bezier(.2, .8, .2, 1);
   color-scheme: light;
+
+  /* Alias historiques de tirage/ (même sens que ci-dessus) */
+  --bg-0: var(--bg); --glass: var(--surface); --glass-strong: var(--surface-2); --border: var(--line);
+  --text: var(--ink); --text-dim: var(--muted); --accent-1: var(--accent); --success: var(--ok); --error: var(--danger);
 }
+
+/* ---------- Thème sombre ---------- */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #070a1c; --surface: #0e1330; --surface-2: #171d45; --ink: #e8eaff; --muted: #9aa1cc; --line: rgba(232, 234, 255, .12);
-    --accent: #8492ff; --on-accent: #070a1c; --signal: #ffd23f; --signal-soft: #3a2f08; --signal-ink: #ffe48a;
-    --ok: #4fd6a0; --danger: #ff6b7d; color-scheme: dark;
+    --bg: #080d1c;
+    --surface: rgba(255, 255, 255, .06);
+    --surface-2: rgba(255, 255, 255, .1);
+    --field: rgba(0, 0, 0, .28);
+    --ink: #eef2fb;
+    --muted: #9ba8c7;
+    --line: rgba(255, 255, 255, .12);
+    --accent: #5b93ff;
+    --accent-2: #ffa24c;
+    --accent-3: #38bdf8;
+    --on-accent: #ffffff;
+    --grad: linear-gradient(135deg, #5b93ff 0%, #38bdf8 45%, #ffa24c 100%);
+    --signal: #ffa24c; --signal-soft: #3d2510; --signal-ink: #ffd2a6;
+    --ok: #34d399; --danger: #fb7185;
+    --shadow: 0 20px 50px rgba(0, 0, 0, .35);
+    --orb-1: rgba(91, 147, 255, .38); --orb-2: rgba(255, 162, 76, .26); --orb-3: rgba(56, 189, 248, .24);
+    --grid-line: rgba(255, 255, 255, .03);
+    color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #070a1c; --surface: #0e1330; --surface-2: #171d45; --ink: #e8eaff; --muted: #9aa1cc; --line: rgba(232, 234, 255, .12);
-  --accent: #8492ff; --on-accent: #070a1c; --signal: #ffd23f; --signal-soft: #3a2f08; --signal-ink: #ffe48a;
-  --ok: #4fd6a0; --danger: #ff6b7d; color-scheme: dark;
+  --bg: #080d1c;
+  --surface: rgba(255, 255, 255, .06);
+  --surface-2: rgba(255, 255, 255, .1);
+  --field: rgba(0, 0, 0, .28);
+  --ink: #eef2fb;
+  --muted: #9ba8c7;
+  --line: rgba(255, 255, 255, .12);
+  --accent: #5b93ff;
+  --accent-2: #ffa24c;
+  --accent-3: #38bdf8;
+  --on-accent: #ffffff;
+  --grad: linear-gradient(135deg, #5b93ff 0%, #38bdf8 45%, #ffa24c 100%);
+  --signal: #ffa24c; --signal-soft: #3d2510; --signal-ink: #ffd2a6;
+  --ok: #34d399; --danger: #fb7185;
+  --shadow: 0 20px 50px rgba(0, 0, 0, .35);
+  --orb-1: rgba(91, 147, 255, .38); --orb-2: rgba(255, 162, 76, .26); --orb-3: rgba(56, 189, 248, .24);
+  --grid-line: rgba(255, 255, 255, .03);
+  color-scheme: dark;
 }
 
+/* ---------- Reset ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
-body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.5; }
-button, input { font: inherit; color: inherit; }
+body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.5; overflow-x: hidden; transition: background-color .4s var(--ease), color .4s var(--ease); }
+button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
+input::placeholder { color: var(--muted); opacity: .8; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 
-/* Barre du haut commune : retour à l'accueil + bouton de thème */
+/* ---------- Fond aurora (sans balisage : pseudo-éléments du body) ---------- */
+body::before {
+  content: ""; position: fixed; inset: -20vmax; z-index: -2; pointer-events: none;
+  background:
+    radial-gradient(38vmax 34vmax at 18% 16%, var(--orb-1), transparent 70%),
+    radial-gradient(34vmax 30vmax at 86% 28%, var(--orb-2), transparent 70%),
+    radial-gradient(38vmax 34vmax at 60% 92%, var(--orb-3), transparent 70%);
+  filter: blur(20px);
+  animation: aurora 26s ease-in-out infinite alternate;
+}
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(circle at 50% 30%, #000, transparent 75%);
+  -webkit-mask-image: radial-gradient(circle at 50% 30%, #000, transparent 75%);
+}
+@keyframes aurora {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(3vmax, 2vmax) scale(1.06); }
+  100% { transform: translate(-2vmax, 3vmax) scale(1.02); }
+}
+
+/* ---------- Verre : cartes, panneaux, fenêtres ---------- */
+.card, .glass, dialog {
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  box-shadow: var(--shadow);
+}
+.card { position: relative; }
+.card::before {
+  content: ""; position: absolute; top: 0; left: 12%; right: 12%; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .45), transparent);
+}
+
+/* ---------- Titres en dégradé ---------- */
+/* Dégradé cyclique (bleu → orange → bleu ciel → orange → bleu) : avec background-size 200%,
+   l'orange reste visible quelle que soit la position de l'animation. */
+:root { --grad-title: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 25%, var(--accent-3) 50%, var(--accent-2) 75%, var(--accent) 100%); }
+.grad-text {
+  background: var(--grad-title); background-size: 200% auto;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  animation: shimmer 6s linear infinite;
+}
+@keyframes shimmer { to { background-position: 200% center; } }
+
+/* ---------- Barre du haut commune : retour à l'accueil + bouton de thème ---------- */
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: .8rem; padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 12px; }
-.back-link { display: inline-flex; align-items: center; gap: .4rem; height: 36px; padding: 0 .85rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); text-decoration: none; font-size: .85rem; font-weight: 600; }
+.back-link { display: inline-flex; align-items: center; gap: .4rem; height: 36px; padding: 0 .9rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); text-decoration: none; font-size: .85rem; font-weight: 600; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.theme-btn { width: 36px; height: 36px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); display: grid; place-items: center; padding: 0; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .back-link:hover, .theme-btn:hover { border-color: var(--accent); }
-.theme-btn { width: 36px; height: 36px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; padding: 0; }
 .theme-btn svg { width: 16px; height: 16px; }
 
 @media (prefers-reduced-motion: reduce) {

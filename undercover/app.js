@@ -263,7 +263,7 @@ function renderSetup() {
   };
 
   app.append(
-    el('h1', { text: 'Undercover' }),
+    el('h1', { class: 'grad-text', text: 'Undercover' }),
     el('p', { class: 'sub', text: 'Trouvez qui n\'a pas le même mot que vous… sans trahir le vôtre.' }),
 
     el('section', { class: 'card' },

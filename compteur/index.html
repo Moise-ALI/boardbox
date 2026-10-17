@@ -7,13 +7,14 @@
 <meta name="description" content="Compteur de points pour les soirées jeux de société : classement animé, objectif, manches et annulation.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Sans:wght@400..700&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="../commun/base.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../commun/base.css?v=3">
+<script src="../commun/commun.js?v=3"></script>
 <style>
 main { width: 100%; max-width: 560px; margin: 0 auto; padding: 0 16px calc(env(safe-area-inset-bottom, 0px) + 32px); }
 
 .app-top { display: flex; align-items: flex-end; justify-content: space-between; gap: .8rem; flex-wrap: wrap; margin: .5rem 0 1.2rem; }
-.app-title { font-family: var(--f-display); font-stretch: 125%; font-weight: 800; font-size: 2rem; line-height: 1; margin: 0; }
+.app-title { font-family: var(--f-display); font-weight: 800; font-size: 2rem; line-height: 1; margin: 0; }
 .app-sub { font-family: var(--f-mono); font-size: .75rem; color: var(--muted); letter-spacing: .05em; margin-top: .4rem; }
 .target { display: flex; align-items: center; gap: .4rem; font-size: .85rem; color: var(--muted); }
 .target input { width: 5.6rem; height: 38px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); padding: 0 .6rem; font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
@@ -23,7 +24,7 @@ main { width: 100%; max-width: 560px; margin: 0 auto; padding: 0 16px calc(env(s
 .pl-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
 .pl { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "av main score" "btns btns btns"; gap: .6rem .8rem; align-items: center; padding: .85rem; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); }
 .pl.lead { border-color: color-mix(in oklab, var(--signal) 70%, transparent); }
-.pl-av { grid-area: av; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; color: #fff; font-weight: 700; font-family: var(--f-display); font-stretch: 125%; position: relative; }
+.pl-av { grid-area: av; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; color: #fff; font-weight: 700; font-family: var(--f-display); position: relative; }
 .pl-rank { position: absolute; bottom: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 4px; border-radius: 999px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); font-family: var(--f-mono); font-size: .66rem; display: grid; place-items: center; }
 .pl.lead .pl-rank { background: var(--signal); color: #1d1400; border-color: var(--signal); }
 .pl-main { grid-area: main; min-width: 0; display: grid; gap: .4rem; }
@@ -31,11 +32,11 @@ main { width: 100%; max-width: 560px; margin: 0 auto; padding: 0 16px calc(env(s
 .pl-name:hover { background: var(--surface-2); }
 .pl-bar { height: 6px; border-radius: 9px; background: var(--surface-2); overflow: hidden; }
 .pl-bar i { display: block; height: 100%; width: 0; background: var(--c, var(--accent)); border-radius: 9px; transition: width .5s var(--ease); }
-.pl-score { grid-area: score; font-family: var(--f-display); font-stretch: 125%; font-weight: 800; font-size: 2.2rem; font-variant-numeric: tabular-nums; min-width: 3ch; text-align: right; line-height: 1; }
+.pl-score { grid-area: score; font-family: var(--f-display); font-weight: 800; font-size: 2.2rem; font-variant-numeric: tabular-nums; min-width: 3ch; text-align: right; line-height: 1; }
 .pl-score.pop { animation: pop .45s var(--ease); }
 @keyframes pop { 40% { transform: scale(1.25); color: var(--accent); } }
 .pl-btns { grid-area: btns; display: flex; gap: .4rem; }
-.pl-btns button { flex: 1 1 0; min-width: 48px; height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); font-family: var(--f-mono); font-weight: 600; font-size: .9rem; font-variant-numeric: tabular-nums; transition: transform .15s, border-color .2s; touch-action: manipulation; }
+.pl-btns button { flex: 1 1 0; min-width: 48px; height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--field); font-family: var(--f-mono); font-weight: 600; font-size: .9rem; font-variant-numeric: tabular-nums; transition: transform .15s, border-color .2s; touch-action: manipulation; }
 .pl-btns button:hover { border-color: var(--accent); }
 .pl-btns button:active { transform: scale(.94); }
 .pl-btns .del { flex: 0 0 44px; min-width: 44px; color: var(--muted); }
@@ -71,7 +72,7 @@ main { width: 100%; max-width: 560px; margin: 0 auto; padding: 0 16px calc(env(s
 <main>
   <div class="app-top">
     <div>
-      <h1 class="app-title">Compteur de points</h1>
+      <h1 class="app-title grad-text">Compteur de points</h1>
       <div class="app-sub" id="round">Manche 1</div>
     </div>
     <label class="target" for="target">Objectif
@@ -95,7 +96,6 @@ main { width: 100%; max-width: 560px; margin: 0 auto; padding: 0 16px calc(env(s
   </div>
 </main>
 
-<script src="../commun/commun.js"></script>
 <script>
 (() => {
 'use strict';
@@ -164,7 +164,7 @@ const snap = () => {
 };
 
 function makeEl(p) {
-  const li = document.createElement('li'); li.className = 'pl'; li.dataset.id = p.id;
+  const li = document.createElement('li'); li.className = 'pl glass'; li.dataset.id = p.id;
   li.innerHTML = `<span class="pl-av"><span class="pl-ini"></span><span class="pl-rank"></span></span>
     <div class="pl-main"><input class="pl-name" maxlength="18" aria-label="Nom du joueur"><div class="pl-bar"><i></i></div></div>
     <output class="pl-score" aria-live="polite"></output>
