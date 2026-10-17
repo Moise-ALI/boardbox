@@ -106,11 +106,19 @@
   --shadow-color: rgba(43, 23, 18, .18);      /* ombres portées */
   --overlay: rgba(43, 23, 18, .35);           /* voile derrière les fenêtres */
   --highlight-line: rgba(255, 255, 255, .75); /* liseré lumineux en haut des cartes en verre */
+  /* Équipes de jeu (Nom de code…) : rouge, bleu, carte neutre, assassin */
+  --team-red: #c8322f; --team-blue: #2563c9; --card-neutral: #dccbb9; --card-assassin: #1f1512;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --shadow-color: rgba(0, 0, 0, .45); --overlay: rgba(8, 4, 3, .62); --highlight-line: rgba(255, 255, 255, .3); }
+  :root:not([data-theme="light"]) {
+    --shadow-color: rgba(0, 0, 0, .45); --overlay: rgba(8, 4, 3, .62); --highlight-line: rgba(255, 255, 255, .3);
+    --team-red: #cc3a35; --team-blue: #2f6fdc; --card-neutral: #6a5649; --card-assassin: #050302;
+  }
 }
-:root[data-theme="dark"] { --shadow-color: rgba(0, 0, 0, .45); --overlay: rgba(8, 4, 3, .62); --highlight-line: rgba(255, 255, 255, .3); }
+:root[data-theme="dark"] {
+  --shadow-color: rgba(0, 0, 0, .45); --overlay: rgba(8, 4, 3, .62); --highlight-line: rgba(255, 255, 255, .3);
+  --team-red: #cc3a35; --team-blue: #2f6fdc; --card-neutral: #6a5649; --card-assassin: #050302;
+}
 :root {
   --on-color: #ffffff;                        /* texte sur une pastille colorée (avatars) */
   --on-signal: #1d1400;                       /* texte sur --signal (gagnant, meneur) */

@@ -11,7 +11,8 @@ if (window.top !== window.self) {
 }
 Outils.bindThemeButton(document.getElementById('themeBtn'));
 const $ = id => document.getElementById(id);
-const cfg = window.UNDERCOVER_CONFIG || {};
+const sb = window.OUTILS_SUPABASE || {};
+const cfg = { supabaseUrl: sb.url, supabaseKey: sb.key };
 
 if (!cfg.supabaseUrl || !cfg.supabaseKey) { $('noConfig').hidden = false; return; }
 if (!window.supabase) {

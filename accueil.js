@@ -7,7 +7,8 @@
 const TOOLS = [
   { path: 'tirage/', icon: '🎲', name: 'tirage.name', desc: 'tirage.desc' },
   { path: 'compteur/', icon: '🏆', name: 'compteur.name', desc: 'compteur.desc' },
-  { path: 'undercover/', icon: '🕵️', name: 'undercover.name', desc: 'undercover.desc' }
+  { path: 'undercover/', icon: '🕵️', name: 'undercover.name', desc: 'undercover.desc' },
+  { path: 'codenames/', icon: '🗝️', name: 'codenames.name', desc: 'codenames.desc' }
 ];
 
 const t = Outils.i18n({
@@ -22,7 +23,9 @@ const t = Outils.i18n({
     'compteur.name': 'Compteur de points',
     'compteur.desc': 'Comptez les scores des soirées jeux : classement animé, objectif et manches.',
     'undercover.name': 'Undercover',
-    'undercover.desc': 'Le jeu d\'ambiance sur un seul téléphone : civils, undercovers et Mister White.'
+    'undercover.desc': 'Le jeu d\'ambiance sur un seul téléphone : civils, undercovers et Mister White.',
+    'codenames.name': 'Nom de code',
+    'codenames.desc': 'Jeu d\'espions en équipes : vue espion et vue joueur synchronisées en direct sur vos téléphones.'
   },
   en: {
     title: 'Toolbox',
@@ -35,7 +38,9 @@ const t = Outils.i18n({
     'compteur.name': 'Score counter',
     'compteur.desc': 'Keep score on game nights: animated ranking, target score and rounds.',
     'undercover.name': 'Undercover',
-    'undercover.desc': 'The party game on a single phone: civilians, undercovers and Mr. White.'
+    'undercover.desc': 'The party game on a single phone: civilians, undercovers and Mr. White.',
+    'codenames.name': 'Code Name',
+    'codenames.desc': 'Team spy game: spymaster and player views synced live across your phones.'
   }
 });
 
