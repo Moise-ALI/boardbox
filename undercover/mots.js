@@ -79,6 +79,13 @@ window.UNDERCOVER_PAIRS = {
       ['Naruto', 'Sasuke'], ['One Piece', 'Fairy Tail'], ['Dragon Ball', 'One Punch Man'], ['Goku', 'Vegeta'], ['Luffy', 'Zoro'],
       ['Attaque des Titans', 'Tokyo Ghoul'], ['Death Note', 'Code Geass'], ['Pikachu', 'Évoli'], ['Totoro', 'Chihiro'], ['Demon Slayer', 'Jujutsu Kaisen'],
       ['Manga', 'Webtoon'], ['Shonen', 'Seinen'], ['Ninja', 'Samouraï'], ['Kamehameha', 'Rasengan']
+    ],
+    // Deux personnages ou éléments d'univers différents qui jouent le même rôle
+    crossover: [
+      ['Orochimaru', 'Voldemort'], ['Gandalf', 'Dumbledore'], ['Goku', 'Superman'], ['Freezer', 'Thanos'],
+      ['Dark Vador', 'Madara'], ['Maître Yoda', 'Tortue Géniale'], ['Hermione', 'Sakura'], ['Luffy', 'Jack Sparrow'],
+      ['Sauron', 'Sukuna'], ['Gollum', 'Dobby'], ['L', 'Sherlock Holmes'], ['Saitama', 'Hulk'],
+      ['Poudlard', 'Académie de Konoha'], ['Sabre laser', 'Zanpakutō']
     ]
   },
 
@@ -160,6 +167,12 @@ window.UNDERCOVER_PAIRS = {
       ['Naruto', 'Sasuke'], ['One Piece', 'Fairy Tail'], ['Dragon Ball', 'One Punch Man'], ['Goku', 'Vegeta'], ['Luffy', 'Zoro'],
       ['Attack on Titan', 'Tokyo Ghoul'], ['Death Note', 'Code Geass'], ['Pikachu', 'Eevee'], ['Totoro', 'Spirited Away'], ['Demon Slayer', 'Jujutsu Kaisen'],
       ['Manga', 'Webtoon'], ['Shonen', 'Seinen'], ['Ninja', 'Samurai'], ['Kamehameha', 'Rasengan']
+    ],
+    crossover: [
+      ['Orochimaru', 'Voldemort'], ['Gandalf', 'Dumbledore'], ['Goku', 'Superman'], ['Frieza', 'Thanos'],
+      ['Darth Vader', 'Madara'], ['Yoda', 'Master Roshi'], ['Hermione', 'Sakura'], ['Luffy', 'Jack Sparrow'],
+      ['Sauron', 'Sukuna'], ['Gollum', 'Dobby'], ['L', 'Sherlock Holmes'], ['Saitama', 'Hulk'],
+      ['Hogwarts', 'Hidden Leaf Village'], ['Lightsaber', 'Zanpakuto']
     ]
   }
 };

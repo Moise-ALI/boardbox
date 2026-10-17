@@ -16,6 +16,8 @@ window.UNDERCOVER_THEMES = [
   { id: 'culture',     icon: '🎬', label: { fr: 'Films, séries & musique', en: 'Movies, TV & music' } },
   { id: 'fantastique', icon: '🐉', label: { fr: 'Fantastique & légendes', en: 'Fantasy & legends' } },
   { id: 'jeux-video',  icon: '🎮', label: { fr: 'Jeux vidéo', en: 'Video games' } },
-  { id: 'anime',       icon: '🍥', label: { fr: 'Anime & manga', en: 'Anime & manga' } }
+  { id: 'anime',       icon: '🍥', label: { fr: 'Anime & manga', en: 'Anime & manga' } },
+  { id: 'crossover',   icon: '🔀', label: { fr: 'Univers croisés', en: 'Crossover' } },
+  { id: 'divers',      icon: '🗂️', label: { fr: 'Divers', en: 'Misc' } }
 ];
 window.UNDERCOVER_DEFAULT_THEME = 'animaux';
