@@ -6,7 +6,9 @@
    - Supabase (données de jeu) : jamais mis en mémoire
    Changer CACHE_VERSION uniquement pour forcer le rechargement complet (liste PRECACHE modifiée…). */
 const CACHE_VERSION = 'v1';
-const CACHE = 'outils-' + CACHE_VERSION;
+// Préfixe propre à BoardBox : l'ancienne adresse /outils/ (même domaine, donc même stockage)
+// utilisait « outils- » ; sa redirection nettoie ses propres caches sans toucher à ceux-ci.
+const CACHE = 'boardbox-' + CACHE_VERSION;
 const CDN_HOSTS = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net'];
 
 // Tout ce qu'il faut pour que chaque outil fonctionne hors connexion, même jamais ouvert
@@ -40,7 +42,7 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
-    for (const key of await caches.keys()) if (key.startsWith('outils-') && key !== CACHE) await caches.delete(key);
+    for (const key of await caches.keys()) if (key.startsWith('boardbox-') && key !== CACHE) await caches.delete(key);
     await self.clients.claim();
   })());
 });
