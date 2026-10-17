@@ -5,6 +5,6 @@
    Ne JAMAIS mettre ici la clé "secret" ou "service_role".
    Laisser vide = le jeu fonctionne avec les paires intégrées uniquement. */
 window.UNDERCOVER_CONFIG = {
-  supabaseUrl: '',
-  supabaseKey: ''
+  supabaseUrl: 'https://qwpmfexatemoxnruqtab.supabase.co',
+  supabaseKey: 'sb_publishable_Gno75o2UGgqxx161uPKtWg_M7MVQHF3'
 };

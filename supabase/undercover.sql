@@ -67,9 +67,13 @@ create policy "suppression par admin" on public.undercover_pairs
   for delete to authenticated
   using (public.is_admin());
 
--- Droits de base de l'API (les policies ci-dessus filtrent ensuite ligne par ligne)
+-- Droits de base de l'API (les policies ci-dessus filtrent ensuite ligne par ligne).
+-- Supabase accorde par défaut TOUS les droits à anon/authenticated sur les nouvelles tables :
+-- on les retire explicitement (double sécurité si une policy était un jour mal écrite).
+revoke all on public.undercover_pairs from anon, authenticated;
 grant select, insert on public.undercover_pairs to anon;
 grant select, insert, update, delete on public.undercover_pairs to authenticated;
+revoke all on public.admins from anon, authenticated;
 
 -- ---------------------------------------------------------------------------
 -- À exécuter séparément, en remplaçant par TON e-mail (ne pas le committer) :
