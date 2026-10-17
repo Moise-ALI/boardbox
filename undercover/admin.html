@@ -10,8 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="../commun/base.css?v=4">
-<script src="../commun/commun.js?v=4"></script>
+<link rel="stylesheet" href="../commun/base.css?v=5">
+<script src="../commun/commun.js?v=5"></script>
 <style>
 main { width: 100%; max-width: 640px; margin: 0 auto; padding: 0 16px calc(env(safe-area-inset-bottom, 0px) + 40px); }
 h1 { font-family: var(--f-display); font-weight: 850; font-size: 2rem; line-height: 1; margin: .4rem 0 .4rem; }
@@ -27,8 +27,8 @@ select { height: 46px; border-radius: 12px; border: 1px solid var(--line); backg
 .lang { font-family: var(--f-mono); font-size: .68rem; padding: .1rem .4rem; border-radius: 6px; background: var(--surface-2); margin-left: .4rem; vertical-align: middle; }
 .btn { height: 46px; padding: 0 1rem; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); font-weight: 600; touch-action: manipulation; }
 .btn:hover { border-color: var(--accent); }
-.btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
-.btn.ok { background: var(--ok); color: #fff; border-color: var(--ok); }
+.btn.primary { background: var(--btn-primary-bg); color: var(--btn-primary-ink); border-color: transparent; box-shadow: var(--btn-primary-shadow); }
+.btn.ok { background: var(--ok); color: var(--on-color); border-color: var(--ok); }
 .btn.danger { color: var(--danger); }
 .btn:disabled { opacity: .5; }
 .btn.small { height: 38px; padding: 0 .75rem; font-size: .85rem; }
@@ -43,6 +43,14 @@ select { height: 46px; border-radius: 12px; border: 1px solid var(--line); backg
 .item .meta { font-family: var(--f-mono); font-size: .72rem; color: var(--muted); }
 .item .actions { display: flex; gap: .4rem; flex-wrap: wrap; justify-content: flex-end; }
 .plain { font-weight: 600; }
+.lang-line { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.lang-line .lang { margin-left: 0; min-width: 2.2rem; text-align: center; }
+.lang-line input { flex: 1 1 110px; min-width: 0; height: 42px; }
+.lang-line.tr input { border-style: dashed; }
+.lang-line.tr input:not(:placeholder-shown) { border-style: solid; }
+.missing { font-family: var(--f-mono); font-size: .68rem; padding: .15rem .45rem; border-radius: 6px; background: var(--signal-soft); color: var(--signal-ink); }
+.add-form { display: grid; gap: .5rem; }
+.add-form .row select { flex: 1 1 160px; }
 .empty { color: var(--muted); text-align: center; padding: 1.5rem; border: 1px dashed var(--line); border-radius: 14px; }
 .msg { margin: .6rem 0 0; font-size: .9rem; color: var(--muted); }
 .msg.err { color: var(--danger); }
@@ -74,13 +82,20 @@ select { height: 46px; border-radius: 12px; border: 1px solid var(--line); backg
     <p class="card msg err" id="notAdmin" hidden>Ce compte n'est pas administrateur : vous ne pouvez rien valider.</p>
 
     <section class="card">
-      <h2>Ajouter directement</h2>
-      <form class="row" id="addForm">
-        <input type="text" id="addA" maxlength="30" placeholder="Mot 1" required aria-label="Mot 1">
-        <input type="text" id="addB" maxlength="30" placeholder="Mot 2" required aria-label="Mot 2">
-        <select id="addTheme" required aria-label="Thème"></select>
-        <select id="addLang" aria-label="Langue"><option value="fr">FR</option><option value="en">EN</option></select>
-        <button class="btn primary" type="submit">Ajouter</button>
+      <h2>Ajouter directement (FR + EN)</h2>
+      <form class="add-form" id="addForm">
+        <div class="lang-line"><span class="lang">FR</span>
+          <input type="text" id="addFrA" maxlength="30" placeholder="Mot 1" required aria-label="Mot 1 en français">
+          <input type="text" id="addFrB" maxlength="30" placeholder="Mot 2" required aria-label="Mot 2 en français">
+        </div>
+        <div class="lang-line"><span class="lang">EN</span>
+          <input type="text" id="addEnA" maxlength="30" placeholder="Word 1" required aria-label="Mot 1 en anglais">
+          <input type="text" id="addEnB" maxlength="30" placeholder="Word 2" required aria-label="Mot 2 en anglais">
+        </div>
+        <div class="row">
+          <select id="addTheme" required aria-label="Thème"></select>
+          <button class="btn primary" type="submit">Ajouter</button>
+        </div>
       </form>
     </section>
 
@@ -98,6 +113,6 @@ select { height: 46px; border-radius: 12px; border: 1px solid var(--line); backg
 <script src="config.js?v=3"></script>
 <script src="themes.js?v=3"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js" integrity="sha384-WgXwGL6fUsYJWNaKJgVbrJKGRQwc1vieh2oy4kw9nXqpNDz3tdSsqEYUgeHD/NuF" crossorigin="anonymous"></script>
-<script src="admin.js?v=1"></script>
+<script src="admin.js?v=3"></script>
 </body>
 </html>

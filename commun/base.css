@@ -77,6 +77,37 @@
   color-scheme: dark;
 }
 
+/* ---------- Jetons de composants ----------
+   Les outils n'utilisent QUE ces variables (aucune couleur en dur, ni en CSS ni en JS) :
+   changer de charte = modifier ce fichier uniquement. */
+:root {
+  --shadow-color: rgba(43, 23, 18, .18);      /* ombres portées */
+  --overlay: rgba(43, 23, 18, .35);           /* voile derrière les fenêtres */
+  --highlight-line: rgba(255, 255, 255, .75); /* liseré lumineux en haut des cartes en verre */
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --shadow-color: rgba(0, 0, 0, .45); --overlay: rgba(8, 4, 3, .62); --highlight-line: rgba(255, 255, 255, .3); }
+}
+:root[data-theme="dark"] { --shadow-color: rgba(0, 0, 0, .45); --overlay: rgba(8, 4, 3, .62); --highlight-line: rgba(255, 255, 255, .3); }
+:root {
+  --on-color: #ffffff;                        /* texte sur une pastille colorée (avatars) */
+  --on-signal: #1d1400;                       /* texte sur --signal (gagnant, meneur) */
+  --radius-sm: 10px; --radius: 14px; --radius-lg: 20px;
+  --shadow-lg: 0 30px 80px var(--shadow-color);
+  --scrollbar: color-mix(in srgb, var(--ink) 20%, transparent);
+  /* Bouton principal : même rendu dans tous les outils */
+  --btn-primary-bg: var(--grad);
+  --btn-primary-ink: var(--on-accent);
+  --btn-primary-shadow: 0 8px 22px -8px color-mix(in srgb, var(--accent) 70%, transparent);
+  /* Couleurs d'identité des joueurs (compteur…) : distinctes entre elles, lisibles avec --on-color */
+  --player-1: #e8590c; --player-2: #3a7bd5; --player-3: #0f9a6c; --player-4: #b03fd4;
+  --player-5: #c27c00; --player-6: #0884b5; --player-7: #d63447; --player-8: #4f8a0f;
+  --player-9: #7a4bd8; --player-10: #a8560f; --player-11: #1a8585; --player-12: #c2347a;
+}
+
+/* ---------- Bouton principal partagé ---------- */
+.btn-primary { background: var(--btn-primary-bg); color: var(--btn-primary-ink); border-color: transparent; box-shadow: var(--btn-primary-shadow); }
+
 /* ---------- Reset ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }

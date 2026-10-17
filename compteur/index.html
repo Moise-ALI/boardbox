@@ -10,8 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="../commun/base.css?v=4">
-<script src="../commun/commun.js?v=4"></script>
+<link rel="stylesheet" href="../commun/base.css?v=5">
+<script src="../commun/commun.js?v=5"></script>
 <style>
 main { width: 100%; max-width: 560px; margin: 0 auto; padding: 0 16px calc(env(safe-area-inset-bottom, 0px) + 32px); }
 
@@ -26,9 +26,9 @@ main { width: 100%; max-width: 560px; margin: 0 auto; padding: 0 16px calc(env(s
 .pl-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
 .pl { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "av main score" "btns btns btns"; gap: .6rem .8rem; align-items: center; padding: .85rem; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); }
 .pl.lead { border-color: color-mix(in oklab, var(--signal) 70%, transparent); }
-.pl-av { grid-area: av; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; color: #fff; font-weight: 700; font-family: var(--f-display); position: relative; }
+.pl-av { grid-area: av; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; color: var(--on-color); font-weight: 700; font-family: var(--f-display); position: relative; }
 .pl-rank { position: absolute; bottom: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 4px; border-radius: 999px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); font-family: var(--f-mono); font-size: .66rem; display: grid; place-items: center; }
-.pl.lead .pl-rank { background: var(--signal); color: #1d1400; border-color: var(--signal); }
+.pl.lead .pl-rank { background: var(--signal); color: var(--on-signal); border-color: var(--signal); }
 .pl-main { grid-area: main; min-width: 0; display: grid; gap: .4rem; }
 .pl-name { border: 0; background: transparent; font-weight: 600; font-size: 1.05rem; padding: .1rem .3rem; margin-left: -.3rem; border-radius: 6px; width: 100%; min-width: 0; }
 .pl-name:hover { background: var(--surface-2); }
@@ -47,17 +47,17 @@ main { width: 100%; max-width: 560px; margin: 0 auto; padding: 0 16px calc(env(s
 .add-row { display: flex; gap: .5rem; margin-top: .9rem; }
 .add-row input { flex: 1; min-width: 0; height: 48px; border-radius: 12px; border: 1px dashed var(--line); background: transparent; padding: 0 .9rem; }
 .add-row input:focus { border-style: solid; border-color: var(--accent); outline: none; }
-.add-row button { height: 48px; padding: 0 1.1rem; border-radius: 12px; border: 0; background: var(--accent); color: var(--on-accent); font-weight: 600; }
+.add-row button { height: 48px; padding: 0 1.1rem; border-radius: 12px; border: 0; font-weight: 600; }
 
 .app-actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--line); }
 .ghost { height: 42px; padding: 0 1rem; border-radius: 10px; border: 1px solid var(--line); background: transparent; font-size: .88rem; display: inline-flex; align-items: center; gap: .4rem; }
 .ghost:hover { border-color: var(--accent); }
 .ghost.warn { border-color: var(--danger); color: var(--danger); }
 
-.win { margin-bottom: .9rem; padding: .9rem 1rem; border-radius: 14px; background: var(--signal); color: #1d1400; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: .8rem; flex-wrap: wrap; }
-.win button { border: 0; background: #1d1400; color: var(--signal); border-radius: 9px; height: 36px; padding: 0 .9rem; font-weight: 600; }
+.win { margin-bottom: .9rem; padding: .9rem 1rem; border-radius: 14px; background: var(--signal); color: var(--on-signal); font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: .8rem; flex-wrap: wrap; }
+.win button { border: 0; background: var(--on-signal); color: var(--signal); border-radius: 9px; height: 36px; padding: 0 .9rem; font-weight: 600; }
 
-.toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); transform: translateX(-50%); z-index: 110; display: flex; align-items: center; gap: .9rem; max-width: calc(100% - 32px); padding: .75rem 1rem; border-radius: 14px; background: var(--ink); color: var(--bg); font-size: .92rem; box-shadow: 0 20px 40px -20px rgba(0, 0, 0, .5); animation: toastIn .3s var(--ease); }
+.toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); transform: translateX(-50%); z-index: 110; display: flex; align-items: center; gap: .9rem; max-width: calc(100% - 32px); padding: .75rem 1rem; border-radius: 14px; background: var(--ink); color: var(--bg); font-size: .92rem; box-shadow: var(--shadow); animation: toastIn .3s var(--ease); }
 .toast button { border: 0; background: transparent; color: var(--bg); font-weight: 700; text-decoration: underline; padding: 0; }
 @keyframes toastIn { from { transform: translate(-50%, 12px); opacity: 0; } }
 #confetti { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 95; pointer-events: none; }
@@ -91,7 +91,7 @@ main { width: 100%; max-width: 560px; margin: 0 auto; padding: 0 16px calc(env(s
 
   <form class="add-row" id="addForm" autocomplete="off">
     <input id="addName" maxlength="18" placeholder="Nom du joueur" aria-label="Nom du nouveau joueur" data-i18n-placeholder="playerName" data-i18n-aria-label="newPlayer">
-    <button type="submit" data-i18n="add">Ajouter</button>
+    <button type="submit" class="btn-primary" data-i18n="add">Ajouter</button>
   </form>
 
   <div class="app-actions">
@@ -101,6 +101,6 @@ main { width: 100%; max-width: 560px; margin: 0 auto; padding: 0 16px calc(env(s
   </div>
 </main>
 
-<script src="app.js?v=1"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>

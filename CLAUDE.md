@@ -26,6 +26,7 @@ supabase/           Scripts SQL à exécuter dans Supabase > SQL Editor (schéma
 - Écritures réservées : via `public.is_admin()` (table `admins`, par e-mail de session). L'e-mail admin n'est jamais committé.
 - Le public n'insère que des lignes « en attente » ; insérer avec `Prefer: return=minimal` (il ne peut pas relire ce qu'il a écrit).
 - L'outil doit rester utilisable si Supabase est indisponible ou en pause (données intégrées en repli).
+- Undercover : chaque association validée existe en FR et en EN (lignes liées par `group_id`). Le public ne peut insérer que `word_a, word_b, theme, lang` (droits par colonne). L'admin valide via `undercover_approve` (proposition + traduction, transactionnel), complète via `undercover_set_translation`, ajoute via `undercover_add` ; ces fonctions `security definer` revérifient `is_admin()`.
 - Besoin d'un secret côté serveur (clé d'API payante) : Supabase Edge Function ou Cloudflare Worker, jamais dans le front.
 
 ## Règles
@@ -36,6 +37,8 @@ supabase/           Scripts SQL à exécuter dans Supabase > SQL Editor (schéma
 - **Chemins relatifs** uniquement (`../commun/...`), le site est servi sous `/outils/`.
 - **Dépendances externes** : seulement via CDN avec une version figée (ex. `three.js/r128`), et un repli si elles ne chargent pas.
 - **Design system** (`commun/base.css`, style « aurora ») commun à tous les outils : palette chaude rouge/orange : `--accent` (orange brûlé, boutons/liens), `--accent-2` (orange), `--accent-3` (rouge), contrastes WCAG vérifiés, dégradé `--grad` (boutons) et `.grad-text` (titres), verre via `.card` / `.glass`, polices Sora (titres) + Inter (texte). Toujours utiliser les variables (jamais de couleur en dur) pour que les thèmes clair et sombre fonctionnent.
+- **Tout le design est piloté par `base.css`** : couleurs, ombres (`--shadow`, `--shadow-lg`, `--shadow-color`), voile des fenêtres (`--overlay`), bouton principal (classe `.btn-primary` ou jetons `--btn-primary-bg/-ink/-shadow`), textes sur couleur (`--on-color`, `--on-signal`), couleurs des joueurs (`--player-1…12`). Aucune couleur en dur dans les outils, CSS comme JS (seule exception : l'éclairage blanc neutre de la scène 3D).
+- Côté JS : `Outils.cssVar('--accent')` pour lire une couleur ; les éléments dessinés (canvas, WebGL) écoutent l'événement `outils:theme` pour se redessiner au changement de thème.
 - `commun.js` se charge dans le `<head>` (il applique le thème avant l'affichage) ; `base.css` et `commun.js` sont versionnés `?v=N` comme le reste.
 
 ## Langues (FR/EN)

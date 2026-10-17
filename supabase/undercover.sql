@@ -42,6 +42,10 @@ alter table public.undercover_pairs add constraint undercover_pairs_theme_format
 alter table public.undercover_pairs drop constraint if exists undercover_pairs_lang_check;
 alter table public.undercover_pairs add constraint undercover_pairs_lang_check check (lang in ('fr', 'en'));
 
+-- v4 : groupe de traduction. Les versions FR et EN d'une même association partagent group_id.
+alter table public.undercover_pairs add column if not exists group_id uuid not null default gen_random_uuid();
+create index if not exists undercover_pairs_group on public.undercover_pairs (group_id);
+
 -- Une même paire (dans un sens ou dans l'autre) ne peut exister qu'une fois par langue
 drop index if exists public.undercover_pairs_unique;
 create unique index undercover_pairs_unique
@@ -80,8 +84,11 @@ create policy "suppression par admin" on public.undercover_pairs
 -- Supabase accorde par défaut TOUS les droits à anon/authenticated sur les nouvelles tables :
 -- on les retire explicitement (double sécurité si une policy était un jour mal écrite).
 revoke all on public.undercover_pairs from anon, authenticated;
-grant select, insert on public.undercover_pairs to anon;
-grant select, insert, update, delete on public.undercover_pairs to authenticated;
+grant select on public.undercover_pairs to anon, authenticated;
+-- Le public ne peut renseigner QUE ces colonnes : statut, groupe et dates restent aux valeurs par défaut
+grant insert (word_a, word_b, theme, lang) on public.undercover_pairs to anon, authenticated;
+-- Modération (filtrée par les policies is_admin()) ; les ajouts admin passent par les fonctions ci-dessous
+grant update, delete on public.undercover_pairs to authenticated;
 revoke all on public.admins from anon, authenticated;
 
 -- v3 : anti-saturation. Le public peut proposer sans compte : on plafonne la file d'attente
@@ -106,6 +113,105 @@ drop trigger if exists undercover_limit_pending on public.undercover_pairs;
 create trigger undercover_limit_pending
   before insert on public.undercover_pairs
   for each row execute function public.undercover_limit_pending();
+
+-- v4 : traductions, faites par l'admin. Fonctions transactionnelles (tout ou rien),
+-- security definer car elles écrivent des lignes « approved » ; chacune vérifie is_admin() elle-même.
+
+-- Crée ou met à jour la version dans l'autre langue de la paire p_id, dans le même groupe.
+-- Si une paire identique existe déjà dans l'autre langue, elle est rattachée au groupe (pas de doublon).
+create or replace function public.undercover_set_translation(p_id bigint, p_word_a text, p_word_b text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  src public.undercover_pairs;
+  other_lang text;
+  target_id bigint;
+  a text := btrim(p_word_a);
+  b text := btrim(p_word_b);
+begin
+  if not public.is_admin() then
+    raise exception 'réservé aux administrateurs' using errcode = '42501';
+  end if;
+  select * into src from public.undercover_pairs where id = p_id;
+  if not found then
+    raise exception 'paire introuvable' using errcode = 'P0002';
+  end if;
+  other_lang := case src.lang when 'fr' then 'en' else 'fr' end;
+
+  select id into target_id from public.undercover_pairs
+   where group_id = src.group_id and lang = other_lang
+   limit 1;
+  if target_id is null then
+    select id into target_id from public.undercover_pairs
+     where lang = other_lang
+       and least(lower(btrim(word_a)), lower(btrim(word_b))) = least(lower(a), lower(b))
+       and greatest(lower(btrim(word_a)), lower(btrim(word_b))) = greatest(lower(a), lower(b))
+     limit 1;
+  end if;
+
+  if target_id is null then
+    insert into public.undercover_pairs (word_a, word_b, theme, lang, status, reviewed_at, group_id)
+    values (a, b, src.theme, other_lang, src.status, now(), src.group_id);
+  else
+    update public.undercover_pairs
+       set word_a = a, word_b = b, theme = src.theme, status = src.status, group_id = src.group_id, reviewed_at = now()
+     where id = target_id;
+  end if;
+end;
+$$;
+
+-- Valide une proposition (mots et thème éventuellement corrigés) ET sa traduction, en une transaction.
+create or replace function public.undercover_approve(
+  p_id bigint, p_word_a text, p_word_b text, p_theme text, p_tr_word_a text, p_tr_word_b text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'réservé aux administrateurs' using errcode = '42501';
+  end if;
+  update public.undercover_pairs
+     set word_a = btrim(p_word_a), word_b = btrim(p_word_b), theme = p_theme, status = 'approved', reviewed_at = now()
+   where id = p_id;
+  if not found then
+    raise exception 'paire introuvable' using errcode = 'P0002';
+  end if;
+  perform public.undercover_set_translation(p_id, p_tr_word_a, p_tr_word_b);
+end;
+$$;
+
+-- Ajout direct par l'admin d'une association dans les deux langues.
+create or replace function public.undercover_add(
+  p_theme text, p_fr_a text, p_fr_b text, p_en_a text, p_en_b text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  new_id bigint;
+begin
+  if not public.is_admin() then
+    raise exception 'réservé aux administrateurs' using errcode = '42501';
+  end if;
+  insert into public.undercover_pairs (word_a, word_b, theme, lang, status, reviewed_at)
+  values (btrim(p_fr_a), btrim(p_fr_b), p_theme, 'fr', 'approved', now())
+  returning id into new_id;
+  perform public.undercover_set_translation(new_id, p_en_a, p_en_b);
+end;
+$$;
+
+revoke all on function public.undercover_set_translation(bigint, text, text) from public, anon;
+revoke all on function public.undercover_approve(bigint, text, text, text, text, text) from public, anon;
+revoke all on function public.undercover_add(text, text, text, text, text) from public, anon;
+grant execute on function public.undercover_set_translation(bigint, text, text) to authenticated;
+grant execute on function public.undercover_approve(bigint, text, text, text, text, text) to authenticated;
+grant execute on function public.undercover_add(text, text, text, text, text) to authenticated;
 
 -- ---------------------------------------------------------------------------
 -- À exécuter séparément, en remplaçant par TON e-mail (ne pas le committer) :

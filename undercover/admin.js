@@ -1,5 +1,6 @@
 /* Modération des associations Undercover (réservée aux admins, interface en français uniquement).
-   Les droits réels sont garantis côté base (RLS + is_admin()), pas par cette page. */
+   Les droits réels sont garantis côté base (RLS + is_admin() + fonctions SQL), pas par cette page.
+   Chaque association existe en FR et en EN : les deux versions partagent un group_id. */
 (() => {
 'use strict';
 Outils.bindThemeButton(document.getElementById('themeBtn'));
@@ -17,6 +18,8 @@ const db = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey, {
   auth: { storageKey: 'undercover.admin.auth', persistSession: true, detectSessionInUrl: true }
 });
 const TABLE = 'undercover_pairs';
+const LANGS = ['fr', 'en'];
+const other = lang => (lang === 'fr' ? 'en' : 'fr');
 let current = 'pending';
 
 function el(tag, attrs, ...children) {
@@ -31,6 +34,15 @@ function el(tag, attrs, ...children) {
   }
   for (const c of children.flat()) if (c != null && c !== false) node.append(c);
   return node;
+}
+
+function errorText(error) {
+  if (!error) return '';
+  if (error.code === '23505') return 'Cette association existe déjà dans cette langue.';
+  if (error.code === '42501') return 'Action réservée aux administrateurs.';
+  if (error.code === 'P0002') return 'Paire introuvable (déjà supprimée ?).';
+  if (error.code === '23514') return 'Valeurs refusées : deux mots différents, 30 caractères maximum.';
+  return 'Erreur : ' + error.message;
 }
 
 /* ---------- Session ---------- */
@@ -51,7 +63,7 @@ $('loginForm').addEventListener('submit', async e => {
   msg.className = 'msg'; msg.textContent = 'Envoi…';
   const { error } = await db.auth.signInWithOtp({
     email: $('email').value.trim(),
-    options: { emailRedirectTo: location.origin + location.pathname }
+    options: { emailRedirectTo: location.origin + location.pathname, shouldCreateUser: false }
   });
   if (error) { msg.className = 'msg err'; msg.textContent = 'Erreur : ' + error.message; return; }
   msg.textContent = 'Lien envoyé ! Ouvrez l\'e-mail sur cet appareil et cliquez sur le lien.';
@@ -59,25 +71,7 @@ $('loginForm').addEventListener('submit', async e => {
 $('logout').onclick = async () => { await db.auth.signOut(); refreshView(); };
 db.auth.onAuthStateChange(() => refreshView());
 
-/* ---------- Liste ---------- */
-document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
-  current = b.dataset.status;
-  document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-pressed', x === b));
-  load();
-}));
-
-async function load() {
-  const list = $('list');
-  list.replaceChildren(el('li', { class: 'empty', text: 'Chargement…' }));
-  const { data, error } = await db.from(TABLE).select('*').eq('status', current).order('created_at', { ascending: current === 'pending' });
-  if (error) { list.replaceChildren(el('li', { class: 'empty', text: 'Erreur : ' + error.message })); return; }
-  const counts = await Promise.all(['pending', 'approved', 'rejected'].map(s => db.from(TABLE).select('id', { count: 'exact', head: true }).eq('status', s)));
-  const labels = { pending: 'En attente', approved: 'Validées', rejected: 'Refusées' };
-  document.querySelectorAll('.tabs button').forEach((b, i) => { b.textContent = `${labels[b.dataset.status]} (${counts[i].count ?? 0})`; });
-  if (!data.length) { list.replaceChildren(el('li', { class: 'empty', text: 'Rien ici.' })); return; }
-  list.replaceChildren(...data.map(renderItem));
-}
-
+/* ---------- Thèmes ---------- */
 const THEMES = window.UNDERCOVER_THEMES || [];
 function themeSelect(value, onchange) {
   const s = el('select', { 'aria-label': 'Thème', onchange },
@@ -88,54 +82,139 @@ function themeSelect(value, onchange) {
   return s;
 }
 $('addTheme').append(...themeSelect(window.UNDERCOVER_DEFAULT_THEME).children);
+$('addTheme').value = window.UNDERCOVER_DEFAULT_THEME; // la sélection ne suit pas les options déplacées
 
-function renderItem(row) {
-  const date = new Date(row.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
-  const lang = el('span', { class: 'lang', text: (row.lang || 'fr').toUpperCase() });
-  if (row.status === 'pending') {
-    const a = el('input', { type: 'text', maxlength: '30', value: row.word_a, 'aria-label': 'Mot 1' });
-    const b = el('input', { type: 'text', maxlength: '30', value: row.word_b, 'aria-label': 'Mot 2' });
-    const theme = themeSelect(row.theme);
-    return el('li', { class: 'item' },
-      el('div', { class: 'words' }, a, b, theme),
-      el('div', { class: 'meta' }, 'Proposée le ' + date + ' · mots et thème modifiables avant validation', lang),
-      el('div', { class: 'actions' },
-        el('button', { class: 'btn small danger', type: 'button', text: 'Refuser', onclick: () => update(row.id, { status: 'rejected' }) }),
-        el('button', { class: 'btn small ok', type: 'button', text: 'Valider', onclick: () => update(row.id, { word_a: a.value.trim(), word_b: b.value.trim(), theme: theme.value, status: 'approved' }) })
-      )
-    );
+/* ---------- Chargement ---------- */
+document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
+  current = b.dataset.status;
+  document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  load();
+}));
+
+/** Regroupe les lignes par group_id : [{ id, theme, created_at, fr: row|undefined, en: row|undefined }] */
+function groupRows(rows) {
+  const map = new Map();
+  for (const r of rows) {
+    if (!map.has(r.group_id)) map.set(r.group_id, { id: r.group_id, theme: r.theme, created_at: r.created_at, fr: undefined, en: undefined });
+    const g = map.get(r.group_id);
+    g[r.lang] = r;
+    if (r.created_at < g.created_at) g.created_at = r.created_at;
   }
+  return [...map.values()].sort((a, b) => b.created_at.localeCompare(a.created_at));
+}
+
+async function load() {
+  const list = $('list');
+  list.replaceChildren(el('li', { class: 'empty', text: 'Chargement…' }));
+  const { data: rows, error } = await db.from(TABLE).select('id,word_a,word_b,theme,lang,status,group_id,created_at').order('created_at');
+  if (error) { list.replaceChildren(el('li', { class: 'empty', text: errorText(error) })); return; }
+
+  const pending = rows.filter(r => r.status === 'pending');
+  const approved = groupRows(rows.filter(r => r.status === 'approved'));
+  const rejected = groupRows(rows.filter(r => r.status === 'rejected'));
+  const missing = approved.filter(g => !g.fr || !g.en).length;
+  const label = { pending: `En attente (${pending.length})`, approved: `Validées (${approved.length}${missing ? ` · ${missing} à traduire` : ''})`, rejected: `Refusées (${rejected.length})` };
+  document.querySelectorAll('.tabs button').forEach(b => { b.textContent = label[b.dataset.status]; });
+
+  const items = current === 'pending' ? pending.map(renderPending)
+    : (current === 'approved' ? approved : rejected).map(renderGroup);
+  list.replaceChildren(...(items.length ? items : [el('li', { class: 'empty', text: 'Rien ici.' })]));
+}
+
+/* ---------- Proposition en attente : correction + traduction obligatoire ---------- */
+function renderPending(row) {
+  const date = new Date(row.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+  const tr = other(row.lang);
+  const a = el('input', { type: 'text', maxlength: '30', value: row.word_a, 'aria-label': 'Mot 1' });
+  const b = el('input', { type: 'text', maxlength: '30', value: row.word_b, 'aria-label': 'Mot 2' });
+  const ta = el('input', { type: 'text', maxlength: '30', placeholder: `Traduction ${tr.toUpperCase()} – mot 1`, 'aria-label': `Traduction ${tr} du mot 1` });
+  const tb = el('input', { type: 'text', maxlength: '30', placeholder: `Traduction ${tr.toUpperCase()} – mot 2`, 'aria-label': `Traduction ${tr} du mot 2` });
+  const theme = themeSelect(row.theme);
+  const approve = el('button', { class: 'btn small ok', type: 'button', text: 'Valider avec la traduction', disabled: true });
+  const refresh = () => { approve.disabled = !(a.value.trim() && b.value.trim() && ta.value.trim() && tb.value.trim()); };
+  [a, b, ta, tb].forEach(i => i.addEventListener('input', refresh));
+
+  approve.onclick = async () => {
+    if (ta.value.trim().toLowerCase() === tb.value.trim().toLowerCase()) return alert('Les deux mots traduits doivent être différents.');
+    approve.disabled = true;
+    const { error } = await db.rpc('undercover_approve', {
+      p_id: row.id, p_word_a: a.value, p_word_b: b.value, p_theme: theme.value, p_tr_word_a: ta.value, p_tr_word_b: tb.value
+    });
+    if (error) { alert(errorText(error)); refresh(); return; }
+    load();
+  };
+
   return el('li', { class: 'item' },
-    el('div', { class: 'plain' }, `${row.word_a}  ·  ${row.word_b}`, lang),
-    el('div', { class: 'words' }, themeSelect(row.theme, e => update(row.id, { theme: e.target.value }, false))),
-    el('div', { class: 'meta', text: 'Proposée le ' + date }),
+    el('div', { class: 'lang-line' }, el('span', { class: 'lang', text: row.lang.toUpperCase() }), a, b),
+    el('div', { class: 'lang-line tr' }, el('span', { class: 'lang', text: tr.toUpperCase() }), ta, tb),
+    el('div', { class: 'words' }, theme),
+    el('div', { class: 'meta', text: `Proposée le ${date} · corrigez si besoin, puis traduisez pour valider` }),
     el('div', { class: 'actions' },
-      row.status === 'approved'
-        ? el('button', { class: 'btn small', type: 'button', text: 'Retirer du jeu', onclick: () => update(row.id, { status: 'rejected' }) })
-        : el('button', { class: 'btn small', type: 'button', text: 'Valider finalement', onclick: () => update(row.id, { status: 'approved' }) }),
-      el('button', { class: 'btn small danger', type: 'button', text: 'Supprimer', onclick: () => { if (confirm('Supprimer définitivement ?')) remove(row.id); } })
+      el('button', { class: 'btn small danger', type: 'button', text: 'Refuser', onclick: async () => {
+        const { error } = await db.from(TABLE).update({ status: 'rejected', reviewed_at: new Date().toISOString() }).eq('id', row.id);
+        if (error) return alert(errorText(error));
+        load();
+      } }),
+      approve
     )
   );
 }
 
-async function update(id, fields, reload = true) {
-  const { error } = await db.from(TABLE).update({ ...fields, reviewed_at: new Date().toISOString() }).eq('id', id);
-  if (error) return alert(error.code === '23505' ? 'Cette association existe déjà.' : 'Erreur : ' + error.message);
-  if (reload) load();
-}
-async function remove(id) {
-  const { error } = await db.from(TABLE).delete().eq('id', id);
-  if (error) return alert('Erreur : ' + error.message);
-  load();
+/* ---------- Association validée / refusée : les deux langues ensemble ---------- */
+function renderGroup(g) {
+  const date = new Date(g.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+  const lines = LANGS.map(lang => {
+    const row = g[lang];
+    if (row) return el('div', { class: 'lang-line' }, el('span', { class: 'lang', text: lang.toUpperCase() }), el('span', { class: 'plain', text: `${row.word_a}  ·  ${row.word_b}` }));
+    // Traduction manquante : saisie directe
+    const source = g[other(lang)];
+    const ta = el('input', { type: 'text', maxlength: '30', placeholder: `${lang.toUpperCase()} – mot 1`, 'aria-label': `Traduction ${lang} du mot 1` });
+    const tb = el('input', { type: 'text', maxlength: '30', placeholder: `${lang.toUpperCase()} – mot 2`, 'aria-label': `Traduction ${lang} du mot 2` });
+    const save = el('button', { class: 'btn small primary', type: 'button', text: 'Ajouter', onclick: async () => {
+      if (!ta.value.trim() || !tb.value.trim()) return alert('Remplissez les deux mots.');
+      const { error } = await db.rpc('undercover_set_translation', { p_id: source.id, p_word_a: ta.value, p_word_b: tb.value });
+      if (error) return alert(errorText(error));
+      load();
+    } });
+    return el('div', { class: 'lang-line tr' }, el('span', { class: 'lang', text: lang.toUpperCase() }), ta, tb, save);
+  });
+
+  const setGroup = async fields => {
+    const { error } = await db.from(TABLE).update({ ...fields, reviewed_at: new Date().toISOString() }).eq('group_id', g.id);
+    if (error) return alert(errorText(error));
+    load();
+  };
+
+  return el('li', { class: 'item' },
+    ...lines,
+    el('div', { class: 'words' }, themeSelect(g.theme, e => setGroup({ theme: e.target.value }))),
+    el('div', { class: 'meta' }, `Proposée le ${date} `, (!g.fr || !g.en) && el('span', { class: 'missing', text: 'Traduction manquante' })),
+    el('div', { class: 'actions' },
+      current === 'approved'
+        ? el('button', { class: 'btn small', type: 'button', text: 'Retirer du jeu', onclick: () => setGroup({ status: 'rejected' }) })
+        : el('button', { class: 'btn small', type: 'button', text: 'Valider finalement', onclick: () => setGroup({ status: 'approved' }) }),
+      el('button', { class: 'btn small danger', type: 'button', text: 'Supprimer (FR + EN)', onclick: async () => {
+        if (!confirm('Supprimer définitivement cette association dans les deux langues ?')) return;
+        const { error } = await db.from(TABLE).delete().eq('group_id', g.id);
+        if (error) return alert(errorText(error));
+        load();
+      } })
+    )
+  );
 }
 
+/* ---------- Ajout direct FR + EN ---------- */
 $('addForm').addEventListener('submit', async e => {
   e.preventDefault();
-  const a = $('addA').value.trim(), b = $('addB').value.trim();
-  if (!a || !b || a.toLowerCase() === b.toLowerCase()) return alert('Deux mots différents.');
-  const { error } = await db.from(TABLE).insert({ word_a: a, word_b: b, theme: $('addTheme').value, lang: $('addLang').value, status: 'approved', reviewed_at: new Date().toISOString() });
-  if (error) return alert(error.code === '23505' ? 'Cette association existe déjà.' : 'Erreur : ' + error.message);
-  $('addA').value = ''; $('addB').value = '';
+  const v = id => $(id).value.trim();
+  if (v('addFrA').toLowerCase() === v('addFrB').toLowerCase() || v('addEnA').toLowerCase() === v('addEnB').toLowerCase()) {
+    return alert('Dans chaque langue, les deux mots doivent être différents.');
+  }
+  const { error } = await db.rpc('undercover_add', {
+    p_theme: $('addTheme').value, p_fr_a: v('addFrA'), p_fr_b: v('addFrB'), p_en_a: v('addEnA'), p_en_b: v('addEnB')
+  });
+  if (error) return alert(errorText(error));
+  ['addFrA', 'addFrB', 'addEnA', 'addEnB'].forEach(id => { $(id).value = ''; });
   if (current === 'approved') load(); else document.querySelector('[data-status="approved"]').click();
 });
 

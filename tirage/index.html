@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../commun/base.css?v=4">
-<script src="../commun/commun.js?v=4"></script>
+    <link rel="stylesheet" href="../commun/base.css?v=5">
+<script src="../commun/commun.js?v=5"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -92,7 +92,7 @@
             padding: 24px;
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+            box-shadow: var(--shadow);
             animation: fadeUp 0.7s ease both;
             position: relative;
             overflow: hidden;
@@ -102,7 +102,7 @@
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            background: linear-gradient(90deg, transparent, var(--highlight-line), transparent);
         }
         .card:nth-child(2) { animation-delay: 0.08s; }
         .card:nth-child(3) { animation-delay: 0.16s; }
@@ -164,7 +164,7 @@
             font-family: 'Sora', sans-serif;
             font-weight: 600;
             font-size: 0.95rem;
-            color: #fff;
+            color: var(--btn-primary-ink);
             border: none;
             padding: 13px 22px;
             border-radius: 12px;
@@ -177,12 +177,9 @@
         button:active { transform: translateY(0) scale(0.98); }
         button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-        .btn-primary {
-            background: var(--grad);
-            background-size: 200% auto;
-            box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 40%, transparent);
-        }
-        .btn-primary:hover { background-position: right center; box-shadow: 0 12px 30px color-mix(in srgb, var(--accent-2) 50%, transparent); }
+        /* .btn-primary : couleurs et ombre fournies par commun/base.css */
+        .btn-primary { background-size: 200% auto; }
+        .btn-primary:hover { background-position: right center; }
 
         .btn-ghost {
             background: var(--glass-strong);
@@ -191,17 +188,11 @@
         }
         .btn-ghost:hover { background: var(--surface-2); border-color: var(--accent); }
 
-        .btn-success {
-            background: var(--ok);
-            box-shadow: 0 8px 24px rgba(16,185,129,0.4);
-        }
-        .btn-success:hover { box-shadow: 0 12px 30px color-mix(in srgb, var(--accent-3) 50%, transparent); }
-
         /* Effet "onde" au clic */
         .ripple {
             position: absolute;
             border-radius: 50%;
-            background: rgba(255,255,255,0.5);
+            background: color-mix(in srgb, var(--on-color) 50%, transparent);
             transform: scale(0);
             animation: ripple 0.6s ease-out;
             pointer-events: none;
@@ -220,7 +211,7 @@
             padding: 4px;
         }
         .chips::-webkit-scrollbar { width: 8px; }
-        .chips::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 8px; }
+        .chips::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 8px; }
 
         .chip {
             display: inline-flex;
@@ -259,7 +250,7 @@
             width: 22px; height: 22px;
             border-radius: 50%;
             border: none;
-            background: rgba(251,113,133,0.2);
+            background: color-mix(in srgb, var(--danger) 18%, transparent);
             color: var(--error);
             font-size: 1rem;
             line-height: 1;
@@ -269,7 +260,7 @@
             transition: background 0.2s, transform 0.2s;
             padding: 0;
         }
-        .chip .remove:hover { background: var(--error); color: #fff; transform: rotate(90deg); }
+        .chip .remove:hover { background: var(--error); color: var(--on-color); transform: rotate(90deg); }
 
         .empty {
             text-align: center;
@@ -296,13 +287,13 @@
             transition: all 0.3s;
         }
         .result-box.success {
-            background: rgba(52,211,153,0.12);
-            border-color: rgba(52,211,153,0.4);
-            box-shadow: 0 0 30px rgba(52,211,153,0.2) inset;
+            background: color-mix(in srgb, var(--ok) 12%, transparent);
+            border-color: color-mix(in srgb, var(--ok) 40%, transparent);
+            box-shadow: 0 0 30px color-mix(in srgb, var(--ok) 20%, transparent) inset;
         }
         .result-box.error {
-            background: rgba(251,113,133,0.12);
-            border-color: rgba(251,113,133,0.4);
+            background: color-mix(in srgb, var(--danger) 12%, transparent);
+            border-color: color-mix(in srgb, var(--danger) 40%, transparent);
         }
         .result-box .win {
             background: var(--grad);
@@ -367,7 +358,7 @@
 
         .team-card.drag-over {
             border-color: var(--accent-3);
-            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-3) 30%, transparent), 0 20px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-3) 30%, transparent), 0 20px 40px var(--shadow-color);
             transform: scale(1.03);
         }
 
@@ -423,7 +414,7 @@
             place-items: center;
             font-size: 0.7rem;
             font-weight: 700;
-            color: #fff;
+            color: var(--on-color);
             flex-shrink: 0;
         }
         .member .grip { margin-left: auto; color: var(--muted); font-size: 0.8rem; }
@@ -431,7 +422,7 @@
         /* ---------- Historique ---------- */
         .history-list { max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
         .history-list::-webkit-scrollbar { width: 8px; }
-        .history-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 8px; }
+        .history-list::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 8px; }
         .history-item {
             display: flex;
             justify-content: space-between;
@@ -485,7 +476,7 @@
             position: fixed;
             inset: 0;
             z-index: 1000;
-            background: rgba(10, 10, 20, 0.55);
+            background: var(--overlay);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             display: grid;
@@ -504,7 +495,7 @@
             border: 1px solid var(--line);
             backdrop-filter: blur(26px);
             -webkit-backdrop-filter: blur(26px);
-            box-shadow: 0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.22);
+            box-shadow: var(--shadow-lg), inset 0 1px 0 var(--highlight-line);
             transform-style: preserve-3d;
             transition: transform 0.15s ease-out;
             animation: modalIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -517,7 +508,7 @@
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+            background: linear-gradient(90deg, transparent, var(--highlight-line), transparent);
         }
         @keyframes modalIn {
             from { opacity: 0; transform: translateY(24px) scale(0.9) rotateX(-10deg); }
@@ -642,7 +633,7 @@
             <div class="teams-controls">
                 <label for="teamCount" data-i18n="teams.count">Nombre d'équipes :</label>
                 <input type="number" id="teamCount" min="1" max="50" value="2">
-                <button id="createTeamsBtn" class="btn-success" data-i18n="teams.create">🎲 Créer les équipes</button>
+                <button id="createTeamsBtn" class="btn-primary" data-i18n="teams.create">🎲 Créer les équipes</button>
             </div>
             <div id="teamsResult"></div>
         </div>
@@ -672,6 +663,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="app.js?v=3"></script>
     <script src="i18n.js?v=1"></script>
-    <script src="ui.js?v=1"></script>
+    <script src="ui.js?v=2"></script>
 </body>
 </html>

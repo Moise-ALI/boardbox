@@ -26,7 +26,13 @@
   function applyTheme(theme) {
     if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
     else delete document.documentElement.dataset.theme;
+    // Pour les éléments dessinés en JS (canvas, WebGL) qui lisent les couleurs via cssVar()
+    document.dispatchEvent(new CustomEvent('outils:theme'));
   }
+  // Thème système modifié pendant l'utilisation (si aucun thème n'est forcé)
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (!document.documentElement.dataset.theme) document.dispatchEvent(new CustomEvent('outils:theme'));
+  });
   function currentTheme() {
     return document.documentElement.dataset.theme
       || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -89,5 +95,10 @@
     bindLangButton(document.getElementById('langBtn'));
   }
 
-  window.Outils = { createStore, bindThemeButton, bindLangButton, initTopbar, lang, i18n, applyI18n };
+  /** Lit une variable du design system (base.css) depuis le JS : dé 3D, confettis, couleurs des joueurs… */
+  function cssVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  window.Outils = { createStore, bindThemeButton, bindLangButton, initTopbar, lang, i18n, applyI18n, cssVar };
 })();

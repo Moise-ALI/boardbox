@@ -53,7 +53,7 @@
 
         // --- Confettis ---
         function confetti() {
-            const colors = ['#f47a55', '#f6a75e', '#ee6366', '#fbbf24', '#c2410c', '#ffd2a6'];
+            const colors = ['--accent', '--accent-2', '--accent-3', '--signal', '--ok'].map(Outils.cssVar);
             for (let i = 0; i < 90; i++) {
                 const c = document.createElement('div');
                 c.className = 'confetti';
@@ -505,14 +505,18 @@
                 c.width = c.height = 256;
                 const ctx = c.getContext('2d');
                 const g = ctx.createLinearGradient(0, 0, 256, 256);
-                g.addColorStop(0, '#ee6366');
-                g.addColorStop(0.5, '#f47a55');
-                g.addColorStop(1, '#f6a75e');
+                // Faces du dé aux couleurs du design system (base.css)
+                g.addColorStop(0, Outils.cssVar('--accent-3'));
+                g.addColorStop(0.5, Outils.cssVar('--accent'));
+                g.addColorStop(1, Outils.cssVar('--accent-2'));
                 ctx.fillStyle = g;
                 ctx.fillRect(0, 0, 256, 256);
-                ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+                const ink = Outils.cssVar('--on-color');
+                ctx.strokeStyle = ink;
+                ctx.globalAlpha = 0.35;
                 ctx.lineWidth = 10;
                 ctx.strokeRect(8, 8, 240, 240);
+                ctx.globalAlpha = 1;
                 const P = {
                     1: [[128, 128]],
                     2: [[72, 72], [184, 184]],
@@ -521,7 +525,7 @@
                     5: [[72, 72], [184, 72], [128, 128], [72, 184], [184, 184]],
                     6: [[72, 64], [184, 64], [72, 128], [184, 128], [72, 192], [184, 192]]
                 };
-                ctx.fillStyle = 'rgba(255,255,255,0.95)';
+                ctx.fillStyle = ink;
                 (P[n] || []).forEach(([x, y]) => {
                     ctx.beginPath();
                     ctx.arc(x, y, 26, 0, Math.PI * 2);
@@ -533,7 +537,8 @@
             }
 
             const geo = new THREE.BoxGeometry(2, 2, 2, 4, 4, 4);
-            const mats = [1, 6, 3, 4, 2, 5].map(n => new THREE.MeshStandardMaterial({
+            const FACES = [1, 6, 3, 4, 2, 5];
+            const mats = FACES.map(n => new THREE.MeshStandardMaterial({
                 map: faceTexture(n),
                 roughness: 0.35,
                 metalness: 0.15
@@ -546,9 +551,15 @@
             const key = new THREE.PointLight(0xffffff, 1.1);
             key.position.set(3, 4, 5);
             scene.add(key);
-            const rim = new THREE.PointLight(0xf47a55, 0.8);
+            const rim = new THREE.PointLight(new THREE.Color(Outils.cssVar('--accent')), 0.8);
             rim.position.set(-4, -2, 3);
             scene.add(rim);
+
+            // Changement de thème : on redessine les faces avec les nouvelles couleurs du design system
+            document.addEventListener('outils:theme', () => {
+                mats.forEach((m, i) => { m.map.dispose(); m.map = faceTexture(FACES[i]); m.needsUpdate = true; });
+                rim.color.set(Outils.cssVar('--accent'));
+            });
 
             // --- Rotation par drag + inertie + snap fluide sur une face ---
             const K = 0.012;            // radians par pixel

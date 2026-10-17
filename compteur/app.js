@@ -54,7 +54,8 @@ Outils.initTopbar();
 Outils.applyI18n(t);
 
 const MAX_PLAYERS = 12;
-const COLORS = ['#e8590c', '#3a7bd5', '#0f9a6c', '#b03fd4', '#d99200', '#0891c9', '#d63447', '#5f9a12', '#7a4bd8', '#b8601a', '#1f8f8f', '#c2347a'];
+// Couleurs d'identité des joueurs : définies dans commun/base.css (--player-1 … --player-12)
+const COLORS = Array.from({ length: 12 }, (_, i) => `var(--player-${i + 1})`);
 
 /* ---------- Toast ---------- */
 let toastEl = null, toastTimer = 0;
@@ -81,8 +82,7 @@ function confetti() {
   if (!c) { c = document.createElement('canvas'); c.id = 'confetti'; document.body.append(c); }
   const ctx = c.getContext('2d'), dpr = Math.min(devicePixelRatio || 1, 2);
   c.width = innerWidth * dpr; c.height = innerHeight * dpr; ctx.scale(dpr, dpr);
-  const cs = getComputedStyle(document.documentElement);
-  const cols = [cs.getPropertyValue('--accent').trim(), cs.getPropertyValue('--signal').trim(), cs.getPropertyValue('--accent-3').trim(), '#fbbf24', '#ffd2a6'];
+  const cols = ['--accent', '--accent-2', '--accent-3', '--signal', '--ok'].map(Outils.cssVar);
   const ps = Array.from({ length: 170 }, () => ({
     x: innerWidth / 2 + (Math.random() - .5) * 120, y: innerHeight * .55,
     vx: (Math.random() - .5) * 15, vy: -Math.random() * 17 - 6, r: Math.random() * Math.PI, vr: (Math.random() - .5) * .35,
