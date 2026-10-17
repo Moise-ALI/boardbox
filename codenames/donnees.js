@@ -1,4 +1,4 @@
-/* Accès Supabase de Nom de code : fonctions SQL (supabase/codenames.sql) + temps réel.
+/* Accès Supabase de CodeName : fonctions SQL (supabase/codenames.sql) + temps réel.
    Aucune session n'est créée ni stockée : tout passe par la clé publique et les fonctions
    security definer, qui valident les entrées et gardent la grille des couleurs secrète. */
 window.CodenamesDonnees = (function () {

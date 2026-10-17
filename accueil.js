@@ -24,7 +24,7 @@ const t = Outils.i18n({
     'compteur.desc': 'Comptez les scores des soirées jeux : classement animé, objectif et manches.',
     'undercover.name': 'Undercover',
     'undercover.desc': 'Le jeu d\'ambiance sur un seul téléphone : civils, undercovers et Mister White.',
-    'codenames.name': 'Nom de code',
+    'codenames.name': 'CodeName',
     'codenames.desc': 'Jeu d\'espions en équipes : vue espion et vue joueur synchronisées en direct sur vos téléphones.'
   },
   en: {
@@ -39,7 +39,7 @@ const t = Outils.i18n({
     'compteur.desc': 'Keep score on game nights: animated ranking, target score and rounds.',
     'undercover.name': 'Undercover',
     'undercover.desc': 'The party game on a single phone: civilians, undercovers and Mr. White.',
-    'codenames.name': 'Code Name',
+    'codenames.name': 'CodeName',
     'codenames.desc': 'Team spy game: spymaster and player views synced live across your phones.'
   }
 });

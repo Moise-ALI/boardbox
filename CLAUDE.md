@@ -16,14 +16,14 @@ commun/commun.js    window.Outils : createStore(prefix), bindThemeButton(btn)
 tirage/             Tirage au sort & équipes (app.js logique, ui.js interface + dé 3D Three.js, i18n.js)
 compteur/           Compteur de points (app.js)
 undercover/         Jeu Undercover (un téléphone) + admin.html (modération des associations)
-codenames/          Nom de code : salle partagée par lien (vue espion / joueur), temps réel Supabase
+codenames/          CodeName : salle partagée par lien (vue espion / joueur), temps réel Supabase
 supabase/           Scripts SQL à exécuter dans Supabase > SQL Editor (undercover.sql, codenames.sql)
 ```
 
 ## Données partagées et secrets (Supabase)
 - Projet Supabase unique pour toute la boîte à outils ; une table par besoin, préfixée par l'outil (`undercover_pairs`).
 - Seules l'URL du projet et la clé **publishable/anon** vont dans le code, à un seul endroit : `commun/supabase-config.js` (`window.OUTILS_SUPABASE`). Jamais la clé `secret`/`service_role`, ni un mot de passe.
-- Un secret de jeu (ex. grille des couleurs de Nom de code) ne doit jamais être calculable côté client : il vit dans une table sans aucun droit public, et n'est lu que via une fonction `security definer` qui exige un jeton. Les jetons voyagent après le `#` de l'URL (jamais envoyé au serveur), avec `referrer: no-referrer`.
+- Un secret de jeu (ex. grille des couleurs de CodeName) ne doit jamais être calculable côté client : il vit dans une table sans aucun droit public, et n'est lu que via une fonction `security definer` qui exige un jeton. Les jetons voyagent après le `#` de l'URL (jamais envoyé au serveur), avec `referrer: no-referrer`.
 - Temps réel : `postgres_changes` de supabase-js sur une table publique ajoutée à la publication `supabase_realtime` ; toujours prévoir un rafraîchissement de secours (veille du téléphone, réseau).
 - Toute table a **RLS activé** et des policies explicites ; le SQL versionné dans `supabase/` est la référence (ré-exécutable).
 - Écritures réservées : via `public.is_admin()` (table `admins`, par e-mail de session). L'e-mail admin n'est jamais committé.

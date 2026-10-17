@@ -1,4 +1,4 @@
-/* Mots de Nom de code, par langue. Une partie en tire 25 au hasard.
+/* Mots de CodeName, par langue. Une partie en tire 25 au hasard.
    Bons mots : noms courts et polysémiques, qui permettent des indices reliant plusieurs cartes
    (ex. « Pièce » : monnaie, théâtre, pièce d'une maison). Pas de doublon dans une liste. */
 window.CODENAMES_WORDS = {

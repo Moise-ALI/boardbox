@@ -1,4 +1,4 @@
-/* Nom de code — salle partagée par lien, synchronisée en temps réel.
+/* CodeName — salle partagée par lien, synchronisée en temps réel.
    URL joueur : ?room=CODE   URL espion : ?room=CODE#spy=JETON
    Le jeton espion reste après le « # » : il n'est jamais envoyé au serveur web ni transmis en referrer.
    Les couleurs ne sont connues que de la base : la vue joueur ne les reçoit qu'au retournement. */
@@ -220,6 +220,7 @@ async function startGame(code, token) {
       game.words.map((word, i) => {
         const role = game.revealed[i];
         const cls = ['word'];
+        if (word.length > 11) cls.push('xlong'); else if (word.length > 8) cls.push('long');
         if (role) cls.push('revealed', 'is-' + role);
         else if (isSpy && key) cls.push('key-' + key[i]);
         if (selected === i) cls.push('selected');

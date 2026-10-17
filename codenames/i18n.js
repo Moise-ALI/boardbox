@@ -1,7 +1,7 @@
-/* Textes de Nom de code en français et en anglais (app.js et data-i18n de index.html). */
+/* Textes de CodeName en français et en anglais (app.js et data-i18n de index.html). */
 window.CODENAMES_I18N = {
   fr: {
-    title: 'Nom de code',
+    title: 'CodeName',
     tagline: 'Deux équipes, deux maîtres-espions, 25 mots : faites deviner vos agents d\'un seul mot… sans tomber sur l\'assassin.',
     'home.newGame': 'Nouvelle partie',
     'home.gridLang': 'Langue de la grille',
@@ -59,7 +59,7 @@ window.CODENAMES_I18N = {
     confirm: 'Confirmer'
   },
   en: {
-    title: 'Code Name',
+    title: 'CodeName',
     tagline: 'Two teams, two spymasters, 25 words: get your agents guessed with a single word… without hitting the assassin.',
     'home.newGame': 'New game',
     'home.gridLang': 'Grid language',

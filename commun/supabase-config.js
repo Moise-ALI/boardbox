@@ -1,4 +1,4 @@
-/* Connexion au projet Supabase de la boîte à outils (Undercover, Nom de code…).
+/* Connexion au projet Supabase de la boîte à outils (Undercover, CodeName…).
    Ces deux valeurs sont PUBLIQUES par conception : la sécurité repose sur les règles RLS,
    les droits par colonne et les fonctions SQL de supabase/*.sql.
    Ne JAMAIS mettre ici la clé "secret" ou "service_role". */

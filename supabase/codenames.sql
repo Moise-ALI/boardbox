@@ -1,4 +1,4 @@
--- Nom de code (Codenames) : parties partagées en temps réel.
+-- CodeName (Codenames) : parties partagées en temps réel.
 -- À exécuter dans Supabase > SQL Editor. Ré-exécutable sans risque.
 --
 -- Principe de sécurité : la grille des couleurs (« clé ») n'est JAMAIS lisible par l'API.
