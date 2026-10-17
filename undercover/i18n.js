@@ -1,7 +1,6 @@
 /* Textes d'Undercover en français et en anglais (utilisés par app.js et les data-i18n de index.html). */
 window.UNDERCOVER_I18N = {
   fr: {
-    pageTitle: 'Undercover',
     confirm: 'Confirmer',
     cancel: 'Annuler',
     close: 'Fermer',
@@ -115,7 +114,6 @@ window.UNDERCOVER_I18N = {
   },
 
   en: {
-    pageTitle: 'Undercover',
     confirm: 'Confirm',
     cancel: 'Cancel',
     close: 'Close',

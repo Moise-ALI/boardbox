@@ -64,10 +64,8 @@ create policy "proposer une paire" on public.undercover_pairs
   for insert to anon, authenticated
   with check (status = 'pending' and reviewed_at is null);
 
+-- Ancienne règle d'ajout direct : remplacée par la fonction undercover_add (v4), retirée.
 drop policy if exists "ajout direct par admin" on public.undercover_pairs;
-create policy "ajout direct par admin" on public.undercover_pairs
-  for insert to authenticated
-  with check (public.is_admin());
 
 drop policy if exists "moderation par admin" on public.undercover_pairs;
 create policy "moderation par admin" on public.undercover_pairs

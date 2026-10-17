@@ -28,9 +28,9 @@
   --ease: cubic-bezier(.2, .8, .2, 1);
   color-scheme: light;
 
-  /* Alias historiques de tirage/ (même sens que ci-dessus) */
-  --bg-0: var(--bg); --glass: var(--surface); --glass-strong: var(--surface-2); --border: var(--line);
-  --text: var(--ink); --text-dim: var(--muted); --accent-1: var(--accent); --success: var(--ok); --error: var(--danger);
+  /* Alias historiques utilisés par tirage/ (même sens que ci-dessus) */
+  --glass: var(--surface); --glass-strong: var(--surface-2); --border: var(--line);
+  --text: var(--ink); --text-dim: var(--muted); --accent-1: var(--accent); --error: var(--danger);
 }
 
 /* ---------- Thème sombre ---------- */
@@ -92,7 +92,6 @@
 :root {
   --on-color: #ffffff;                        /* texte sur une pastille colorée (avatars) */
   --on-signal: #1d1400;                       /* texte sur --signal (gagnant, meneur) */
-  --radius-sm: 10px; --radius: 14px; --radius-lg: 20px;
   --shadow-lg: 0 30px 80px var(--shadow-color);
   --scrollbar: color-mix(in srgb, var(--ink) 20%, transparent);
   /* Bouton principal : même rendu dans tous les outils */
