@@ -1,4 +1,4 @@
-/* Service worker de la boîte à outils : appli installable, utilisable hors connexion.
+/* Service worker de BoardBox : appli installable, utilisable hors connexion.
    Stratégies :
    - pages (navigation)      : réseau d'abord (toujours la dernière version en ligne), mémoire si hors ligne
    - scripts, styles, polices, icônes, bibliothèques CDN : mémoire d'abord ; chaque mise à jour change
@@ -6,8 +6,8 @@
    - Supabase (données de jeu) : jamais mis en mémoire
    Changer CACHE_VERSION uniquement pour forcer le rechargement complet (liste PRECACHE modifiée…). */
 const CACHE_VERSION = 'v1';
-// Préfixe propre à BoardBox : l'ancienne adresse /outils/ (même domaine, donc même stockage)
-// utilisait « outils- » ; sa redirection nettoie ses propres caches sans toucher à ceux-ci.
+// Préfixe propre à BoardBox : le domaine moise-ali.github.io (et donc son stockage) est partagé
+// avec les autres dépôts du compte, le nettoyage ne touche qu'aux caches « boardbox- ».
 const CACHE = 'boardbox-' + CACHE_VERSION;
 const CDN_HOSTS = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net'];
 

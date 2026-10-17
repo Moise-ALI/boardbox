@@ -6,15 +6,15 @@
 const MIN_PLAYERS = 3;
 const MAX_PLAYERS = 20;
 const RECENT_MAX = 60;
-const LANG = Outils.lang;
+const LANG = BoardBox.lang;
 const THEMES = window.UNDERCOVER_THEMES;
 const themeLabel = id => { const th = THEMES.find(x => x.id === id); return th ? th.label[LANG] : id; };
 
-const t = Outils.i18n(window.UNDERCOVER_I18N);
-Outils.initTopbar();
-Outils.applyI18n(t);
+const t = BoardBox.i18n(window.UNDERCOVER_I18N);
+BoardBox.initTopbar();
+BoardBox.applyI18n(t);
 
-const store = Outils.createStore('undercover');
+const store = BoardBox.createStore('undercover');
 const app = document.getElementById('app');
 
 /* ---------- Petits utilitaires ---------- */

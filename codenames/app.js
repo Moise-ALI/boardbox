@@ -5,9 +5,9 @@
 (() => {
 'use strict';
 
-const t = Outils.i18n(window.CODENAMES_I18N);
-Outils.initTopbar();
-Outils.applyI18n(t);
+const t = BoardBox.i18n(window.CODENAMES_I18N);
+BoardBox.initTopbar();
+BoardBox.applyI18n(t);
 
 const app = document.getElementById('app');
 const Data = window.CodenamesDonnees;
@@ -83,7 +83,7 @@ else renderHome();
 
 /* ---------- Accueil ---------- */
 function renderHome(errorKey) {
-  let gridLang = Outils.lang;
+  let gridLang = BoardBox.lang;
   const segBtn = l => el('button', { type: 'button', 'aria-pressed': String(l === gridLang), text: l.toUpperCase(), onclick: e => {
     gridLang = l;
     e.currentTarget.parentElement.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b === e.currentTarget)));
@@ -282,9 +282,9 @@ async function startGame(code, token) {
     canvas.width = canvas.height = px;
     canvas.style.width = canvas.style.height = (px / dpr) + 'px';
     const ctx = canvas.getContext('2d');
-    ctx.fillStyle = Outils.cssVar('--qr-bg');
+    ctx.fillStyle = BoardBox.cssVar('--qr-bg');
     ctx.fillRect(0, 0, px, px);
-    ctx.fillStyle = Outils.cssVar('--qr-fg');
+    ctx.fillStyle = BoardBox.cssVar('--qr-fg');
     for (let r = 0; r < qr.getModuleCount(); r++) {
       for (let c = 0; c < qr.getModuleCount(); c++) {
         if (qr.isDark(r, c)) ctx.fillRect((c + quiet) * cell, (r + quiet) * cell, cell, cell);

@@ -4,9 +4,9 @@
 
 const $ = (s, r = document) => r.querySelector(s);
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const store = Outils.createStore('compteur');
+const store = BoardBox.createStore('compteur');
 
-const t = Outils.i18n({
+const t = BoardBox.i18n({
   fr: {
     title: 'Compteur de points',
     round: 'Manche {n}',
@@ -50,8 +50,8 @@ const t = Outils.i18n({
     winner: '🏆 {name} reached {target} points'
   }
 });
-Outils.initTopbar();
-Outils.applyI18n(t);
+BoardBox.initTopbar();
+BoardBox.applyI18n(t);
 
 const MAX_PLAYERS = 12;
 // Couleurs d'identité des joueurs : définies dans commun/base.css (--player-1 … --player-12)
@@ -82,7 +82,7 @@ function confetti() {
   if (!c) { c = document.createElement('canvas'); c.id = 'confetti'; document.body.append(c); }
   const ctx = c.getContext('2d'), dpr = Math.min(devicePixelRatio || 1, 2);
   c.width = innerWidth * dpr; c.height = innerHeight * dpr; ctx.scale(dpr, dpr);
-  const cols = ['--accent', '--accent-2', '--accent-3', '--signal', '--ok'].map(Outils.cssVar);
+  const cols = ['--accent', '--accent-2', '--accent-3', '--signal', '--ok'].map(BoardBox.cssVar);
   const ps = Array.from({ length: 170 }, () => ({
     x: innerWidth / 2 + (Math.random() - .5) * 120, y: innerHeight * .55,
     vx: (Math.random() - .5) * 15, vy: -Math.random() * 17 - 6, r: Math.random() * Math.PI, vr: (Math.random() - .5) * .35,

@@ -1,8 +1,8 @@
 /* Tirage & Équipes : interface (liste, tirages, équipes, dé 3D). La logique est dans app.js. */
-        const t = Outils.i18n(window.TIRAGE_I18N);
+        const t = BoardBox.i18n(window.TIRAGE_I18N);
         RandomSelector.t = t;
-        Outils.initTopbar();
-        Outils.applyI18n(t);
+        BoardBox.initTopbar();
+        BoardBox.applyI18n(t);
 
         const selector = new RandomSelector();
         let items = selector.getElements();
@@ -53,7 +53,7 @@
 
         // --- Confettis ---
         function confetti() {
-            const colors = ['--accent', '--accent-2', '--accent-3', '--signal', '--ok'].map(Outils.cssVar);
+            const colors = ['--accent', '--accent-2', '--accent-3', '--signal', '--ok'].map(BoardBox.cssVar);
             for (let i = 0; i < 90; i++) {
                 const c = document.createElement('div');
                 c.className = 'confetti';
@@ -518,12 +518,12 @@
                 const ctx = c.getContext('2d');
                 const g = ctx.createLinearGradient(0, 0, 256, 256);
                 // Faces du dé aux couleurs du design system (base.css)
-                g.addColorStop(0, Outils.cssVar('--accent-3'));
-                g.addColorStop(0.5, Outils.cssVar('--accent'));
-                g.addColorStop(1, Outils.cssVar('--accent-2'));
+                g.addColorStop(0, BoardBox.cssVar('--accent-3'));
+                g.addColorStop(0.5, BoardBox.cssVar('--accent'));
+                g.addColorStop(1, BoardBox.cssVar('--accent-2'));
                 ctx.fillStyle = g;
                 ctx.fillRect(0, 0, 256, 256);
-                const ink = Outils.cssVar('--on-color');
+                const ink = BoardBox.cssVar('--on-color');
                 ctx.strokeStyle = ink;
                 ctx.globalAlpha = 0.35;
                 ctx.lineWidth = 10;
@@ -563,14 +563,14 @@
             const key = new THREE.PointLight(0xffffff, 1.1);
             key.position.set(3, 4, 5);
             scene.add(key);
-            const rim = new THREE.PointLight(new THREE.Color(Outils.cssVar('--accent')), 0.8);
+            const rim = new THREE.PointLight(new THREE.Color(BoardBox.cssVar('--accent')), 0.8);
             rim.position.set(-4, -2, 3);
             scene.add(rim);
 
             // Changement de thème : on redessine les faces avec les nouvelles couleurs du design system
-            document.addEventListener('outils:theme', () => {
+            document.addEventListener('boardbox:theme', () => {
                 mats.forEach((m, i) => { m.map.dispose(); m.map = faceTexture(FACES[i]); m.needsUpdate = true; });
-                rim.color.set(Outils.cssVar('--accent'));
+                rim.color.set(BoardBox.cssVar('--accent'));
             });
 
             // --- Rotation par drag + inertie + snap fluide sur une face ---

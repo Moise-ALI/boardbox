@@ -23,14 +23,14 @@
       }
     };
   }
-  const prefs = createStore('outils');
+  const prefs = createStore('boardbox');
 
   /* ---------- Thème clair/sombre ---------- */
   function applyTheme(theme) {
     if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
     else delete document.documentElement.dataset.theme;
     // Pour les éléments dessinés en JS (canvas, WebGL) qui lisent les couleurs via cssVar()
-    document.dispatchEvent(new CustomEvent('outils:theme'));
+    document.dispatchEvent(new CustomEvent('boardbox:theme'));
   }
   // Barre du téléphone (et de l'appli installée) à la couleur du fond, selon le thème réellement affiché
   function syncThemeColor() {
@@ -38,10 +38,10 @@
     if (!meta) { meta = document.createElement('meta'); meta.name = 'theme-color'; document.head.append(meta); }
     meta.content = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#150c0a';
   }
-  document.addEventListener('outils:theme', syncThemeColor);
+  document.addEventListener('boardbox:theme', syncThemeColor);
   // Thème système modifié pendant l'utilisation (si aucun thème n'est forcé)
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-    if (!document.documentElement.dataset.theme) document.dispatchEvent(new CustomEvent('outils:theme'));
+    if (!document.documentElement.dataset.theme) document.dispatchEvent(new CustomEvent('boardbox:theme'));
   });
   function currentTheme() {
     return document.documentElement.dataset.theme
@@ -120,5 +120,5 @@
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
 
-  window.Outils = { createStore, bindThemeButton, bindLangButton, initTopbar, lang, i18n, applyI18n, cssVar, isInstalled };
+  window.BoardBox = { createStore, bindThemeButton, bindLangButton, initTopbar, lang, i18n, applyI18n, cssVar, isInstalled };
 })();

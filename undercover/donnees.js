@@ -3,7 +3,7 @@
 (function () {
   'use strict';
 
-  const sb = window.OUTILS_SUPABASE || {};
+  const sb = window.BOARDBOX_SUPABASE || {};
   const cfg = { supabaseUrl: sb.url, supabaseKey: sb.key };
   const enabled = Boolean(cfg.supabaseUrl && cfg.supabaseKey);
   const base = enabled ? cfg.supabaseUrl.replace(/\/+$/, '') + '/rest/v1/undercover_pairs' : '';

@@ -12,7 +12,7 @@ Petites applis web personnelles publiées sur GitHub Pages : https://moise-ali.g
 ```
 index.html          Accueil ; registre TOOLS et textes dans accueil.js
 commun/base.css     Couleurs clair/sombre, reset, .topbar / .back-link / .theme-btn
-commun/commun.js    window.Outils : createStore(prefix), bindThemeButton(btn)
+commun/commun.js    window.BoardBox : createStore(prefix), bindThemeButton(btn)
 tirage/             Tirage au sort & équipes (app.js logique, ui.js interface + dé 3D Three.js, i18n.js)
 compteur/           Compteur de points (app.js)
 undercover/         Jeu Undercover (un téléphone) + admin.html (modération des associations)
@@ -21,8 +21,8 @@ supabase/           Scripts SQL à exécuter dans Supabase > SQL Editor (underco
 ```
 
 ## Données partagées et secrets (Supabase)
-- Projet Supabase unique pour toute la boîte à outils ; une table par besoin, préfixée par l'outil (`undercover_pairs`).
-- Seules l'URL du projet et la clé **publishable/anon** vont dans le code, à un seul endroit : `commun/supabase-config.js` (`window.OUTILS_SUPABASE`). Jamais la clé `secret`/`service_role`, ni un mot de passe.
+- Projet Supabase unique pour tout BoardBox ; une table par besoin, préfixée par l'outil (`undercover_pairs`).
+- Seules l'URL du projet et la clé **publishable/anon** vont dans le code, à un seul endroit : `commun/supabase-config.js` (`window.BOARDBOX_SUPABASE`). Jamais la clé `secret`/`service_role`, ni un mot de passe.
 - Un secret de jeu (ex. grille des couleurs de CodeName) ne doit jamais être calculable côté client : il vit dans une table sans aucun droit public, et n'est lu que via une fonction `security definer` qui exige un jeton. Les jetons voyagent après le `#` de l'URL (jamais envoyé au serveur), avec `referrer: no-referrer`.
 - Temps réel : `postgres_changes` de supabase-js sur une table publique ajoutée à la publication `supabase_realtime` ; toujours prévoir un rafraîchissement de secours (veille du téléphone, réseau).
 - Toute table a **RLS activé** et des policies explicites ; le SQL versionné dans `supabase/` est la référence (ré-exécutable).
@@ -33,7 +33,7 @@ supabase/           Scripts SQL à exécuter dans Supabase > SQL Editor (underco
 - Besoin d'un secret côté serveur (clé d'API payante) : Supabase Edge Function ou Cloudflare Worker, jamais dans le front.
 
 ## Règles
-- **Stockage** : tous les outils partagent le même `localStorage` (même domaine). Chaque clé est préfixée par le nom du dossier de l'outil : utiliser `Outils.createStore('<dossier>')`, ou à défaut des clés `'<dossier>.xxx'`. Ne jamais renommer une clé existante sans migration (les utilisateurs perdraient leurs données). Pour renommer des clés, ne modifier que les appels `localStorage.*` : un remplacement global touche aussi les `id` HTML et les `getElementById` du même nom.
+- **Stockage** : tous les outils partagent le même `localStorage` (même domaine). Chaque clé est préfixée par le nom du dossier de l'outil : utiliser `BoardBox.createStore('<dossier>')`, ou à défaut des clés `'<dossier>.xxx'`. Ne jamais renommer une clé existante sans migration (les utilisateurs perdraient leurs données). Pour renommer des clés, ne modifier que les appels `localStorage.*` : un remplacement global touche aussi les `id` HTML et les `getElementById` du même nom.
 - **Avant chaque push** : charger l'outil modifié et exercer ses actions principales en vérifiant la console (une erreur JS en début de script casse tout ce qui suit, ex. le dé 3D de `tirage/`).
 - **Lien de retour** : chaque outil affiche un lien `← BoardBox` vers `../`.
 - **Cache** : GitHub Pages sert les fichiers avec `max-age=600`. Les scripts/styles propres à un outil sont inclus avec `?v=N` (ex. `app.js?v=2`) : incrémenter N dans les `<script>` à chaque modification du fichier, sinon les visiteurs gardent l'ancienne version jusqu'à 10 min (cas vécu : config.js vide en cache).
@@ -41,13 +41,13 @@ supabase/           Scripts SQL à exécuter dans Supabase > SQL Editor (underco
 - **Dépendances externes** : seulement via CDN avec une version figée (ex. `three.js/r128`), et un repli si elles ne chargent pas.
 - **Design system** (`commun/base.css`, style « aurora ») commun à tous les outils : palette chaude rouge/orange : `--accent` (orange brûlé, boutons/liens), `--accent-2` (orange), `--accent-3` (rouge), contrastes WCAG vérifiés, dégradé `--grad` (boutons) et `.grad-text` (titres), verre via `.card` / `.glass`, polices Sora (titres) + Inter (texte). Toujours utiliser les variables (jamais de couleur en dur) pour que les thèmes clair et sombre fonctionnent.
 - **Tout le design est piloté par `base.css`** : couleurs, ombres (`--shadow`, `--shadow-lg`, `--shadow-color`), voile des fenêtres (`--overlay`), bouton principal (classe `.btn-primary` ou jetons `--btn-primary-bg/-ink/-shadow`), textes sur couleur (`--on-color`, `--on-signal`), couleurs des joueurs (`--player-1…12`). Aucune couleur en dur dans les outils, CSS comme JS (seule exception : l'éclairage blanc neutre de la scène 3D).
-- Côté JS : `Outils.cssVar('--accent')` pour lire une couleur ; les éléments dessinés (canvas, WebGL) écoutent l'événement `outils:theme` pour se redessiner au changement de thème.
+- Côté JS : `BoardBox.cssVar('--accent')` pour lire une couleur ; les éléments dessinés (canvas, WebGL) écoutent l'événement `outils:theme` pour se redessiner au changement de thème.
 - `commun.js` se charge dans le `<head>` (il applique le thème avant l'affichage) ; `base.css` et `commun.js` sont versionnés `?v=N` comme le reste.
 
 ## Langues (FR/EN)
-- `commun.js` détermine la langue (`Outils.lang` : choix mémorisé, sinon langue du navigateur) ; le bouton `#langBtn` recharge la page dans l'autre langue.
-- Chaque outil a un dictionnaire `{ fr: {...}, en: {...} }` (fichier `i18n.js` si gros) et `const t = Outils.i18n(dict)` ; `t('cle', { var })` remplace `{var}`. Repli : français, puis la clé (visible = oubli facile à repérer).
-- HTML statique : `data-i18n`, `data-i18n-placeholder`, `data-i18n-aria-label`, `data-i18n-title`, appliqués par `Outils.applyI18n(t)`. Clés communes `common.back`, `common.theme`.
+- `commun.js` détermine la langue (`BoardBox.lang` : choix mémorisé, sinon langue du navigateur) ; le bouton `#langBtn` recharge la page dans l'autre langue.
+- Chaque outil a un dictionnaire `{ fr: {...}, en: {...} }` (fichier `i18n.js` si gros) et `const t = BoardBox.i18n(dict)` ; `t('cle', { var })` remplace `{var}`. Repli : français, puis la clé (visible = oubli facile à repérer).
+- HTML statique : `data-i18n`, `data-i18n-placeholder`, `data-i18n-aria-label`, `data-i18n-title`, appliqués par `BoardBox.applyI18n(t)`. Clés communes `common.back`, `common.theme`.
 - Contenus de jeu par langue (ex. `UNDERCOVER_PAIRS.fr / .en`, colonne `lang` en base) : listes séparées, pas de traduction mot à mot.
 - `undercover/admin.html` (modération) reste en français uniquement.
 

@@ -9,9 +9,9 @@ if (window.top !== window.self) {
   document.body.replaceChildren();
   return;
 }
-Outils.bindThemeButton(document.getElementById('themeBtn'));
+BoardBox.bindThemeButton(document.getElementById('themeBtn'));
 const $ = id => document.getElementById(id);
-const sb = window.OUTILS_SUPABASE || {};
+const sb = window.BOARDBOX_SUPABASE || {};
 const cfg = { supabaseUrl: sb.url, supabaseKey: sb.key };
 
 if (!cfg.supabaseUrl || !cfg.supabaseKey) { $('noConfig').hidden = false; return; }

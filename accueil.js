@@ -11,7 +11,7 @@ const TOOLS = [
   { path: 'codenames/', icon: '🗝️', name: 'codenames.name', desc: 'codenames.desc' }
 ];
 
-const t = Outils.i18n({
+const t = BoardBox.i18n({
   fr: {
     title: 'BoardBox',
     lead: 'Mes petites applis du quotidien, utilisables depuis n\'importe quel appareil. Les données restent dans votre navigateur.',
@@ -50,17 +50,17 @@ const t = Outils.i18n({
   }
 });
 
-Outils.initTopbar();
-Outils.applyI18n(t);
+BoardBox.initTopbar();
+BoardBox.applyI18n(t);
 document.getElementById('count').textContent = t('count', { n: TOOLS.length });
 
 /* ---------- Encart « Installer l'appli » ---------- */
 (function installPrompt() {
-  const prefs = Outils.createStore('outils');
+  const prefs = BoardBox.createStore('boardbox');
   const box = document.getElementById('install');
   const btn = document.getElementById('installBtn');
   const text = document.getElementById('installText');
-  if (Outils.isInstalled() || prefs.get('installDismissed', false)) return;
+  if (BoardBox.isInstalled() || prefs.get('installDismissed', false)) return;
   const hide = () => { box.hidden = true; };
   document.getElementById('installClose').onclick = () => { prefs.set('installDismissed', true); hide(); };
   addEventListener('appinstalled', hide);

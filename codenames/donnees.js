@@ -4,7 +4,7 @@
 window.CodenamesDonnees = (function () {
   'use strict';
 
-  const sb = window.OUTILS_SUPABASE || {};
+  const sb = window.BOARDBOX_SUPABASE || {};
   const db = (window.supabase && sb.url && sb.key)
     ? window.supabase.createClient(sb.url, sb.key, {
         // detectSessionInUrl: false — le # de l'URL contient le jeton espion, pas une session
