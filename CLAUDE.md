@@ -35,7 +35,8 @@ supabase/           Scripts SQL à exécuter dans Supabase > SQL Editor (schéma
 - **Cache** : GitHub Pages sert les fichiers avec `max-age=600`. Les scripts/styles propres à un outil sont inclus avec `?v=N` (ex. `app.js?v=2`) : incrémenter N dans les `<script>` à chaque modification du fichier, sinon les visiteurs gardent l'ancienne version jusqu'à 10 min (cas vécu : config.js vide en cache).
 - **Chemins relatifs** uniquement (`../commun/...`), le site est servi sous `/outils/`.
 - **Dépendances externes** : seulement via CDN avec une version figée (ex. `three.js/r128`), et un repli si elles ne chargent pas.
-- Un outil peut garder son propre design ; les nouveaux outils partent de `commun/base.css`.
+- **Design system** (`commun/base.css`, style « aurora ») commun à tous les outils : bleu = couleur principale (`--accent`), orange = accent (`--accent-2`), dégradé `--grad` (boutons) et `.grad-text` (titres), verre via `.card` / `.glass`, polices Sora (titres) + Inter (texte). Toujours utiliser les variables (jamais de couleur en dur) pour que les thèmes clair et sombre fonctionnent.
+- `commun.js` se charge dans le `<head>` (il applique le thème avant l'affichage) ; `base.css` et `commun.js` sont versionnés `?v=N` comme le reste.
 
 ## Ajouter un outil
 1. Créer `nom-outil/index.html` (partir de `compteur/index.html` comme modèle : topbar, base.css, commun.js, store préfixé).
