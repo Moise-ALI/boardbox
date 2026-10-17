@@ -15,7 +15,18 @@ commun/base.css     Couleurs clair/sombre, reset, .topbar / .back-link / .theme-
 commun/commun.js    window.Outils : createStore(prefix), bindThemeButton(btn)
 tirage/             Tirage au sort & création d'équipes (design propre, dé 3D Three.js)
 compteur/           Compteur de points pour jeux de société
+undercover/         Jeu Undercover (un téléphone) + admin.html (modération des associations)
+supabase/           Scripts SQL à exécuter dans Supabase > SQL Editor (schéma + règles RLS)
 ```
+
+## Données partagées et secrets (Supabase)
+- Projet Supabase unique pour toute la boîte à outils ; une table par besoin, préfixée par l'outil (`undercover_pairs`).
+- Seules l'URL du projet et la clé **publishable/anon** vont dans le code (`<outil>/config.js`). Jamais la clé `secret`/`service_role`, ni un mot de passe.
+- Toute table a **RLS activé** et des policies explicites ; le SQL versionné dans `supabase/` est la référence (ré-exécutable).
+- Écritures réservées : via `public.is_admin()` (table `admins`, par e-mail de session). L'e-mail admin n'est jamais committé.
+- Le public n'insère que des lignes « en attente » ; insérer avec `Prefer: return=minimal` (il ne peut pas relire ce qu'il a écrit).
+- L'outil doit rester utilisable si Supabase est indisponible ou en pause (données intégrées en repli).
+- Besoin d'un secret côté serveur (clé d'API payante) : Supabase Edge Function ou Cloudflare Worker, jamais dans le front.
 
 ## Règles
 - **Stockage** : tous les outils partagent le même `localStorage` (même domaine). Chaque clé est préfixée par le nom du dossier de l'outil : utiliser `Outils.createStore('<dossier>')`, ou à défaut des clés `'<dossier>.xxx'`. Ne jamais renommer une clé existante sans migration (les utilisateurs perdraient leurs données). Pour renommer des clés, ne modifier que les appels `localStorage.*` : un remplacement global touche aussi les `id` HTML et les `getElementById` du même nom.
