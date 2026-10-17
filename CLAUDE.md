@@ -62,9 +62,15 @@ supabase/           Scripts SQL à exécuter dans Supabase > SQL Editor (underco
 - Pages sensibles (actions admin) : protection anti-clickjacking en JS (`window.top !== window.self`), GitHub Pages ne pouvant pas envoyer `X-Frame-Options` / `frame-ancestors`.
 - Lire le localStorage avec garde (`try/catch`, vérifier le type) : une donnée corrompue ne doit pas casser la page.
 
+## Appli installable (PWA)
+- `manifest.webmanifest` (racine) + icônes dans `commun/icons/` (générées aux couleurs de la charte). Chaque page a dans son `<head>` : `rel="manifest"`, favicon, apple-touch-icon, `meta theme-color` (mise à jour par commun.js selon le thème).
+- `sw.js` (racine, portée `/outils/`, enregistré par commun.js) : pages en réseau d'abord, fichiers statiques et CDN en mémoire d'abord (le `?v=N` garantit les mises à jour), Supabase jamais en mémoire.
+- **Tout nouveau fichier nécessaire hors connexion va dans `PRECACHE` de sw.js** (chemins sans `?v=`), et tout nouvel outil dans `shortcuts` du manifeste. Incrémenter `CACHE_VERSION` seulement pour forcer un re-téléchargement complet.
+- Bibliothèques tierces : hébergées dans `commun/vendor/` avec leur licence quand elles doivent marcher hors ligne (ex. qrcode-generator).
+
 ## Ajouter un outil
 1. Créer `nom-outil/index.html` + `nom-outil/app.js` (modèle : `compteur/` — CSP, topbar avec langue/thème, base.css, commun.js dans le head, store préfixé, dictionnaire FR/EN).
-2. Ajouter une ligne dans `TOOLS` de `index.html`.
+2. Ajouter une ligne dans `TOOLS` de `accueil.js` (+ textes FR/EN), ses fichiers dans `PRECACHE` de `sw.js` et un raccourci dans `manifest.webmanifest`.
 3. Vérifier : mobile 360px, thème clair et sombre, FR et EN, rechargement de page (données conservées), console sans erreur ni blocage CSP.
 4. Commit puis push : GitHub Pages republie en ~1 minute.
 
