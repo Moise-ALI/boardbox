@@ -53,7 +53,11 @@
       });
       if (res.ok) return { ok: true };
       if (res.status === 409) return { ok: false, reason: 'doublon' };
-      if (res.status === 400) return { ok: false, reason: 'invalide' };
+      if (res.status === 400) {
+        // P0001 = file d'attente pleine (trigger anti-saturation) : présenté comme une indisponibilité
+        const body = await res.json().catch(() => ({}));
+        return { ok: false, reason: body.code === 'P0001' ? 'reseau' : 'invalide' };
+      }
       return { ok: false, reason: 'reseau' };
     } catch (e) {
       return { ok: false, reason: 'reseau' };

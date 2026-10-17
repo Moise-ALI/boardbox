@@ -1,26 +1,26 @@
 /* Design system de la boîte à outils — style « aurora » : fond lumineux animé, cartes en verre,
-   titres en dégradé. Bleu = couleur principale, orange = accent. Thèmes clair et sombre.
+   titres en dégradé. Palette chaude rouge/orange (contrastes WCAG vérifiés). Thèmes clair et sombre.
    Les pages chargent Sora + Inter (Google Fonts) et ce fichier, puis leur propre CSS. */
 
 /* ---------- Couleurs : thème clair (par défaut) ---------- */
 :root {
-  --bg: #eef2f9;
-  --surface: rgba(255, 255, 255, .62);      /* verre */
-  --surface-2: rgba(255, 255, 255, .85);    /* verre plus opaque */
-  --field: rgba(255, 255, 255, .9);         /* fond des champs */
-  --ink: #12203a;
-  --muted: #56627e;
-  --line: rgba(18, 32, 58, .12);
-  --accent: #2f6fe4;                        /* bleu */
-  --accent-2: #f08a24;                      /* orange */
-  --accent-3: #0ea5e9;                      /* bleu ciel */
+  --bg: #fbf5f1;
+  --surface: rgba(255, 255, 255, .64);      /* verre */
+  --surface-2: rgba(255, 255, 255, .86);    /* verre plus opaque */
+  --field: rgba(255, 255, 255, .92);        /* fond des champs */
+  --ink: #2b1712;
+  --muted: #7a5a50;
+  --line: rgba(43, 23, 18, .12);
+  --accent: #c2410c;                        /* orange brûlé : boutons, liens */
+  --accent-2: #d9650b;                      /* orange */
+  --accent-3: #b91c3c;                      /* rouge */
   --on-accent: #ffffff;
-  --grad: linear-gradient(135deg, #2f6fe4 0%, #0ea5e9 45%, #f08a24 100%);
-  --signal: #f08a24; --signal-soft: #ffe6cc; --signal-ink: #5a2d00;
-  --ok: #0f9a6c; --danger: #d6334a;
-  --shadow: 0 18px 40px -18px rgba(18, 32, 58, .25);
-  --orb-1: rgba(47, 111, 228, .28); --orb-2: rgba(240, 138, 36, .22); --orb-3: rgba(14, 165, 233, .2);
-  --grid-line: rgba(18, 32, 58, .05);
+  --grad: linear-gradient(135deg, #b91c3c 0%, #c2410c 50%, #d9650b 100%);
+  --signal: #d97706; --signal-soft: #fdebd3; --signal-ink: #5a2d00;
+  --ok: #0f8a5f; --danger: #c42b3a;
+  --shadow: 0 18px 40px -18px rgba(43, 23, 18, .22);
+  --orb-1: rgba(194, 65, 12, .18); --orb-2: rgba(217, 101, 11, .16); --orb-3: rgba(185, 28, 60, .12);
+  --grid-line: rgba(43, 23, 18, .045);
 
   --f-display: "Sora", system-ui, sans-serif;
   --f-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -36,44 +36,44 @@
 /* ---------- Thème sombre ---------- */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #080d1c;
-    --surface: rgba(255, 255, 255, .06);
-    --surface-2: rgba(255, 255, 255, .1);
-    --field: rgba(0, 0, 0, .28);
-    --ink: #eef2fb;
-    --muted: #9ba8c7;
-    --line: rgba(255, 255, 255, .12);
-    --accent: #5b93ff;
-    --accent-2: #ffa24c;
-    --accent-3: #38bdf8;
-    --on-accent: #ffffff;
-    --grad: linear-gradient(135deg, #5b93ff 0%, #38bdf8 45%, #ffa24c 100%);
-    --signal: #ffa24c; --signal-soft: #3d2510; --signal-ink: #ffd2a6;
-    --ok: #34d399; --danger: #fb7185;
-    --shadow: 0 20px 50px rgba(0, 0, 0, .35);
-    --orb-1: rgba(91, 147, 255, .38); --orb-2: rgba(255, 162, 76, .26); --orb-3: rgba(56, 189, 248, .24);
-    --grid-line: rgba(255, 255, 255, .03);
+    --bg: #150c0a;
+    --surface: rgba(255, 240, 232, .055);
+    --surface-2: rgba(255, 240, 232, .095);
+    --field: rgba(0, 0, 0, .3);
+    --ink: #f7ece7;
+    --muted: #c9aca2;
+    --line: rgba(255, 236, 228, .12);
+    --accent: #f47a55;
+    --accent-2: #f6a75e;
+    --accent-3: #ee6366;
+    --on-accent: #1f0d07;
+    --grad: linear-gradient(135deg, #ee6366 0%, #f47a55 50%, #f6a75e 100%);
+    --signal: #f6a75e; --signal-soft: #3d2410; --signal-ink: #ffd8b0;
+    --ok: #34d399; --danger: #ff6b78;
+    --shadow: 0 20px 50px rgba(0, 0, 0, .4);
+    --orb-1: rgba(244, 122, 85, .26); --orb-2: rgba(246, 167, 94, .18); --orb-3: rgba(238, 99, 102, .16);
+    --grid-line: rgba(255, 236, 228, .028);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #080d1c;
-  --surface: rgba(255, 255, 255, .06);
-  --surface-2: rgba(255, 255, 255, .1);
-  --field: rgba(0, 0, 0, .28);
-  --ink: #eef2fb;
-  --muted: #9ba8c7;
-  --line: rgba(255, 255, 255, .12);
-  --accent: #5b93ff;
-  --accent-2: #ffa24c;
-  --accent-3: #38bdf8;
-  --on-accent: #ffffff;
-  --grad: linear-gradient(135deg, #5b93ff 0%, #38bdf8 45%, #ffa24c 100%);
-  --signal: #ffa24c; --signal-soft: #3d2510; --signal-ink: #ffd2a6;
-  --ok: #34d399; --danger: #fb7185;
-  --shadow: 0 20px 50px rgba(0, 0, 0, .35);
-  --orb-1: rgba(91, 147, 255, .38); --orb-2: rgba(255, 162, 76, .26); --orb-3: rgba(56, 189, 248, .24);
-  --grid-line: rgba(255, 255, 255, .03);
+  --bg: #150c0a;
+  --surface: rgba(255, 240, 232, .055);
+  --surface-2: rgba(255, 240, 232, .095);
+  --field: rgba(0, 0, 0, .3);
+  --ink: #f7ece7;
+  --muted: #c9aca2;
+  --line: rgba(255, 236, 228, .12);
+  --accent: #f47a55;
+  --accent-2: #f6a75e;
+  --accent-3: #ee6366;
+  --on-accent: #1f0d07;
+  --grad: linear-gradient(135deg, #ee6366 0%, #f47a55 50%, #f6a75e 100%);
+  --signal: #f6a75e; --signal-soft: #3d2410; --signal-ink: #ffd8b0;
+  --ok: #34d399; --danger: #ff6b78;
+  --shadow: 0 20px 50px rgba(0, 0, 0, .4);
+  --orb-1: rgba(244, 122, 85, .26); --orb-2: rgba(246, 167, 94, .18); --orb-3: rgba(238, 99, 102, .16);
+  --grid-line: rgba(255, 236, 228, .028);
   color-scheme: dark;
 }
 
@@ -123,7 +123,7 @@ body::after {
 }
 
 /* ---------- Titres en dégradé ---------- */
-/* Dégradé cyclique (bleu → orange → bleu ciel → orange → bleu) : avec background-size 200%,
+/* Dégradé cyclique (orange brûlé → orange → rouge → orange → orange brûlé) : avec background-size 200%,
    l'orange reste visible quelle que soit la position de l'animation. */
 :root { --grad-title: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 25%, var(--accent-3) 50%, var(--accent-2) 75%, var(--accent) 100%); }
 .grad-text {
@@ -138,7 +138,9 @@ body::after {
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: .8rem; padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 12px; }
 .back-link { display: inline-flex; align-items: center; gap: .4rem; height: 36px; padding: 0 .9rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); text-decoration: none; font-size: .85rem; font-weight: 600; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .theme-btn { width: 36px; height: 36px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); display: grid; place-items: center; padding: 0; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-.back-link:hover, .theme-btn:hover { border-color: var(--accent); }
+.topbar-actions { display: flex; align-items: center; gap: .5rem; }
+.lang-btn { min-width: 36px; height: 36px; padding: 0 .6rem; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-family: var(--f-mono); font-size: .75rem; font-weight: 600; letter-spacing: .04em; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.back-link:hover, .theme-btn:hover, .lang-btn:hover { border-color: var(--accent); }
 .theme-btn svg { width: 16px; height: 16px; }
 
 @media (prefers-reduced-motion: reduce) {

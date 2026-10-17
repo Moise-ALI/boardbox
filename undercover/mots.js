@@ -80,5 +80,86 @@ window.UNDERCOVER_PAIRS = {
       ['Attaque des Titans', 'Tokyo Ghoul'], ['Death Note', 'Code Geass'], ['Pikachu', 'Évoli'], ['Totoro', 'Chihiro'], ['Demon Slayer', 'Jujutsu Kaisen'],
       ['Manga', 'Webtoon'], ['Shonen', 'Seinen'], ['Ninja', 'Samouraï'], ['Kamehameha', 'Rasengan']
     ]
+  },
+
+  en: {
+    animaux: [
+      ['Cat', 'Dog'], ['Lion', 'Tiger'], ['Wolf', 'Fox'], ['Dolphin', 'Shark'], ['Bee', 'Wasp'],
+      ['Crocodile', 'Alligator'], ['Horse', 'Donkey'], ['Owl', 'Hawk'], ['Frog', 'Toad'], ['Rabbit', 'Hare'],
+      ['Butterfly', 'Moth'], ['Penguin', 'Puffin'], ['Snail', 'Slug'], ['Crow', 'Raven'], ['Sheep', 'Goat'],
+      ['Mouse', 'Hamster'], ['Whale', 'Orca'], ['Spider', 'Scorpion']
+    ],
+    nourriture: [
+      ['Pizza', 'Flatbread'], ['Croissant', 'Muffin'], ['Pancake', 'Waffle'], ['Burger', 'Sandwich'], ['Sushi', 'Ramen'],
+      ['Ice cream', 'Frozen yogurt'], ['Cheese', 'Butter'], ['Spaghetti', 'Noodles'], ['Apple', 'Pear'], ['Lemon', 'Lime'],
+      ['Strawberry', 'Raspberry'], ['Banana', 'Mango'], ['Tomato', 'Bell pepper'], ['Fries', 'Chips'], ['Chocolate', 'Caramel'],
+      ['Cookie', 'Biscuit'], ['Taco', 'Burrito'], ['Hot dog', 'Corn dog'], ['Cupcake', 'Donut'], ['Honey', 'Jam'],
+      ['Omelette', 'Scrambled eggs'], ['Ketchup', 'Mustard'], ['Rice', 'Pasta'], ['Soup', 'Stew'], ['Popcorn', 'Pretzel'],
+      ['Coffee', 'Tea'], ['Wine', 'Champagne'], ['Beer', 'Cider'], ['Orange juice', 'Lemonade'], ['Coke', 'Iced tea'],
+      ['Milk', 'Milkshake'], ['Mojito', 'Margarita']
+    ],
+    maison: [
+      ['Sofa', 'Armchair'], ['Bed', 'Hammock'], ['Fork', 'Spoon'], ['Knife', 'Scissors'], ['Plate', 'Bowl'],
+      ['Lamp', 'Candle'], ['Pillow', 'Blanket'], ['Shower', 'Bathtub'], ['Toothbrush', 'Comb'], ['Umbrella', 'Raincoat'],
+      ['Key', 'Padlock'], ['Mirror', 'Window'], ['Clock', 'Watch'], ['Backpack', 'Suitcase'], ['Pen', 'Pencil'],
+      ['Book', 'Magazine'], ['Fridge', 'Freezer'], ['Oven', 'Microwave'], ['Vacuum', 'Broom'], ['Rug', 'Carpet']
+    ],
+    mode: [
+      ['Socks', 'Tights'], ['Sweater', 'Hoodie'], ['Jeans', 'Sweatpants'], ['Sneakers', 'Flip-flops'], ['Cap', 'Beanie'],
+      ['Scarf', 'Tie'], ['Dress', 'Skirt'], ['Pajamas', 'Bathrobe'], ['Glasses', 'Contact lenses'], ['Ring', 'Bracelet']
+    ],
+    lieux: [
+      ['Beach', 'Swimming pool'], ['Mountain', 'Hill'], ['Forest', 'Jungle'], ['Desert', 'Savanna'], ['Hospital', 'Pharmacy'],
+      ['School', 'University'], ['Cinema', 'Theater'], ['Restaurant', 'Cafeteria'], ['Hotel', 'Campsite'], ['Museum', 'Library'],
+      ['Bakery', 'Coffee shop'], ['Supermarket', 'Market'], ['Airport', 'Train station'], ['Castle', 'Palace'], ['Church', 'Temple'],
+      ['Zoo', 'Aquarium'], ['London', 'New York'], ['Lake', 'Pond'], ['Island', 'Peninsula'], ['Prison', 'Police station']
+    ],
+    transports: [
+      ['Car', 'Motorcycle'], ['Bike', 'Scooter'], ['Train', 'Subway'], ['Plane', 'Helicopter'], ['Boat', 'Submarine'],
+      ['Bus', 'Tram'], ['Taxi', 'Uber'], ['Rocket', 'Satellite']
+    ],
+    metiers: [
+      ['Doctor', 'Nurse'], ['Firefighter', 'Police officer'], ['Baker', 'Pastry chef'], ['Teacher', 'Principal'], ['Lawyer', 'Judge'],
+      ['Pilot', 'Flight attendant'], ['Hairdresser', 'Barber'], ['Chef', 'Waiter'], ['Plumber', 'Electrician'], ['Dentist', 'Optician'],
+      ['Journalist', 'News anchor'], ['Astronaut', 'Astronomer']
+    ],
+    sport: [
+      ['Football', 'Rugby'], ['Tennis', 'Badminton'], ['Basketball', 'Volleyball'], ['Skiing', 'Snowboarding'], ['Swimming', 'Diving'],
+      ['Boxing', 'Wrestling'], ['Golf', 'Mini golf'], ['Yoga', 'Pilates'], ['Chess', 'Checkers'], ['Poker', 'Blackjack'],
+      ['Surfing', 'Windsurfing'], ['Running', 'Walking'], ['Bowling', 'Pool'], ['Karaoke', 'Concert'], ['Puzzle', 'Lego'],
+      ['Baseball', 'Cricket'], ['Soccer', 'Hockey']
+    ],
+    nature: [
+      ['Sun', 'Moon'], ['Rain', 'Snow'], ['Thunderstorm', 'Hurricane'], ['Cloud', 'Fog'], ['Rose', 'Tulip'],
+      ['Tree', 'Bush'], ['Volcano', 'Geyser'], ['Star', 'Planet'], ['Rainbow', 'Northern lights'], ['Fire', 'Lava']
+    ],
+    fetes: [
+      ['Christmas', 'New Year\'s Eve'], ['Birthday', 'Wedding'], ['Halloween', 'Carnival'], ['Vacation', 'Weekend'], ['Breakfast', 'Brunch'],
+      ['Nap', 'Sleep-in'], ['Picnic', 'Barbecue'], ['First date', 'Job interview'], ['Kiss', 'Hug'], ['Dream', 'Nightmare'],
+      ['Thanksgiving', 'Easter']
+    ],
+    tech: [
+      ['Phone', 'Tablet'], ['Computer', 'Console'], ['WhatsApp', 'Text message'], ['Wi-Fi', 'Bluetooth'], ['Robot', 'Cyborg'],
+      ['Netflix', 'YouTube'], ['Instagram', 'TikTok'], ['Photo', 'Selfie'], ['Keyboard', 'Mouse'], ['Email', 'Letter']
+    ],
+    culture: [
+      ['Guitar', 'Violin'], ['Piano', 'Keyboard'], ['Drums', 'Tambourine'], ['Rap', 'Rock'], ['Movie', 'TV show'],
+      ['Harry Potter', 'The Lord of the Rings'], ['Batman', 'Spider-Man'], ['Cartoon', 'Comic book'], ['Star Wars', 'Star Trek'], ['Titanic', 'Avatar'],
+      ['Marvel', 'DC'], ['Disney', 'Pixar']
+    ],
+    fantastique: [
+      ['Ghost', 'Zombie'], ['Vampire', 'Werewolf'], ['Pirate', 'Viking'], ['Knight', 'Samurai'], ['Witch', 'Fairy'],
+      ['Dragon', 'Dinosaur'], ['Unicorn', 'Pegasus'], ['Treasure', 'Safe'], ['Elf', 'Dwarf'], ['Mermaid', 'Nymph']
+    ],
+    'jeux-video': [
+      ['Mario', 'Sonic'], ['Minecraft', 'Roblox'], ['Fortnite', 'Call of Duty'], ['Pokémon', 'Digimon'], ['Zelda', 'Final Fantasy'],
+      ['PlayStation', 'Xbox'], ['Nintendo Switch', 'Game Boy'], ['Tetris', 'Pac-Man'], ['League of Legends', 'Dota'], ['FIFA', 'Rocket League'],
+      ['GTA', 'Red Dead Redemption'], ['Among Us', 'Fall Guys']
+    ],
+    anime: [
+      ['Naruto', 'Sasuke'], ['One Piece', 'Fairy Tail'], ['Dragon Ball', 'One Punch Man'], ['Goku', 'Vegeta'], ['Luffy', 'Zoro'],
+      ['Attack on Titan', 'Tokyo Ghoul'], ['Death Note', 'Code Geass'], ['Pikachu', 'Eevee'], ['Totoro', 'Spirited Away'], ['Demon Slayer', 'Jujutsu Kaisen'],
+      ['Manga', 'Webtoon'], ['Shonen', 'Seinen'], ['Ninja', 'Samurai'], ['Kamehameha', 'Rasengan']
+    ]
   }
 };

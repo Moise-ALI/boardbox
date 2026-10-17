@@ -84,6 +84,29 @@ grant select, insert on public.undercover_pairs to anon;
 grant select, insert, update, delete on public.undercover_pairs to authenticated;
 revoke all on public.admins from anon, authenticated;
 
+-- v3 : anti-saturation. Le public peut proposer sans compte : on plafonne la file d'attente
+-- (au-delà, les propositions sont refusées jusqu'à ce que l'admin fasse du tri).
+-- security definer : le comptage doit voir toutes les lignes en attente, que la RLS cache au public.
+create or replace function public.undercover_limit_pending()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if new.status = 'pending'
+     and (select count(*) from public.undercover_pairs where status = 'pending') >= 300 then
+    raise exception 'file d''attente pleine' using errcode = 'P0001';
+  end if;
+  return new;
+end;
+$$;
+revoke all on function public.undercover_limit_pending() from public, anon, authenticated;
+drop trigger if exists undercover_limit_pending on public.undercover_pairs;
+create trigger undercover_limit_pending
+  before insert on public.undercover_pairs
+  for each row execute function public.undercover_limit_pending();
+
 -- ---------------------------------------------------------------------------
 -- À exécuter séparément, en remplaçant par TON e-mail (ne pas le committer) :
 -- insert into public.admins (email) values ('ton-email@exemple.com') on conflict do nothing;

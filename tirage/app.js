@@ -1,32 +1,50 @@
+/* Tirage & Équipes : logique (liste, tirages, équipes), sans dépendance au DOM.
+   Les messages passent par RandomSelector.t (traducteur fourni par ui.js) ; repli : la clé. */
 class RandomSelector {
     constructor() {
-        this.elements = JSON.parse(localStorage.getItem('tirage.elements')) || [];
+        // Données stockées : on ne garde que des chaînes valides (stockage corrompu ou ancien format)
+        this.elements = RandomSelector.loadJSON('tirage.elements', [])
+            .filter(v => typeof v === 'string' && v.trim() !== '' && v.length <= RandomSelector.MAX_LENGTH)
+            .slice(0, RandomSelector.MAX_ITEMS);
         this.picked = [];
-        this.history = JSON.parse(localStorage.getItem('tirage.drawHistory')) || [];
+        this.history = RandomSelector.loadJSON('tirage.drawHistory', []);
+    }
+
+    static loadJSON(key, fallback) {
+        try {
+            const value = JSON.parse(localStorage.getItem(key));
+            return Array.isArray(fallback) ? (Array.isArray(value) ? value : fallback) : (value ?? fallback);
+        } catch (e) {
+            return fallback;
+        }
+    }
+
+    static msg(key, vars) {
+        return (RandomSelector.t || (k => k))(key, vars);
     }
 
     addElement(value) {
         const trimmed = value.trim();
-        if (trimmed === '') throw new Error('Veuillez entrer une valeur valide.');
-        if (trimmed.length > RandomSelector.MAX_LENGTH) throw new Error(`${RandomSelector.MAX_LENGTH} caractères maximum.`);
-        if (this.elements.length >= RandomSelector.MAX_ITEMS) throw new Error(`${RandomSelector.MAX_ITEMS} éléments maximum.`);
-        if (this.elements.includes(trimmed)) throw new Error('Cette valeur est déjà dans la liste.');
+        if (trimmed === '') throw new Error(RandomSelector.msg('err.empty'));
+        if (trimmed.length > RandomSelector.MAX_LENGTH) throw new Error(RandomSelector.msg('err.maxLength', { n: RandomSelector.MAX_LENGTH }));
+        if (this.elements.length >= RandomSelector.MAX_ITEMS) throw new Error(RandomSelector.msg('err.maxItems', { n: RandomSelector.MAX_ITEMS }));
+        if (this.elements.includes(trimmed)) throw new Error(RandomSelector.msg('err.duplicate'));
         this.elements.push(trimmed);
         this.saveList();
     }
 
     removeElement(index) {
-        if (index < 0 || index >= this.elements.length) throw new Error('Index invalide.');
+        if (index < 0 || index >= this.elements.length) throw new Error(RandomSelector.msg('err.index'));
         this.elements.splice(index, 1);
         this.saveList();
     }
 
     updateElement(index, value) {
-        if (index < 0 || index >= this.elements.length) throw new Error('Index invalide.');
+        if (index < 0 || index >= this.elements.length) throw new Error(RandomSelector.msg('err.index'));
         const trimmed = value.trim();
-        if (trimmed === '') throw new Error('Veuillez entrer une valeur valide.');
-        if (trimmed.length > RandomSelector.MAX_LENGTH) throw new Error(`${RandomSelector.MAX_LENGTH} caractères maximum.`);
-        if (this.elements.includes(trimmed)) throw new Error('Cette valeur est déjà dans la liste.');
+        if (trimmed === '') throw new Error(RandomSelector.msg('err.empty'));
+        if (trimmed.length > RandomSelector.MAX_LENGTH) throw new Error(RandomSelector.msg('err.maxLength', { n: RandomSelector.MAX_LENGTH }));
+        if (this.elements.includes(trimmed)) throw new Error(RandomSelector.msg('err.duplicate'));
         this.elements[index] = trimmed;
         this.saveList();
     }
@@ -37,9 +55,9 @@ class RandomSelector {
     }
 
     drawRandom(count, withoutReplacement = true) {
-        if (this.elements.length === 0) throw new Error('La liste est vide.');
-        if (count <= 0) throw new Error('Le nombre doit être supérieur à 0.');
-        if (count > this.elements.length && withoutReplacement) throw new Error(`Vous ne pouvez pas tirer plus de ${this.elements.length} éléments sans remplacement.`);
+        if (this.elements.length === 0) throw new Error(RandomSelector.msg('err.listEmpty'));
+        if (!(count > 0)) throw new Error(RandomSelector.msg('err.countPositive'));
+        if (count > this.elements.length && withoutReplacement) throw new Error(RandomSelector.msg('err.tooMany', { n: this.elements.length }));
 
         this.picked = [];
         const temp = [...this.elements];
@@ -50,7 +68,7 @@ class RandomSelector {
             if (withoutReplacement) temp.splice(index, 1);
         }
 
-        this.recordHistory(count, withoutReplacement);
+        this.recordHistory();
         return this.picked;
     }
 
@@ -61,9 +79,9 @@ class RandomSelector {
      * @returns {string[][]} Array of teams
      */
     generateBalancedTeams(teamCount) {
-        if (this.elements.length === 0) throw new Error('La liste est vide.');
-        if (teamCount < 1) throw new Error('Le nombre d\'équipes doit être au moins 1.');
-        if (teamCount > this.elements.length) throw new Error(`Vous ne pouvez pas créer ${teamCount} équipes avec seulement ${this.elements.length} éléments.`);
+        if (this.elements.length === 0) throw new Error(RandomSelector.msg('err.listEmpty'));
+        if (!(teamCount >= 1)) throw new Error(RandomSelector.msg('err.teamsMin'));
+        if (teamCount > this.elements.length) throw new Error(RandomSelector.msg('err.teamsTooMany', { teams: teamCount, n: this.elements.length }));
 
         // Fisher-Yates shuffle for a fair random distribution
         const items = [...this.elements];
@@ -89,13 +107,8 @@ class RandomSelector {
         return teams;
     }
 
-    recordHistory(count, withoutReplacement) {
-        const type = withoutReplacement ? 'Sans remplacement' : 'Avec remplacement';
-        this.history.push({
-            date: new Date().toISOString(),
-            items: [...this.picked],
-            type: `Tirage de ${count} élément(s) ${type}`
-        });
+    recordHistory() {
+        this.history.push({ date: new Date().toISOString(), items: [...this.picked] });
         if (this.history.length > 100) this.history.shift();
         this.saveHistory();
     }
@@ -105,8 +118,9 @@ class RandomSelector {
     }
 
     importList(jsonData) {
-        const data = JSON.parse(jsonData);
-        if (!Array.isArray(data)) throw new Error('Format JSON invalide (tableau attendu).');
+        let data;
+        try { data = JSON.parse(jsonData); } catch (e) { throw new Error(RandomSelector.msg('err.json')); }
+        if (!Array.isArray(data)) throw new Error(RandomSelector.msg('err.json'));
         const newItems = data
             .filter(n => typeof n === 'string')
             .map(n => n.trim())
@@ -123,11 +137,11 @@ class RandomSelector {
     }
 
     saveList() {
-        localStorage.setItem('tirage.elements', JSON.stringify(this.elements));
+        try { localStorage.setItem('tirage.elements', JSON.stringify(this.elements)); } catch (e) { /* stockage plein ou bloqué */ }
     }
 
     saveHistory() {
-        localStorage.setItem('tirage.drawHistory', JSON.stringify(this.history));
+        try { localStorage.setItem('tirage.drawHistory', JSON.stringify(this.history)); } catch (e) { /* stockage plein ou bloqué */ }
     }
 
     getElements() { return [...this.elements]; }
