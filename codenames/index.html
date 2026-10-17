@@ -8,7 +8,7 @@
 <meta name="referrer" content="no-referrer">
 <title data-i18n="title">CodeName</title>
 <meta name="description" content="CodeName : jeu d'espions en équipes, avec vue espion et vue joueur synchronisées en temps réel.">
-<link rel="stylesheet" href="../commun/base.css?v=8">
+<link rel="stylesheet" href="../commun/base.css?v=9">
 <script src="../commun/commun.js?v=5"></script>
 <style>
 main { width: 100%; max-width: 720px; margin: 0 auto; padding: 0 12px calc(env(safe-area-inset-bottom, 0px) + 40px); }
@@ -125,7 +125,8 @@ dialog .actions { justify-content: flex-end; margin-top: .6rem; }
     <input type="text" id="spyLink" readonly aria-label="Lien espion" data-i18n-aria-label="share.spy">
     <div class="row"><button class="btn small" type="button" id="copySpy" data-i18n="share.copy">Copier</button><button class="btn small" type="button" id="sendSpy" data-i18n="share.send" hidden>Envoyer</button></div>
   </div>
-  <div class="actions"><button class="btn" type="button" id="shareClose" data-i18n="share.close">Fermer</button></div>
+  <!-- autofocus : à l'ouverture, le focus va sur « Fermer » et pas sur un champ (évite le zoom iPhone) -->
+  <div class="actions"><button class="btn" type="button" id="shareClose" data-i18n="share.close" autofocus>Fermer</button></div>
 </dialog>
 
 <dialog id="confirmDlg">

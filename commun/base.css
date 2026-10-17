@@ -145,6 +145,11 @@ body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink); f
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 input::placeholder { color: var(--muted); opacity: .8; }
+/* iPhone : Safari zoome sur tout champ dont le texte fait moins de 16px quand il reçoit le focus.
+   Sur écran tactile, on impose donc 16px minimum à tous les champs de saisie. */
+@media (pointer: coarse) {
+  input, select, textarea { font-size: max(16px, 1em) !important; }
+}
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 
 /* ---------- Fond aurora (sans balisage : pseudo-éléments du body) ---------- */
