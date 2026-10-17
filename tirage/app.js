@@ -8,6 +8,8 @@ class RandomSelector {
     addElement(value) {
         const trimmed = value.trim();
         if (trimmed === '') throw new Error('Veuillez entrer une valeur valide.');
+        if (trimmed.length > RandomSelector.MAX_LENGTH) throw new Error(`${RandomSelector.MAX_LENGTH} caractères maximum.`);
+        if (this.elements.length >= RandomSelector.MAX_ITEMS) throw new Error(`${RandomSelector.MAX_ITEMS} éléments maximum.`);
         if (this.elements.includes(trimmed)) throw new Error('Cette valeur est déjà dans la liste.');
         this.elements.push(trimmed);
         this.saveList();
@@ -23,6 +25,7 @@ class RandomSelector {
         if (index < 0 || index >= this.elements.length) throw new Error('Index invalide.');
         const trimmed = value.trim();
         if (trimmed === '') throw new Error('Veuillez entrer une valeur valide.');
+        if (trimmed.length > RandomSelector.MAX_LENGTH) throw new Error(`${RandomSelector.MAX_LENGTH} caractères maximum.`);
         if (this.elements.includes(trimmed)) throw new Error('Cette valeur est déjà dans la liste.');
         this.elements[index] = trimmed;
         this.saveList();
@@ -104,9 +107,12 @@ class RandomSelector {
     importList(jsonData) {
         const data = JSON.parse(jsonData);
         if (!Array.isArray(data)) throw new Error('Format JSON invalide (tableau attendu).');
-        const newItems = data.filter(n => typeof n === 'string' && n.trim() !== '');
+        const newItems = data
+            .filter(n => typeof n === 'string')
+            .map(n => n.trim())
+            .filter(n => n !== '' && n.length <= RandomSelector.MAX_LENGTH);
         const before = this.elements.length;
-        this.elements = [...new Set([...this.elements, ...newItems])];
+        this.elements = [...new Set([...this.elements, ...newItems])].slice(0, RandomSelector.MAX_ITEMS);
         this.saveList();
         return this.elements.length - before;
     }
@@ -127,3 +133,5 @@ class RandomSelector {
     getElements() { return [...this.elements]; }
     getPicked() { return [...this.picked]; }
 }
+RandomSelector.MAX_LENGTH = 60;
+RandomSelector.MAX_ITEMS = 200;

@@ -665,7 +665,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="app.js"></script>
+    <script src="app.js?v=2"></script>
     <script>
         const selector = new RandomSelector();
         let items = selector.getElements();
@@ -728,7 +728,11 @@
         function showMessage(type, message, highlight) {
             drawResultDiv.className = 'result-box ' + type;
             if (highlight) {
-                pickedItemsDiv.innerHTML = `<span class="win">${message}</span>`;
+                // Le message contient des éléments saisis ou reçus par lien : toujours en texte, jamais en HTML
+                const win = document.createElement('span');
+                win.className = 'win';
+                win.textContent = message;
+                pickedItemsDiv.replaceChildren(win);
             } else {
                 pickedItemsDiv.textContent = message;
             }
@@ -1110,10 +1114,10 @@
         const params = new URLSearchParams(window.location.search);
         const itemsUrl = params.get('items');
         if (itemsUrl) {
-            itemsUrl.split(',').forEach(value => {
+            itemsUrl.split(',').slice(0, RandomSelector.MAX_ITEMS).forEach(value => {
                 const trimmed = value.trim();
-                if (trimmed && !items.includes(trimmed)) {
-                    selector.addElement(trimmed);
+                if (trimmed && trimmed.length <= RandomSelector.MAX_LENGTH && !items.includes(trimmed)) {
+                    try { selector.addElement(trimmed); } catch (e) { /* liste pleine ou valeur refusée */ }
                 }
             });
             items = selector.getElements();
