@@ -34,9 +34,18 @@ create table if not exists public.undercover_pairs (
   check (lower(btrim(word_a)) <> lower(btrim(word_b)))
 );
 
--- Une même paire (dans un sens ou dans l'autre) ne peut exister qu'une fois
-create unique index if not exists undercover_pairs_unique
-  on public.undercover_pairs (least(lower(btrim(word_a)), lower(btrim(word_b))), greatest(lower(btrim(word_a)), lower(btrim(word_b))));
+-- v2 : thème (ids de undercover/themes.js) et langue de la paire
+alter table public.undercover_pairs add column if not exists theme text not null default 'animaux';
+alter table public.undercover_pairs add column if not exists lang text not null default 'fr';
+alter table public.undercover_pairs drop constraint if exists undercover_pairs_theme_format;
+alter table public.undercover_pairs add constraint undercover_pairs_theme_format check (theme ~ '^[a-z0-9-]{2,30}$');
+alter table public.undercover_pairs drop constraint if exists undercover_pairs_lang_check;
+alter table public.undercover_pairs add constraint undercover_pairs_lang_check check (lang in ('fr', 'en'));
+
+-- Une même paire (dans un sens ou dans l'autre) ne peut exister qu'une fois par langue
+drop index if exists public.undercover_pairs_unique;
+create unique index undercover_pairs_unique
+  on public.undercover_pairs (lang, least(lower(btrim(word_a)), lower(btrim(word_b))), greatest(lower(btrim(word_a)), lower(btrim(word_b))));
 create index if not exists undercover_pairs_status on public.undercover_pairs (status);
 
 alter table public.undercover_pairs enable row level security;

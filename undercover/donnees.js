@@ -20,11 +20,11 @@
     return ctrl.signal;
   }
 
-  /** Paires validées : [{ id, word_a, word_b }]. Renvoie [] si indisponible. */
+  /** Paires validées : [{ id, word_a, word_b, theme, lang }]. Renvoie [] si indisponible. */
   async function loadApproved() {
     if (!enabled) return [];
     try {
-      const res = await fetch(base + '?select=id,word_a,word_b&status=eq.approved&order=id', {
+      const res = await fetch(base + '?select=id,word_a,word_b,theme,lang&status=eq.approved&order=id', {
         headers: headers(), signal: withTimeout(6000)
       });
       if (!res.ok) return [];
@@ -36,10 +36,11 @@
   }
 
   /** Propose une paire. Renvoie { ok: true } ou { ok: false, reason: 'doublon' | 'invalide' | 'reseau' }. */
-  async function submit(wordA, wordB) {
+  async function submit(wordA, wordB, theme, lang) {
     if (!enabled) return { ok: false, reason: 'reseau' };
     const a = wordA.trim(), b = wordB.trim();
-    if (!a || !b || a.length > 30 || b.length > 30 || a.toLowerCase() === b.toLowerCase()) {
+    const knownTheme = (window.UNDERCOVER_THEMES || []).some(t => t.id === theme);
+    if (!a || !b || a.length > 30 || b.length > 30 || a.toLowerCase() === b.toLowerCase() || !knownTheme) {
       return { ok: false, reason: 'invalide' };
     }
     try {
@@ -47,7 +48,7 @@
         method: 'POST',
         // return=minimal : les paires en attente ne sont pas relisibles par le public
         headers: headers({ Prefer: 'return=minimal' }),
-        body: JSON.stringify({ word_a: a, word_b: b }),
+        body: JSON.stringify({ word_a: a, word_b: b, theme, lang: lang === 'en' ? 'en' : 'fr' }),
         signal: withTimeout(8000)
       });
       if (res.ok) return { ok: true };

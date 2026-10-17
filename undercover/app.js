@@ -6,6 +6,9 @@
 const MIN_PLAYERS = 3;
 const MAX_PLAYERS = 20;
 const RECENT_MAX = 60;
+const LANG = 'fr';
+const THEMES = window.UNDERCOVER_THEMES;
+const themeLabel = id => { const t = THEMES.find(x => x.id === id); return t ? t.label[LANG] : id; };
 
 const store = Outils.createStore('undercover');
 Outils.bindThemeButton(document.getElementById('themeBtn'));
@@ -73,7 +76,8 @@ function confirmBox(title, text, yesLabel = 'Confirmer') {
 }
 
 /* ---------- État ---------- */
-const defaults = () => ({ players: [], undercovers: 1, white: true, community: true, recent: [], game: null });
+// excludedThemes plutôt qu'une liste de thèmes cochés : un thème ajouté plus tard est actif d'office
+const defaults = () => ({ players: [], undercovers: 1, white: true, community: true, excludedThemes: [], recent: [], game: null });
 let st = Object.assign(defaults(), store.get('etat', {}));
 const save = () => store.set('etat', st);
 
@@ -100,22 +104,29 @@ function setupError() {
   if (n < MIN_PLAYERS) return `Il faut au moins ${MIN_PLAYERS} joueurs.`;
   if (u + w === 0) return 'Il faut au moins un undercover ou Mister White.';
   if (c <= u + w) return 'Les civils doivent être plus nombreux que les imposteurs.';
+  if (!pairPool().length) return 'Choisissez au moins un thème.';
   return '';
 }
 
 /* ---------- Choix de la paire ---------- */
-function pairPool() {
+/** Toutes les paires de la langue (intégrées + communauté si activée), sans doublon. */
+function allPairs() {
   const seen = new Set();
   const pool = [];
-  const add = (key, a, b) => {
+  const add = (key, theme, a, b) => {
     const id = [normalize(a), normalize(b)].sort().join('|');
     if (seen.has(id)) return;
     seen.add(id);
-    pool.push({ key, a, b });
+    pool.push({ key, theme, a, b });
   };
-  window.UNDERCOVER_PAIRS.forEach(([a, b], i) => add('s' + i, a, b));
-  if (st.community) communityPairs.forEach(p => add('c' + p.id, p.word_a, p.word_b));
+  const builtIn = (window.UNDERCOVER_PAIRS || {})[LANG] || {};
+  for (const [theme, pairs] of Object.entries(builtIn)) pairs.forEach(([a, b], i) => add(`s:${theme}:${i}`, theme, a, b));
+  if (st.community) communityPairs.filter(p => p.lang === LANG).forEach(p => add('c' + p.id, p.theme, p.word_a, p.word_b));
   return pool;
+}
+
+function pairPool() {
+  return allPairs().filter(p => !st.excludedThemes.includes(p.theme));
 }
 
 function pickPair() {
@@ -124,7 +135,8 @@ function pickPair() {
   const choice = (fresh.length ? fresh : pool)[Math.floor(Math.random() * (fresh.length || pool.length))];
   st.recent = [choice.key, ...st.recent.filter(k => k !== choice.key)].slice(0, RECENT_MAX);
   // Le mot des civils est tiré au hasard dans la paire
-  return Math.random() < .5 ? { civil: choice.a, under: choice.b } : { civil: choice.b, under: choice.a };
+  const [civil, under] = Math.random() < .5 ? [choice.a, choice.b] : [choice.b, choice.a];
+  return { civil, under, theme: choice.theme };
 }
 
 /* ---------- Déroulement ---------- */
@@ -139,6 +151,7 @@ function startGame() {
   st.game = {
     civil: pair.civil,
     under: pair.under,
+    theme: pair.theme,
     players: st.players.map((name, i) => ({ name, role: roles[i], alive: true })),
     phase: 'reveal',
     revealIdx: 0,
@@ -285,7 +298,7 @@ function renderSetup() {
       UndercoverDonnees.enabled && el('div', { class: 'setting' },
         el('div', {}, el('b', { text: 'Associations de la communauté' }), el('small', { text: communityPairs.length ? `${communityPairs.length} paire(s) validée(s) en plus` : 'Aucune pour l\'instant' })),
         el('label', { class: 'switch' },
-          el('input', { type: 'checkbox', 'aria-label': 'Inclure les associations de la communauté', checked: st.community, onchange: e => { st.community = e.target.checked; save(); } }),
+          el('input', { type: 'checkbox', 'aria-label': 'Inclure les associations de la communauté', checked: st.community, onchange: e => { st.community = e.target.checked; save(); render(); } }),
           el('span')
         )
       ),
@@ -297,10 +310,34 @@ function renderSetup() {
       el('p', { class: 'error', text: err })
     ),
 
+    renderThemePicker(),
+
     el('div', { class: 'stack' },
       el('button', { class: 'btn primary big', type: 'button', text: 'Distribuer les mots', disabled: Boolean(err), onclick: startGame }),
       UndercoverDonnees.enabled && el('button', { class: 'btn link', type: 'button', text: '+ Proposer une association de mots', onclick: openPropose })
     )
+  );
+}
+
+function renderThemePicker() {
+  const counts = {};
+  for (const p of allPairs()) counts[p.theme] = (counts[p.theme] || 0) + 1;
+  const available = THEMES.filter(t => counts[t.id]);
+  const active = available.filter(t => !st.excludedThemes.includes(t.id));
+  const setExcluded = list => { st.excludedThemes = list; save(); render(); };
+  const toggle = id => setExcluded(st.excludedThemes.includes(id) ? st.excludedThemes.filter(x => x !== id) : [...st.excludedThemes, id]);
+
+  return el('section', { class: 'card' },
+    el('div', { class: 'card-head' },
+      el('h2', { text: `Thèmes (${active.length}/${available.length})` }),
+      el('div', { class: 'quick' },
+        el('button', { class: 'btn link', type: 'button', text: 'Tous', onclick: () => setExcluded([]) }),
+        el('button', { class: 'btn link', type: 'button', text: 'Aucun', onclick: () => setExcluded(available.map(t => t.id)) })
+      )
+    ),
+    el('div', { class: 'themes' }, available.map(t => el('button', {
+      class: 'theme', type: 'button', 'aria-pressed': String(!st.excludedThemes.includes(t.id)), onclick: () => toggle(t.id)
+    }, el('span', { 'aria-hidden': 'true', text: t.icon }), t.label[LANG], el('small', { text: counts[t.id] }))))
   );
 }
 
@@ -401,6 +438,7 @@ function renderEnd() {
       el('div', {}, el('small', { text: 'Mot des civils' }), el('b', { text: g.civil })),
       el('div', {}, el('small', { text: 'Mot des undercovers' }), el('b', { text: g.under }))
     ),
+    g.theme && el('p', { class: 'hint center', text: 'Thème : ' + themeLabel(g.theme) }),
     el('ul', { class: 'roles' }, g.players.map(p => el('li', { class: p.alive ? '' : 'out' },
       el('span', { text: p.name + (p.alive ? '' : ' ✝') }),
       el('span', { class: 'tag ' + p.role, text: ROLE_LABEL[p.role] })
@@ -433,9 +471,15 @@ function openPeek(p) {
 
 /* ---------- Proposer une association ---------- */
 const proposeDlg = document.getElementById('proposeDlg');
+const propTheme = document.getElementById('propTheme');
+propTheme.append(
+  el('option', { value: '', text: 'Choisir un thème…', disabled: true, selected: true }),
+  ...THEMES.map(t => el('option', { value: t.id, text: `${t.icon} ${t.label[LANG]}` }))
+);
 function openPropose() {
   document.getElementById('propA').value = '';
   document.getElementById('propB').value = '';
+  propTheme.value = '';
   document.getElementById('propErr').textContent = '';
   proposeDlg.showModal();
 }
@@ -445,8 +489,9 @@ document.getElementById('proposeForm').addEventListener('submit', async e => {
   const a = document.getElementById('propA').value, b = document.getElementById('propB').value;
   const errEl = document.getElementById('propErr'), btn = document.getElementById('propSend');
   if (normalize(a) && normalize(a) === normalize(b)) { errEl.textContent = 'Les deux mots doivent être différents.'; return; }
+  if (!propTheme.value) { errEl.textContent = 'Choisissez un thème.'; return; }
   btn.disabled = true;
-  const res = await UndercoverDonnees.submit(a, b);
+  const res = await UndercoverDonnees.submit(a, b, propTheme.value, LANG);
   btn.disabled = false;
   if (res.ok) { proposeDlg.close(); toast('Merci ! Votre association sera ajoutée après validation.'); return; }
   errEl.textContent = {

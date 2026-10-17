@@ -18,7 +18,10 @@ h2 { font-family: var(--f-display); font-stretch: 112%; font-size: 1.1rem; margi
 .row { display: flex; gap: .5rem; flex-wrap: wrap; }
 .row > input { flex: 1 1 140px; min-width: 0; }
 input[type=text], input[type=email] { height: 46px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); padding: 0 .85rem; }
-input:focus { outline: none; border-color: var(--accent); }
+input:focus, select:focus { outline: none; border-color: var(--accent); }
+select { height: 46px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); padding: 0 .6rem; max-width: 100%; }
+.item select { height: 42px; flex: 1 1 100%; }
+.lang { font-family: var(--f-mono); font-size: .68rem; padding: .1rem .4rem; border-radius: 6px; background: var(--surface-2); margin-left: .4rem; vertical-align: middle; }
 .btn { height: 46px; padding: 0 1rem; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); font-weight: 600; touch-action: manipulation; }
 .btn:hover { border-color: var(--accent); }
 .btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
@@ -72,6 +75,8 @@ input:focus { outline: none; border-color: var(--accent); }
       <form class="row" id="addForm">
         <input type="text" id="addA" maxlength="30" placeholder="Mot 1" required aria-label="Mot 1">
         <input type="text" id="addB" maxlength="30" placeholder="Mot 2" required aria-label="Mot 2">
+        <select id="addTheme" required aria-label="Thème"></select>
+        <select id="addLang" aria-label="Langue"><option value="fr">FR</option><option value="en">EN</option></select>
         <button class="btn primary" type="submit">Ajouter</button>
       </form>
     </section>
@@ -88,7 +93,8 @@ input:focus { outline: none; border-color: var(--accent); }
 </main>
 
 <script src="../commun/commun.js"></script>
-<script src="config.js?v=2"></script>
+<script src="config.js?v=3"></script>
+<script src="themes.js?v=3"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
 <script>
 (() => {
@@ -169,22 +175,36 @@ async function load() {
   list.replaceChildren(...data.map(renderItem));
 }
 
+const THEMES = window.UNDERCOVER_THEMES || [];
+function themeSelect(value, onchange) {
+  const s = el('select', { 'aria-label': 'Thème', onchange },
+    THEMES.map(t => el('option', { value: t.id, text: `${t.icon} ${t.label.fr}` })));
+  // Thème inconnu (supprimé de themes.js) : on l'affiche quand même pour ne pas le perdre
+  if (value && !THEMES.some(t => t.id === value)) s.prepend(el('option', { value, text: '? ' + value }));
+  s.value = value || window.UNDERCOVER_DEFAULT_THEME;
+  return s;
+}
+$('addTheme').append(...themeSelect(window.UNDERCOVER_DEFAULT_THEME).children);
+
 function renderItem(row) {
   const date = new Date(row.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+  const lang = el('span', { class: 'lang', text: (row.lang || 'fr').toUpperCase() });
   if (row.status === 'pending') {
     const a = el('input', { type: 'text', maxlength: '30', value: row.word_a, 'aria-label': 'Mot 1' });
     const b = el('input', { type: 'text', maxlength: '30', value: row.word_b, 'aria-label': 'Mot 2' });
+    const theme = themeSelect(row.theme);
     return el('li', { class: 'item' },
-      el('div', { class: 'words' }, a, b),
-      el('div', { class: 'meta', text: 'Proposée le ' + date + ' · modifiable avant validation' }),
+      el('div', { class: 'words' }, a, b, theme),
+      el('div', { class: 'meta' }, 'Proposée le ' + date + ' · mots et thème modifiables avant validation', lang),
       el('div', { class: 'actions' },
         el('button', { class: 'btn small danger', type: 'button', text: 'Refuser', onclick: () => update(row.id, { status: 'rejected' }) }),
-        el('button', { class: 'btn small ok', type: 'button', text: 'Valider', onclick: () => update(row.id, { word_a: a.value.trim(), word_b: b.value.trim(), status: 'approved' }) })
+        el('button', { class: 'btn small ok', type: 'button', text: 'Valider', onclick: () => update(row.id, { word_a: a.value.trim(), word_b: b.value.trim(), theme: theme.value, status: 'approved' }) })
       )
     );
   }
   return el('li', { class: 'item' },
-    el('div', { class: 'plain', text: `${row.word_a}  ·  ${row.word_b}` }),
+    el('div', { class: 'plain' }, `${row.word_a}  ·  ${row.word_b}`, lang),
+    el('div', { class: 'words' }, themeSelect(row.theme, e => update(row.id, { theme: e.target.value }, false))),
     el('div', { class: 'meta', text: 'Proposée le ' + date }),
     el('div', { class: 'actions' },
       row.status === 'approved'
@@ -195,10 +215,10 @@ function renderItem(row) {
   );
 }
 
-async function update(id, fields) {
+async function update(id, fields, reload = true) {
   const { error } = await db.from(TABLE).update({ ...fields, reviewed_at: new Date().toISOString() }).eq('id', id);
   if (error) return alert(error.code === '23505' ? 'Cette association existe déjà.' : 'Erreur : ' + error.message);
-  load();
+  if (reload) load();
 }
 async function remove(id) {
   const { error } = await db.from(TABLE).delete().eq('id', id);
@@ -210,7 +230,7 @@ $('addForm').addEventListener('submit', async e => {
   e.preventDefault();
   const a = $('addA').value.trim(), b = $('addB').value.trim();
   if (!a || !b || a.toLowerCase() === b.toLowerCase()) return alert('Deux mots différents.');
-  const { error } = await db.from(TABLE).insert({ word_a: a, word_b: b, status: 'approved', reviewed_at: new Date().toISOString() });
+  const { error } = await db.from(TABLE).insert({ word_a: a, word_b: b, theme: $('addTheme').value, lang: $('addLang').value, status: 'approved', reviewed_at: new Date().toISOString() });
   if (error) return alert(error.code === '23505' ? 'Cette association existe déjà.' : 'Erreur : ' + error.message);
   $('addA').value = ''; $('addB').value = '';
   if (current === 'approved') load(); else document.querySelector('[data-status="approved"]').click();

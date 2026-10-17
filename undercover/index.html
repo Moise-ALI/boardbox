@@ -28,7 +28,17 @@ h2 { font-family: var(--f-display); font-stretch: 112%; font-size: 1.15rem; marg
 .row { display: flex; gap: .5rem; }
 .row input { flex: 1; min-width: 0; }
 input[type=text] { height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); padding: 0 .9rem; }
-input[type=text]:focus { outline: none; border-color: var(--accent); }
+input[type=text]:focus, select:focus { outline: none; border-color: var(--accent); }
+select { height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); padding: 0 .7rem; width: 100%; }
+
+/* Thèmes */
+.card-head { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; }
+.quick { display: flex; gap: .8rem; }
+.themes { display: flex; flex-wrap: wrap; gap: .45rem; }
+.theme { display: inline-flex; align-items: center; gap: .4rem; min-height: 40px; padding: .35rem .75rem; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--muted); font-size: .88rem; font-weight: 600; transition: background .2s, color .2s, border-color .2s; }
+.theme small { font-family: var(--f-mono); font-size: .7rem; opacity: .7; }
+.theme[aria-pressed="true"] { background: color-mix(in oklab, var(--accent) 16%, var(--surface)); border-color: var(--accent); color: var(--ink); }
+.hint.center { text-align: center; margin: -.4rem 0 1rem; }
 
 /* Boutons */
 .btn { height: 48px; padding: 0 1.1rem; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: .4rem; touch-action: manipulation; }
@@ -152,6 +162,7 @@ dialog label { font-size: .85rem; color: var(--muted); }
     <p>Deux mots proches mais différents. Votre proposition sera ajoutée au jeu après validation.</p>
     <div class="field"><label for="propA">Premier mot</label><input type="text" id="propA" maxlength="30" autocomplete="off" required></div>
     <div class="field"><label for="propB">Second mot</label><input type="text" id="propB" maxlength="30" autocomplete="off" required></div>
+    <div class="field"><label for="propTheme">Thème</label><select id="propTheme" required></select></div>
     <p class="error" id="propErr"></p>
     <div class="actions">
       <button class="btn" type="button" id="propCancel">Annuler</button>
@@ -161,9 +172,10 @@ dialog label { font-size: .85rem; color: var(--muted); }
 </dialog>
 
 <script src="../commun/commun.js"></script>
-<script src="config.js?v=2"></script>
-<script src="mots.js?v=2"></script>
-<script src="donnees.js?v=2"></script>
-<script src="app.js?v=2"></script>
+<script src="config.js?v=3"></script>
+<script src="themes.js?v=3"></script>
+<script src="mots.js?v=3"></script>
+<script src="donnees.js?v=3"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>
