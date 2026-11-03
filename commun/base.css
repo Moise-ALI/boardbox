@@ -213,3 +213,15 @@ body::after {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
 }
+
+/* ---------- Écrans tactiles : allègement pour un défilement fluide ----------
+   Sur téléphone, le verre dépoli (backdrop-filter) devait recalculer son flou à chaque image, parce que
+   le fond aurora bouge en permanence : le défilement et le tactile saccadaient. Au doigt, le fond reste
+   donc immobile, le verre devient un simple fond translucide, et le reflet des titres ne passe qu'une fois
+   (le dégradé est cyclique : la fin de l'animation se raccorde au début sans saut).
+   Les !important l'emportent sur les styles propres à chaque outil (ex. cartes de tirage/). */
+@media (pointer: coarse) {
+  body::before { animation: none; filter: none; }
+  *, *::before, *::after { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  .grad-text, h1 { animation-iteration-count: 1 !important; }
+}

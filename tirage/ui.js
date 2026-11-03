@@ -601,8 +601,29 @@
                 return DieMath.restingOrientation(die.quaternion, THREE).target;
             }
 
-            function animate() {
+            // Économie sur mobile : le rendu WebGL à 60 images/s en continu, sous le fond animé et le verre
+            // dépoli, saccadait le défilement au doigt. On ne dessine donc que quand c'est utile :
+            // jamais hors de l'écran, et au doigt (pas de flottement) seulement quand le dé bouge.
+            const FLOTTEMENT = !matchMedia('(pointer: coarse)').matches;
+            let visible = true;
+            let enCours = false;
+            function demarrer() {
+                if (enCours || !visible) return;
+                enCours = true;
                 requestAnimationFrame(animate);
+            }
+            new IntersectionObserver(entrees => {
+                visible = entrees[0].isIntersecting;
+                demarrer();
+            }).observe(container);
+            document.addEventListener('boardbox:theme', demarrer);   // redessiner les faces recolorées
+
+            function auRepos() {
+                return mode === 'idle' && Math.abs(die.position.y) < 0.001 && Math.abs(die.scale.x - 1) < 0.001;
+            }
+
+            function animate() {
+                if (!visible) { enCours = false; return; }
                 t += 0.016;
 
                 if (mode === 'spin') {
@@ -622,8 +643,8 @@
                     }
                 }
 
-                // flottement doux en idle, retour à 0 sinon
-                const targetY = (mode === 'idle') ? Math.sin(t * 1.4) * 0.06 : 0;
+                // flottement doux en idle (sauf au doigt), retour à 0 sinon
+                const targetY = (mode === 'idle' && FLOTTEMENT) ? Math.sin(t * 1.4) * 0.06 : 0;
                 die.position.y += (targetY - die.position.y) * 0.08;
 
                 // léger zoom pendant le drag
@@ -632,8 +653,17 @@
                 die.scale.y = die.scale.z = die.scale.x;
 
                 renderer.render(scene, camera);
+
+                if (!FLOTTEMENT && auRepos()) {
+                    die.position.y = 0;
+                    die.scale.set(1, 1, 1);
+                    renderer.render(scene, camera);
+                    enCours = false;
+                    return;
+                }
+                requestAnimationFrame(animate);
             }
-            animate();
+            demarrer();
 
             const el = renderer.domElement;
             el.style.cursor = 'grab';
@@ -646,6 +676,7 @@
                 last.y = e.clientY;
                 el.style.cursor = 'grabbing';
                 e.preventDefault();
+                demarrer();   // le rendu a pu s'arrêter au repos
             }
             function onMove(e) {
                 if (mode !== 'drag') return;
@@ -654,6 +685,7 @@
                 last.x = e.clientX;
                 last.y = e.clientY;
                 spinBy(dy * K, dx * K);
+                demarrer();
                 vel.x = clamp(dy * K, -0.5, 0.5);
                 vel.y = clamp(dx * K, -0.5, 0.5);
                 lastMoveAt = performance.now();
