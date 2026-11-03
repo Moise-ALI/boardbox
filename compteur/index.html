@@ -6,15 +6,15 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title data-i18n="title">Compteur de points</title>
-<meta name="description" content="Compteur de points pour les soirées jeux de société : classement animé, objectif, manches et annulation.">
+<meta name="description" content="Compteur de points pour les soirées jeux de société : une tuile colorée par joueur, objectif, manches et annulation.">
 <link rel="manifest" href="../manifest.webmanifest">
 <link rel="icon" type="image/png" href="../commun/icons/favicon.png">
 <link rel="apple-touch-icon" href="../commun/icons/apple-touch-icon.png">
 <meta name="theme-color" content="#150c0a">
-<link rel="stylesheet" href="../commun/base.css?v=12">
+<link rel="stylesheet" href="../commun/base.css?v=13">
 <script src="../commun/commun.js?v=8"></script>
 <style>
-main { width: 100%; max-width: 560px; margin: 0 auto; padding: 0 16px calc(env(safe-area-inset-bottom, 0px) + 32px); }
+main { width: 100%; max-width: 760px; margin: 0 auto; padding: 0 12px calc(env(safe-area-inset-bottom, 0px) + 32px); }
 
 .app-top { display: flex; align-items: flex-end; justify-content: space-between; gap: .8rem; flex-wrap: wrap; margin: .5rem 0 1.2rem; }
 .app-title { font-family: var(--f-display); font-weight: 800; font-size: 2rem; line-height: 1; margin: 0; }
@@ -24,26 +24,31 @@ main { width: 100%; max-width: 560px; margin: 0 auto; padding: 0 16px calc(env(s
 
 .empty { padding: 2rem 1rem; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 16px; }
 
-.pl-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
-.pl { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "av main score" "btns btns btns"; gap: .6rem .8rem; align-items: center; padding: .85rem; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); }
-.pl.lead { border-color: color-mix(in oklab, var(--signal) 70%, transparent); }
-.pl-av { grid-area: av; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; color: var(--on-color); font-weight: 700; font-family: var(--f-display); position: relative; }
-.pl-rank { position: absolute; bottom: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 4px; border-radius: 999px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); font-family: var(--f-mono); font-size: .66rem; display: grid; place-items: center; }
-.pl.lead .pl-rank { background: var(--signal); color: var(--on-signal); border-color: var(--signal); }
-.pl-main { grid-area: main; min-width: 0; display: grid; gap: .4rem; }
-.pl-name { border: 0; background: transparent; font-weight: 600; font-size: 1.05rem; padding: .1rem .3rem; margin-left: -.3rem; border-radius: 6px; width: 100%; min-width: 0; }
-.pl-name:hover { background: var(--surface-2); }
-.pl-bar { height: 6px; border-radius: 9px; background: var(--surface-2); overflow: hidden; }
-.pl-bar i { display: block; height: 100%; width: 0; background: var(--c, var(--accent)); border-radius: 9px; transition: width .5s var(--ease); }
-.pl-score { grid-area: score; font-family: var(--f-display); font-weight: 800; font-size: 2.2rem; font-variant-numeric: tabular-nums; min-width: 3ch; text-align: right; line-height: 1; }
-.pl-score.pop { animation: pop .45s var(--ease); }
-@keyframes pop { 40% { transform: scale(1.25); color: var(--accent); } }
-.pl-btns { grid-area: btns; display: flex; gap: .4rem; }
-.pl-btns button { flex: 1 1 0; min-width: 48px; height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--field); font-family: var(--f-mono); font-weight: 600; font-size: .9rem; font-variant-numeric: tabular-nums; transition: transform .15s, border-color .2s; touch-action: manipulation; }
-.pl-btns button:hover { border-color: var(--accent); }
-.pl-btns button:active { transform: scale(.94); }
-.pl-btns .del { flex: 0 0 44px; min-width: 44px; color: var(--muted); }
-.pl-btns .del:hover { color: var(--danger); border-color: var(--danger); }
+/* Une tuile colorée par joueur, en grille (2 colonnes sur téléphone) ; l'ordre reste fixe pour que les boutons ne bougent pas sous le doigt */
+.pl-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.pl { --c: var(--player-1); display: flex; flex-direction: column; border-radius: 18px; overflow: hidden; background: var(--c); color: var(--on-color); box-shadow: var(--shadow); }
+.pl.lead { outline: 3px solid var(--signal); outline-offset: 2px; }
+.pl-head { display: flex; align-items: center; gap: .3rem; padding: 6px 6px 6px 8px; background: var(--tint-dark); }
+.pl-name { flex: 1; min-width: 0; height: 36px; border: 0; border-radius: 8px; background: transparent; color: var(--on-color); font-family: var(--f-display); font-weight: 700; font-size: 1.05rem; text-align: center; padding: 0 .3rem; }
+.pl-name:hover, .pl-name:focus { background: var(--tint-dark); outline: none; }
+.pl-delta { flex: none; min-width: 34px; height: 30px; padding: 0 6px; border-radius: 8px; background: var(--on-color); color: var(--c); font-family: var(--f-mono); font-weight: 700; font-size: .85rem; font-variant-numeric: tabular-nums; display: grid; place-items: center; }
+.pl-delta.zero { opacity: .55; }
+.pl-btns { display: flex; gap: 6px; padding: 10px 8px 0; }
+.pl-btns.plus { padding: 0 8px 10px; }
+.pl-btns button { flex: 1 1 0; min-width: 0; height: 44px; border-radius: 10px; border: 0; background: var(--tint-dark); color: var(--on-color); font-family: var(--f-mono); font-weight: 600; font-size: .95rem; font-variant-numeric: tabular-nums; transition: transform .12s, background-color .2s; touch-action: manipulation; }
+.pl-btns button:active { transform: scale(.92); }
+.pl-score { display: grid; place-items: center; min-height: 6.5rem; font-family: var(--f-display); font-weight: 800; font-size: 3.4rem; font-variant-numeric: tabular-nums; line-height: 1; }
+.pl-score.long { font-size: 2.6rem; }
+.pl-score.longer { font-size: 2rem; }
+.pl-score.pop { animation: pop .4s var(--ease); }
+@keyframes pop { 40% { transform: scale(1.2); } }
+/* Bande du bas : se remplit vers l'objectif, avec le rang et le bouton pour retirer le joueur */
+.pl-foot { position: relative; display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 0 0 10px; background: var(--tint-light); }
+.pl-foot i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--tint-light); transition: width .5s var(--ease); }
+.pl-rank { position: relative; font-family: var(--f-mono); font-size: .8rem; font-weight: 700; }
+.pl.lead .pl-rank { background: var(--signal); color: var(--on-signal); border-radius: 999px; padding: 2px 8px; }
+.pl-foot .del { position: relative; width: 44px; height: 44px; border: 0; background: transparent; color: var(--on-color); font-size: 1rem; opacity: .8; }
+.pl-foot .del:hover { opacity: 1; }
 
 .add-row { display: flex; gap: .5rem; margin-top: .9rem; }
 .add-row input { flex: 1; min-width: 0; height: 48px; border-radius: 12px; border: 1px dashed var(--line); background: transparent; padding: 0 .9rem; }
@@ -102,6 +107,6 @@ main { width: 100%; max-width: 560px; margin: 0 auto; padding: 0 16px calc(env(s
   </div>
 </main>
 
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

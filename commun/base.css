@@ -134,6 +134,8 @@
   --player-1: #e8590c; --player-2: #3a7bd5; --player-3: #0f9a6c; --player-4: #b03fd4;
   --player-5: #c27c00; --player-6: #0884b5; --player-7: #d63447; --player-8: #4f8a0f;
   --player-9: #7a4bd8; --player-10: #a8560f; --player-11: #1a8585; --player-12: #c2347a;
+  /* Voiles posés sur une couleur de joueur (tuiles du compteur) : plus sombre pour les boutons, plus clair pour les bandes */
+  --tint-dark: rgba(0, 0, 0, .2); --tint-light: rgba(255, 255, 255, .32);
 }
 
 /* ---------- Bouton principal partagé ---------- */

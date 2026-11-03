@@ -1,4 +1,4 @@
-/* Compteur de points : classement animé, objectif, manches, annulation. */
+/* Compteur de points : une tuile colorée par joueur, objectif, manches, annulation. */
 (() => {
 'use strict';
 
@@ -26,7 +26,10 @@ const t = BoardBox.i18n({
     maxPlayers: '{n} joueurs maximum',
     nothingToUndo: 'Rien à annuler',
     resetDone: 'Scores remis à zéro',
-    winner: '🏆 {name} atteint {target} points'
+    winner: '🏆 {name} atteint {target} points',
+    roundDelta: 'Points de cette manche',
+    rank: '{n}e',
+    rankFirst: '1er'
   },
   en: {
     title: 'Score counter',
@@ -47,7 +50,10 @@ const t = BoardBox.i18n({
     maxPlayers: '{n} players maximum',
     nothingToUndo: 'Nothing to undo',
     resetDone: 'Scores reset',
-    winner: '🏆 {name} reached {target} points'
+    winner: '🏆 {name} reached {target} points',
+    roundDelta: 'Points this round',
+    rank: '#{n}',
+    rankFirst: '#1'
   }
 });
 BoardBox.initTopbar();
@@ -104,6 +110,13 @@ const fresh = () => ({ target: 100, round: 1, winner: null, history: [], next: 1
 let st = store.get('partie', null);
 if (!st || !Array.isArray(st.players)) st = fresh();
 
+// p.base = score au début de la manche (sert au badge « points de cette manche »).
+// Les parties enregistrées avant ce champ démarrent leur manche au score actuel.
+function normalizePlayers() {
+  st.players.forEach(p => { if (typeof p.base !== 'number') p.base = p.score; });
+}
+normalizePlayers();
+
 const list = $('#plList'), els = new Map();
 const save = () => store.set('partie', st);
 const snap = () => {
@@ -112,17 +125,19 @@ const snap = () => {
 };
 
 function makeEl(p) {
-  const li = document.createElement('li'); li.className = 'pl glass'; li.dataset.id = p.id;
+  const li = document.createElement('li'); li.className = 'pl'; li.dataset.id = p.id;
   // Gabarit fixe sans aucune donnée utilisateur ; les noms sont posés ensuite en value/textContent
-  li.innerHTML = `<span class="pl-av"><span class="pl-ini"></span><span class="pl-rank"></span></span>
-    <div class="pl-main"><input class="pl-name" maxlength="18"><div class="pl-bar"><i></i></div></div>
+  li.innerHTML = `<div class="pl-head"><input class="pl-name" maxlength="18"><output class="pl-delta"></output></div>
+    <div class="pl-btns minus">
+      <button type="button" data-d="-10">−10</button><button type="button" data-d="-5">−5</button><button type="button" data-d="-1">−1</button>
+    </div>
     <output class="pl-score" aria-live="polite"></output>
-    <div class="pl-btns">
-      <button type="button" data-d="-1">−1</button><button type="button" data-d="1">+1</button>
-      <button type="button" data-d="5">+5</button><button type="button" data-d="10">+10</button>
-      <button type="button" class="del">✕</button>
-    </div>`;
+    <div class="pl-btns plus">
+      <button type="button" data-d="1">+1</button><button type="button" data-d="5">+5</button><button type="button" data-d="10">+10</button>
+    </div>
+    <div class="pl-foot"><i></i><span class="pl-rank"></span><button type="button" class="del">✕</button></div>`;
   $('.pl-name', li).setAttribute('aria-label', t('playerName'));
+  $('.pl-delta', li).title = t('roundDelta');
   li.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
     if (b.classList.contains('del')) return remove(p.id);
@@ -140,35 +155,38 @@ function makeEl(p) {
   return li;
 }
 
+// Rang « sportif » : les ex æquo partagent la même place (1, 1, 3…)
+const rankOf = p => 1 + st.players.filter(x => x.score > p.score).length;
+const signed = n => (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(n);
+
 function render(pulseId) {
-  const first = new Map();
-  els.forEach((el, id) => first.set(id, el.getBoundingClientRect().top));
   const focused = document.activeElement;
-  const sorted = [...st.players].sort((a, b) => b.score - a.score);
-  const top = sorted.length ? sorted[0].score : 0;
-  sorted.forEach((p, i) => {
+  const top = Math.max(...st.players.map(p => p.score));
+  const leaders = st.players.filter(p => p.score === top).length;
+  // Ordre d'ajout conservé : les tuiles ne se déplacent pas pendant qu'on tape les points
+  st.players.forEach(p => {
+    const isNew = !els.has(p.id);
     const el = els.get(p.id) || makeEl(p);
-    const color = COLORS[p.c % COLORS.length];
-    $('.pl-av', el).style.background = color;
-    $('.pl-ini', el).textContent = (p.name[0] || '?').toUpperCase();
-    $('.pl-rank', el).textContent = i + 1;
+    el.style.setProperty('--c', COLORS[p.c % COLORS.length]);
     const inp = $('.pl-name', el); if (document.activeElement !== inp) inp.value = p.name;
-    $('.del', el).setAttribute('aria-label', t('remove', { name: p.name }));
+    const delta = p.score - p.base, dl = $('.pl-delta', el);
+    dl.textContent = signed(delta); dl.classList.toggle('zero', delta === 0);
     const sc = $('.pl-score', el); sc.textContent = p.score;
-    const bar = $('.pl-bar i', el); bar.style.setProperty('--c', color);
-    bar.style.width = Math.max(0, Math.min(100, p.score / st.target * 100)) + '%';
-    el.classList.toggle('lead', i === 0 && p.score > 0 && sorted.filter(x => x.score === top).length === 1);
+    const digits = String(p.score).length;
+    sc.classList.toggle('long', digits === 4); sc.classList.toggle('longer', digits > 4);
+    const rank = rankOf(p);
+    $('.pl-rank', el).textContent = rank === 1 ? t('rankFirst') : t('rank', { n: rank });
+    $('.pl-foot i', el).style.width = Math.max(0, Math.min(100, p.score / st.target * 100)) + '%';
+    $('.del', el).setAttribute('aria-label', t('remove', { name: p.name }));
+    el.classList.toggle('lead', p.score === top && p.score > 0 && leaders === 1);
     if (pulseId === p.id && !RM) { sc.classList.remove('pop'); void sc.offsetWidth; sc.classList.add('pop'); }
-    list.append(el);
+    list.append(el); // remet aussi à sa place un joueur rétabli par « Annuler »
+    if (isNew) {
+      if (!RM) el.animate([{ opacity: 0, transform: 'scale(.94)' }, { opacity: 1, transform: 'none' }], { duration: 320, easing: 'cubic-bezier(.2,.8,.2,1)' });
+    }
   });
   els.forEach((el, id) => { if (!st.players.some(p => p.id === id)) { el.remove(); els.delete(id); } });
   if (focused && focused !== document.activeElement && document.contains(focused)) focused.focus({ preventScroll: true });
-  if (!RM) els.forEach((el, id) => {
-    const f = first.get(id);
-    if (f == null) { el.animate([{ opacity: 0, transform: 'translateY(12px) scale(.98)' }, { opacity: 1, transform: 'none' }], { duration: 350, easing: 'cubic-bezier(.2,.8,.2,1)' }); return; }
-    const dy = f - el.getBoundingClientRect().top;
-    if (Math.abs(dy) > 1) el.animate([{ transform: `translateY(${dy}px)` }, { transform: 'none' }], { duration: 480, easing: 'cubic-bezier(.2,.8,.2,1)' });
-  });
   $('#empty').hidden = st.players.length > 0;
   $('#round').textContent = t('round', { n: st.round });
   const tg = $('#target'); if (document.activeElement !== tg) tg.value = st.target;
@@ -196,17 +214,22 @@ function add(name) {
   snap();
   const used = new Set(st.players.map(p => p.c % COLORS.length));
   let c = 0; while (used.has(c) && c < COLORS.length - 1) c++;
-  st.players.push({ id: 'p' + (st.next++), name, score: 0, c });
+  st.players.push({ id: 'p' + (st.next++), name, score: 0, base: 0, c });
   render(); save(); return true;
 }
 function undo() {
   const s = st.history.pop();
   if (!s) { toast(t('nothingToUndo')); return; }
-  Object.assign(st, JSON.parse(s)); render(); save();
+  Object.assign(st, JSON.parse(s)); normalizePlayers(); render(); save();
+}
+function nextRound() {
+  snap(); st.round++;
+  st.players.forEach(p => p.base = p.score);
+  render(); save();
 }
 function reset() {
   snap();
-  st.players.forEach(p => p.score = 0); st.round = 1; st.winner = null;
+  st.players.forEach(p => { p.score = 0; p.base = 0; }); st.round = 1; st.winner = null;
   render(); save(); toast(t('resetDone'), { label: t('cancel'), run: undo });
 }
 
@@ -217,7 +240,7 @@ $('#addForm').addEventListener('submit', e => {
   if (add(v)) inp.value = '';
 });
 $('#undoBtn').onclick = undo;
-$('#roundBtn').onclick = () => { snap(); st.round++; render(); save(); };
+$('#roundBtn').onclick = nextRound;
 $('#winReset').onclick = reset;
 let armed = 0;
 $('#resetBtn').onclick = e => {
