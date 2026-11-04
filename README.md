@@ -9,6 +9,7 @@ Mes petites applis du quotidien, utilisables depuis n'importe quel appareil, en 
 | [🎲 Tirage & Équipes](https://moise-ali.github.io/boardbox/tirage/) | Tirer au sort dans une liste, répartir en équipes équilibrées, dé 3D |
 | [👆 Qui commence ?](https://moise-ali.github.io/boardbox/qui-commence/) | Chacun pose un doigt sur l'écran : l'appli désigne qui commence, ou tout l'ordre de jeu |
 | [🏆 Compteur de points](https://moise-ali.github.io/boardbox/compteur/) | Scores des soirées jeux : une tuile colorée par joueur, objectif, manches, annulation |
+| [⏳ Minuteur de tours](https://moise-ali.github.io/boardbox/minuteur/) | Sablier par tour ou pendule par joueur : on touche l'écran pour passer la main |
 | [🕵️ Undercover](https://moise-ali.github.io/boardbox/undercover/) | Jeu d'ambiance sur un seul téléphone, avec associations proposées par les joueurs et modérées |
 | [🗝️ CodeName](https://moise-ali.github.io/boardbox/codenames/) | Jeu d'espions en équipes : salle partagée par lien, vue espion et vue joueur synchronisées en direct |
 

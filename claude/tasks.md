@@ -5,6 +5,12 @@
 ## 🟡 En cours
 
 <!-- Une seule tâche à la fois -->
+- [ ] Minuteur de tours — voir `claude/features/minuteur.md`
+  - Périmètre : nouveau dossier `minuteur/` + intégration (accueil, sw.js, manifeste, README). Lecture seule de `compteur.partie`.
+  - [x] Étape 1 — Écran de réglages
+  - [x] Étape 2 — Écran de jeu (temps, tour suivant, précédent, pause, alertes, écran allumé)
+  - [x] Étape 3 — Intégration
+  - [ ] Étape 4 — Recette, essai par Moïse, push avec accord
 
 ## 🐛 Bugs ouverts
 
@@ -17,7 +23,7 @@
 
 ## 🔵 Backlog (priorisé)
 
-- [ ] Minuteur de tours (sablier / pendule) — priorité: normale — dépend de: rien — voir `claude/features/minuteur.md`
+<!-- Vide : proposer une idée avec /kit:feature -->
 
 ## ✅ Terminées récemment
 

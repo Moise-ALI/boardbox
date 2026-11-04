@@ -8,6 +8,7 @@ const TOOLS = [
   { path: 'tirage/', icon: '🎲', name: 'tirage.name', desc: 'tirage.desc' },
   { path: 'qui-commence/', icon: '👆', name: 'quiCommence.name', desc: 'quiCommence.desc' },
   { path: 'compteur/', icon: '🏆', name: 'compteur.name', desc: 'compteur.desc' },
+  { path: 'minuteur/', icon: '⏳', name: 'minuteur.name', desc: 'minuteur.desc' },
   { path: 'undercover/', icon: '🕵️', name: 'undercover.name', desc: 'undercover.desc' },
   { path: 'codenames/', icon: '🗝️', name: 'codenames.name', desc: 'codenames.desc' }
 ];
@@ -28,6 +29,8 @@ const t = BoardBox.i18n({
     'quiCommence.desc': 'Chacun pose un doigt sur l\'écran : l\'appli désigne qui commence, ou tout l\'ordre de jeu.',
     'compteur.name': 'Compteur de points',
     'compteur.desc': 'Comptez les scores des soirées jeux : une tuile colorée par joueur, objectif et manches.',
+    'minuteur.name': 'Minuteur de tours',
+    'minuteur.desc': 'Un sablier par tour ou une pendule par joueur : on touche l\'écran pour passer la main.',
     'undercover.name': 'Undercover',
     'undercover.desc': 'Le jeu d\'ambiance sur un seul téléphone : civils, undercovers et Mister White.',
     'codenames.name': 'CodeName',
@@ -48,6 +51,8 @@ const t = BoardBox.i18n({
     'quiCommence.desc': 'Everyone puts a finger on the screen: the app picks who starts, or the whole turn order.',
     'compteur.name': 'Score counter',
     'compteur.desc': 'Keep score on game nights: one colour tile per player, target score and rounds.',
+    'minuteur.name': 'Turn timer',
+    'minuteur.desc': 'An hourglass per turn or a chess clock per player: tap the screen to pass the turn.',
     'undercover.name': 'Undercover',
     'undercover.desc': 'The party game on a single phone: civilians, undercovers and Mr. White.',
     'codenames.name': 'CodeName',

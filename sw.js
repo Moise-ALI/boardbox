@@ -22,6 +22,7 @@ const PRECACHE = [
   'tirage/', 'tirage/app.js', 'tirage/i18n.js', 'tirage/de.js', 'tirage/ui.js',
   'qui-commence/', 'qui-commence/app.js',
   'compteur/', 'compteur/app.js',
+  'minuteur/', 'minuteur/app.js',
   'undercover/', 'undercover/app.js', 'undercover/i18n.js', 'undercover/mots.js', 'undercover/themes.js', 'undercover/donnees.js',
   'codenames/', 'codenames/app.js', 'codenames/i18n.js', 'codenames/mots.js', 'codenames/donnees.js',
   'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
