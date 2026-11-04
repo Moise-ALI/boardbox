@@ -54,3 +54,4 @@ Recette manuelle par Moïse : à plusieurs doigts sur son téléphone.
 - Recette automatisée faite le 2026-11-04 : tirage après 2 s, relance si un doigt part, mode Ordre, souris, plafond à 10, 360 px, clair/sombre, accueil FR/EN, console sans erreur.
 - Vibration : les navigateurs ne l'autorisent qu'après un vrai « tap » (lever un doigt) ; au tout premier tour, le téléphone peut rester muet. Accepté, l'affichage suffit.
 - Pendant le résultat, les cercles restent figés même doigts levés (pour lire le résultat) ; le premier contact suivant relance un tour.
+- iPhone (2026-11-04) : la zone dépassait en bas, le `min-height: 100vh` de base.css l'emportait sur `100dvh` (100vh ignore la barre d'adresse de Safari) ; corrigé par `min-height: 0` sur la page.
