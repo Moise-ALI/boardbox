@@ -1,81 +1,45 @@
-# BoardBox — conventions
+# BoardBox — Claude Code
 
-Petites applis web personnelles publiées sur GitHub Pages : https://moise-ali.github.io/boardbox/
+> Chargé automatiquement à chaque session. C'est un aiguillage : le détail est dans `claude/`.
 
-## Principes
-- **Statique uniquement** : HTML, CSS, JavaScript natif. Pas de build, pas de framework, pas de npm. Un fichier ouvert dans le navigateur doit fonctionner.
-- **Un outil = un dossier** autonome (`nom-outil/index.html`, + `app.js` si la logique dépasse ~300 lignes).
-- **Dépôt public** : jamais de clé d'API, mot de passe ou donnée personnelle dans le code.
-- Interface en **français**, utilisable au doigt sur mobile (cibles ≥ 44px, pas de défilement horizontal à 360px de large).
+Petites applis web pour les soirées jeux, publiées sur GitHub Pages : https://moise-ali.github.io/boardbox/ — **dépôt public**.
 
-## Structure
-```
-index.html          Accueil ; registre TOOLS et textes dans accueil.js
-commun/base.css     Couleurs clair/sombre, reset, .topbar / .back-link / .theme-btn
-commun/commun.js    window.BoardBox : createStore(prefix), bindThemeButton(btn)
-tirage/             Tirage au sort & équipes (app.js logique, ui.js interface + dé 3D Three.js, i18n.js)
-compteur/           Compteur de points (app.js)
-undercover/         Jeu Undercover (un téléphone) + admin.html (modération des associations)
-codenames/          CodeName : salle partagée par lien (vue espion / joueur), temps réel Supabase
-supabase/           Scripts SQL à exécuter dans Supabase > SQL Editor (undercover.sql, codenames.sql)
-```
+## Démarrage
 
-## Données partagées et secrets (Supabase)
-- Projet Supabase unique pour tout BoardBox ; une table par besoin, préfixée par l'outil (`undercover_pairs`).
-- Seules l'URL du projet et la clé **publishable/anon** vont dans le code, à un seul endroit : `commun/supabase-config.js` (`window.BOARDBOX_SUPABASE`). Jamais la clé `secret`/`service_role`, ni un mot de passe.
-- Un secret de jeu (ex. grille des couleurs de CodeName) ne doit jamais être calculable côté client : il vit dans une table sans aucun droit public, et n'est lu que via une fonction `security definer` qui exige un jeton. Les jetons voyagent après le `#` de l'URL (jamais envoyé au serveur), avec `referrer: no-referrer`.
-- Temps réel : `postgres_changes` de supabase-js sur une table publique ajoutée à la publication `supabase_realtime` ; toujours prévoir un rafraîchissement de secours (veille du téléphone, réseau).
-- Toute table a **RLS activé** et des policies explicites ; le SQL versionné dans `supabase/` est la référence (ré-exécutable).
-- Écritures réservées : via `public.is_admin()` (table `admins`, par e-mail de session). L'e-mail admin n'est jamais committé.
-- Le public n'insère que des lignes « en attente » ; insérer avec `Prefer: return=minimal` (il ne peut pas relire ce qu'il a écrit).
-- L'outil doit rester utilisable si Supabase est indisponible ou en pause (données intégrées en repli).
-- Undercover : chaque association validée existe en FR et en EN (lignes liées par `group_id`). Le public ne peut insérer que `word_a, word_b, theme, lang` (droits par colonne). L'admin valide via `undercover_approve` (proposition + traduction, transactionnel), complète via `undercover_set_translation`, ajoute via `undercover_add` ; ces fonctions `security definer` revérifient `is_admin()`.
-- Besoin d'un secret côté serveur (clé d'API payante) : Supabase Edge Function ou Cloudflare Worker, jamais dans le front.
+Avant toute modification, lire : `claude/rules.md` → `claude/tasks.md` → `claude/context.md`.
+Pour reprendre après une interruption : `/kit:start`.
 
-## Règles
-- **Stockage** : tous les outils partagent le même `localStorage` (même domaine). Chaque clé est préfixée par le nom du dossier de l'outil : utiliser `BoardBox.createStore('<dossier>')`, ou à défaut des clés `'<dossier>.xxx'`. Ne jamais renommer une clé existante sans migration (les utilisateurs perdraient leurs données). Pour renommer des clés, ne modifier que les appels `localStorage.*` : un remplacement global touche aussi les `id` HTML et les `getElementById` du même nom.
-- **Avant chaque push** : charger l'outil modifié et exercer ses actions principales en vérifiant la console (une erreur JS en début de script casse tout ce qui suit, ex. le dé 3D de `tirage/`).
-- **Lien de retour** : chaque outil affiche un lien `← BoardBox` vers `../`.
-- **Cache** : GitHub Pages sert les fichiers avec `max-age=600`. Les scripts/styles propres à un outil sont inclus avec `?v=N` (ex. `app.js?v=2`) : incrémenter N dans les `<script>` à chaque modification du fichier, sinon les visiteurs gardent l'ancienne version jusqu'à 10 min (cas vécu : config.js vide en cache).
-- **Chemins relatifs** uniquement (`../commun/...`), le site est servi sous `/boardbox/`.
-- **Dépendances externes** : seulement via CDN avec une version figée (ex. `three.js/r128`), et un repli si elles ne chargent pas.
-- **Design system** (`commun/base.css`, style « aurora ») commun à tous les outils : palette chaude rouge/orange : `--accent` (orange brûlé, boutons/liens), `--accent-2` (orange), `--accent-3` (rouge), contrastes WCAG vérifiés, dégradé `--grad` (boutons) et `.grad-text` (titres), verre via `.card` / `.glass`, polices Sora (titres) + Inter (texte). Toujours utiliser les variables (jamais de couleur en dur) pour que les thèmes clair et sombre fonctionnent.
-- **Tout le design est piloté par `base.css`** : couleurs, ombres (`--shadow`, `--shadow-lg`, `--shadow-color`), voile des fenêtres (`--overlay`), bouton principal (classe `.btn-primary` ou jetons `--btn-primary-bg/-ink/-shadow`), textes sur couleur (`--on-color`, `--on-signal`), couleurs des joueurs (`--player-1…12`). Aucune couleur en dur dans les outils, CSS comme JS (seule exception : l'éclairage blanc neutre de la scène 3D).
-- Côté JS : `BoardBox.cssVar('--accent')` pour lire une couleur ; les éléments dessinés (canvas, WebGL) écoutent l'événement `outils:theme` pour se redessiner au changement de thème.
-- `commun.js` se charge dans le `<head>` (il applique le thème avant l'affichage) ; `base.css` et `commun.js` sont versionnés `?v=N` comme le reste.
+## Cycle de travail (plugin kit)
 
-## Langues (FR/EN)
-- `commun.js` détermine la langue (`BoardBox.lang` : choix mémorisé, sinon langue du navigateur) ; le bouton `#langBtn` recharge la page dans l'autre langue.
-- Chaque outil a un dictionnaire `{ fr: {...}, en: {...} }` (fichier `i18n.js` si gros) et `const t = BoardBox.i18n(dict)` ; `t('cle', { var })` remplace `{var}`. Repli : français, puis la clé (visible = oubli facile à repérer).
-- HTML statique : `data-i18n`, `data-i18n-placeholder`, `data-i18n-aria-label`, `data-i18n-title`, appliqués par `BoardBox.applyI18n(t)`. Clés communes `common.back`, `common.theme`.
-- Contenus de jeu par langue (ex. `UNDERCOVER_PAIRS.fr / .en`, colonne `lang` en base) : listes séparées, pas de traduction mot à mot.
-- `undercover/admin.html` (modération) reste en français uniquement.
+| Commande | Quand |
+|---|---|
+| `/kit:start` | Début de session : où en est-on ? |
+| `/kit:feature <nom>` | Nouvelle fonctionnalité (fiche + questions, puis plan) |
+| `/kit:continue` | Reprendre l'étape suivante de la tâche en cours |
+| `/kit:validate` | Contrôle avant de clore (relecteur indépendant) |
+| `/kit:finish` | Clore la tâche : historique, archive, suite |
+| `/kit:bug <symptôme>` | Déclarer un bug (diagnostic + plan, pas de code avant validation) |
+| `/kit:fix <quoi>` | Petit correctif direct, tracé dans l'historique |
+| `/kit:retour` | Fin de session : ce qu'on retient pour le projet ou pour le kit |
 
-## Sécurité (à respecter pour tout nouvel outil)
-- **Jamais de donnée utilisateur dans `innerHTML`** (ni saisie, ni paramètre d'URL, ni import) : `textContent`, `value`, création d'éléments. Une faille XSS sur n'importe quel outil expose le localStorage de tous (dont la session admin Supabase).
-- **Aucun script en ligne** (`<script>…</script>`, `onclick=`) : tout dans des fichiers `.js`. Chaque page a une **CSP** en `<meta>` (`script-src 'self'` + CDN strictement nécessaires, `connect-src` limité) ; la recopier depuis une page existante.
-- Scripts de CDN : version figée + **SRI** (`integrity` + `crossorigin="anonymous"`).
-- Limiter la taille des entrées (longueur, nombre d'éléments), surtout celles venant d'un lien ou d'un fichier.
-- **Aucun service tiers au chargement** : polices auto-hébergées dans `commun/fonts/` (WOFF2 variables + licences OFL, déclarées en `@font-face` dans `base.css`). Ne pas réintroduire Google Fonts ; la CSP n'autorise que `'self'` pour les polices et styles.
-- Session admin Supabase en `sessionStorage` (fin de session à la fermeture de l'onglet), `flowType: 'implicit'` obligatoire (le lien e-mail s'ouvre dans un nouvel onglet).
-- Glisser-déposer : événements pointer (pas le drag & drop HTML5, inopérant au doigt) ; au doigt, poignée dédiée en `touch-action: none` pour préserver le défilement.
-- Pages sensibles (actions admin) : protection anti-clickjacking en JS (`window.top !== window.self`), GitHub Pages ne pouvant pas envoyer `X-Frame-Options` / `frame-ancestors`.
-- Lire le localStorage avec garde (`try/catch`, vérifier le type) : une donnée corrompue ne doit pas casser la page.
+Brouillon d'idée : déposer un `.md` libre dans `claude/inbox/`, puis `/kit:feature <nom>`.
 
-## Appli installable (PWA)
-- `manifest.webmanifest` (racine) + icônes dans `commun/icons/` (générées aux couleurs de la charte). Chaque page a dans son `<head>` : `rel="manifest"`, favicon, apple-touch-icon, `meta theme-color` (mise à jour par commun.js selon le thème).
-- `sw.js` (racine, portée `/boardbox/`, enregistré par commun.js) : pages en réseau d'abord, fichiers statiques et CDN en mémoire d'abord (le `?v=N` garantit les mises à jour), Supabase jamais en mémoire.
-- **Tout nouveau fichier nécessaire hors connexion va dans `PRECACHE` de sw.js** (chemins sans `?v=`), et tout nouvel outil dans `shortcuts` du manifeste. Incrémenter `CACHE_VERSION` seulement pour forcer un re-téléchargement complet.
-- Bibliothèques tierces : hébergées dans `commun/vendor/` avec leur licence quand elles doivent marcher hors ligne (ex. qrcode-generator).
+## Source de vérité
 
-## Ajouter un outil
-1. Créer `nom-outil/index.html` + `nom-outil/app.js` (modèle : `compteur/` — CSP, topbar avec langue/thème, base.css, commun.js dans le head, store préfixé, dictionnaire FR/EN).
-2. Ajouter une ligne dans `TOOLS` de `accueil.js` (+ textes FR/EN), ses fichiers dans `PRECACHE` de `sw.js` et un raccourci dans `manifest.webmanifest`.
-3. Vérifier : mobile 360px, thème clair et sombre, FR et EN, rechargement de page (données conservées), console sans erreur ni blocage CSP.
-4. Commit puis push : GitHub Pages republie en ~1 minute.
+`commun/base.css` (design), `commun/commun.js` (socle JS), `supabase/*.sql` (base), `sw.js` + `manifest.webmanifest` + `accueil.js` (registre des outils). Séquence obligatoire après modification (`?v=N`, précache, recette) : `claude/rules.md`.
 
-## Tester en local
-```
-python -m http.server 8000
-```
-puis http://localhost:8000/ (ouvrir les fichiers en `file://` casse certains chemins).
+## Stack
+
+HTML, CSS, JavaScript natif sans build ni npm ; GitHub Pages ; Supabase (Undercover, CodeName) ; PWA hors connexion.
+
+## Fichiers clés
+
+| Besoin | Fichier |
+|---|---|
+| Interdits, obligations, sécurité, séquence après modification | `claude/rules.md` |
+| Structure, design system, langues, Supabase, PWA, ajouter un outil | `claude/architecture.md` |
+| Stockage, tables, rôles, pièges | `claude/context.md` |
+| Tester en local (serveur, recette automatisée) | `claude/dev.md` |
+| Décisions d'architecture | `claude/architecture.md` (section Décisions) |
+| Fonctionnalités | `claude/features/` |
+| Questions en attente | `claude/questions.md` |

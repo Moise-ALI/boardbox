@@ -1,0 +1,20 @@
+# Historique
+
+> Une ligne par `/kit:finish` et par `/kit:fix`, la plus récente en bas. Pas de doublon. `/kit:start` compare avec `git log` pour repérer un oubli.
+> Lignes avant 2026-11-04 reconstituées depuis `git log` à l'installation du système.
+
+| Date | Action | Résumé |
+|---|---|---|
+| 2026-10-17 | feature | Boîte à outils : accueil, Tirage & Équipes, Compteur de points |
+| 2026-10-17 | fix | Tirage : historique introuvable qui cassait tirages et dé 3D |
+| 2026-10-17 | feature | Undercover : jeu sur un téléphone, associations par thèmes, modération Supabase, droits de l'API durcis |
+| 2026-10-17 | feature | Design « aurora » piloté par base.css, palette rouge/orange, multilingue FR/EN |
+| 2026-10-17 | fix | Sécurité : faille XSS des liens de partage de Tirage, anti-clickjacking, polices auto-hébergées, session admin limitée à l'onglet |
+| 2026-10-17 | feature | Tirage : dé 3D posé sur la face visible, glisser-déposer tactile |
+| 2026-10-17 | feature | CodeName : salle partagée en temps réel, grille protégée par la base, mise en page mobile |
+| 2026-10-17 | fix | Plus de zoom iPhone à l'ouverture des champs ; accueil sans pied de page |
+| 2026-10-18 | feature | Appli installable (PWA) hors connexion, QR code dans CodeName |
+| 2026-10-18 | feature | Renommage en BoardBox (icône dé), caches préfixés `boardbox-` |
+| 2026-11-03 | fix | Fluidité mobile : fond fixe, sans verre dépoli, dé 3D économe |
+| 2026-11-03 | feature | Compteur : une tuile colorée par joueur (−10…+10, points de la manche) |
+| 2026-11-04 | init | Système de pilotage Claude (`claude/`), CLAUDE.md réduit à un aiguillage |
