@@ -55,4 +55,6 @@ BoardBox regroupe de petites applis web pour les soirées jeux de société (tir
 - GitHub Pages ne peut pas envoyer `X-Frame-Options` ni `frame-ancestors` : les pages admin se protègent en JS (`window.top !== window.self`).
 - Le lien e-mail de connexion admin s'ouvre dans un nouvel onglet : `flowType: 'implicit'` obligatoire.
 - Le glisser-déposer HTML5 ne marche pas au doigt : événements pointer + poignée en `touch-action: none`.
+- **Page plein écran** (zone tactile qui remplit l'écran) : `height: 100dvh` **et** `min-height: 0` sur le `body`, sinon le `min-height: 100vh` de `base.css` l'emporte et, sur iPhone, la page passe sous la barre du navigateur (100vh ignore les barres). Modèle : `qui-commence/index.html`.
+- Élément qui suit le doigt : le déplacer par la propriété CSS `translate`, et mesurer la zone au contact plutôt qu'à chaque mouvement (fluidité).
 - Supabase gratuit se met en pause après une période d'inactivité : les outils doivent fonctionner avec leurs données intégrées.

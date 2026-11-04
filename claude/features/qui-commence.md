@@ -1,6 +1,6 @@
 # Fonctionnalité : Qui commence ?
 
-**Statut** : 🟡 En cours
+**Statut** : ✅ Terminé
 **Priorité** : normale
 **Dépend de** : socle-commun
 
@@ -46,7 +46,7 @@ Recette manuelle par Moïse : à plusieurs doigts sur son téléphone.
 
 - [x] Étape 1 — Page `qui-commence/index.html` (modèle compteur : CSP, topbar, styles) + `app.js` (dictionnaire FR/EN, suivi des pointeurs, anneau, tirage, modes)
 - [x] Étape 2 — Intégration : accueil, sw.js, manifeste, README
-- [ ] Étape 3 — Recette automatisée + captures, puis push avec accord
+- [x] Étape 3 — Recette automatisée + captures, essai sur iPhone par Moïse, push
 
 ## Notes / Décisions
 
@@ -55,3 +55,4 @@ Recette manuelle par Moïse : à plusieurs doigts sur son téléphone.
 - Vibration : les navigateurs ne l'autorisent qu'après un vrai « tap » (lever un doigt) ; au tout premier tour, le téléphone peut rester muet. Accepté, l'affichage suffit.
 - Pendant le résultat, les cercles restent figés même doigts levés (pour lire le résultat) ; le premier contact suivant relance un tour.
 - iPhone (2026-11-04) : la zone dépassait en bas, le `min-height: 100vh` de base.css l'emportait sur `100dvh` (100vh ignore la barre d'adresse de Safari) ; corrigé par `min-height: 0` sur la page.
+- Fluidité (2026-11-04) : cercles déplacés par la propriété CSS `translate` (carte graphique) et position de la zone mesurée au contact seulement, pas à chaque mouvement. Sécurité vérifiée : aucun `innerHTML`, aucune saisie, CSP recopiée, réglage `mode` validé à la lecture.

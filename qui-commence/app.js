@@ -79,10 +79,18 @@ function firstFreeColor() {
   return 1;
 }
 
-function placeMarker(el, event) {
+// Coin intérieur de la zone (bordure comprise), d'où partent les cercles.
+// Relu à chaque nouveau contact plutôt qu'à chaque mouvement : le relire forcerait un calcul de mise en page.
+let zoneOrigin = { x: 0, y: 0 };
+function measureZone() {
   const box = zone.getBoundingClientRect();
-  el.style.left = (event.clientX - box.left) + 'px';
-  el.style.top = (event.clientY - box.top) + 'px';
+  zoneOrigin = { x: box.left + zone.clientLeft, y: box.top + zone.clientTop };
+}
+
+// Déplacement par la propriété translate (et non left/top) : géré par la carte graphique, fluide même à 10 doigts.
+// Elle se combine avec les transform: scale() des états .chosen / .out.
+function placeMarker(el, event) {
+  el.style.translate = `${event.clientX - zoneOrigin.x}px ${event.clientY - zoneOrigin.y}px`;
 }
 
 function addMarker(key, event, fixed) {
@@ -158,6 +166,7 @@ function updateHint() {
 zone.addEventListener('pointerdown', event => {
   if (event.target.closest('.reset')) return;
   event.preventDefault();
+  measureZone();
   const isMouse = event.pointerType === 'mouse';
 
   if (phase === 'result') {

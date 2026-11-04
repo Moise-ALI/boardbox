@@ -18,3 +18,4 @@
 | 2026-11-03 | fix | Fluidité mobile : fond fixe, sans verre dépoli, dé 3D économe |
 | 2026-11-03 | feature | Compteur : une tuile colorée par joueur (−10…+10, points de la manche) |
 | 2026-11-04 | init | Système de pilotage Claude (`claude/`), CLAUDE.md réduit à un aiguillage |
+| 2026-11-04 | feature | Qui commence ? : un doigt désigné (ou l'ordre de jeu) après 2 s ; correctif hauteur iPhone, déplacement fluide des cercles |

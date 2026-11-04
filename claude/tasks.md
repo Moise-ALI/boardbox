@@ -4,11 +4,7 @@
 
 ## 🟡 En cours
 
-- [ ] Qui commence ? — voir `claude/features/qui-commence.md`
-  - Périmètre : nouveau dossier `qui-commence/` + intégration (accueil, sw.js, manifeste, README). Ne pas toucher aux autres outils.
-  - [x] Étape 1 — Page + logique
-  - [x] Étape 2 — Intégration
-  - [ ] Étape 3 — Recette (faite) ; essai sur téléphone par Moïse, push avec accord
+<!-- Une seule tâche à la fois -->
 
 ## 🐛 Bugs ouverts
 
@@ -27,6 +23,7 @@
 
 | Date | Tâche |
 |---|---|
+| 2026-11-04 | Qui commence ? (`features/qui-commence.md`) |
 | 2026-11-03 | Compteur en tuiles colorées (`features/compteur.md`) |
 | 2026-11-03 | Fluidité mobile (fond fixe, dé 3D économe) |
 | 2026-10-18 | Renommage BoardBox, PWA (`features/socle-commun.md`) |
