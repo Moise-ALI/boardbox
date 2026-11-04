@@ -387,12 +387,24 @@ setInterval(tick, 250);
 
 /* ---------- Alarme : bip (Web Audio) + vibration ---------- */
 let audio = null;
-// Les navigateurs n'autorisent le son qu'après un geste de l'utilisateur : on prépare l'audio à chaque appui
+// Les navigateurs n'autorisent le son qu'après un geste de l'utilisateur : on prépare l'audio à chaque appui.
+// Sur iPhone (surtout l'appli installée), le son passe à l'état « interrupted » quand l'appli passe en arrière-plan
+// ou que l'écran se verrouille : on le relance dès qu'il n'est pas « running », pas seulement quand il est « suspended ».
 function unlockAudio() {
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   if (!AudioContextClass) return;
-  if (!audio) audio = new AudioContextClass();
-  if (audio.state === 'suspended') audio.resume();
+  if (!audio) {
+    audio = new AudioContextClass();
+    playSilence(); // l'iPhone n'autorise vraiment le son qu'après un premier son joué pendant un appui
+  }
+  if (audio.state !== 'running') audio.resume().catch(() => { /* refusé : nouvel essai au prochain appui */ });
+}
+function playSilence() {
+  const osc = audio.createOscillator(), gain = audio.createGain();
+  gain.gain.value = 0;
+  osc.connect(gain).connect(audio.destination);
+  osc.start();
+  osc.stop(audio.currentTime + 0.05);
 }
 function beep(startAt, frequency) {
   const osc = audio.createOscillator(), gain = audio.createGain();
@@ -404,11 +416,17 @@ function beep(startAt, frequency) {
   osc.start(startAt);
   osc.stop(startAt + 0.3);
 }
+// Pas de vibration sur iPhone : Apple ne l'autorise pas aux pages web ni aux applis installées depuis le navigateur
 function alarm() {
   vibrate([200, 100, 200]);
-  if (!audio || audio.state !== 'running') return;
-  const now = audio.currentTime;
-  beep(now, 880); beep(now + 0.3, 880); beep(now + 0.6, 1320);
+  if (!audio) return;
+  const playBeeps = () => {
+    const now = audio.currentTime;
+    beep(now, 880); beep(now + 0.3, 880); beep(now + 0.6, 1320);
+  };
+  if (audio.state === 'running') { playBeeps(); return; }
+  // Dernière chance si le son a été interrompu depuis le dernier appui (le navigateur peut refuser hors d'un geste)
+  audio.resume().then(playBeeps).catch(() => {});
 }
 
 /* ---------- Écran allumé pendant la partie (si le navigateur le permet) ---------- */

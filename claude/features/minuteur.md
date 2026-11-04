@@ -55,3 +55,4 @@ Recette automatisée (iframe + Edge sans fenêtre, horloge simulée par `--virtu
 - Joueurs du compteur lus en lecture seule (`compteur.partie`) : le minuteur ne modifie jamais les données d'un autre outil.
 - Mode plein écran : même règle de hauteur que `qui-commence` (`100dvh` + `min-height: 0`), seulement pendant la partie (les réglages peuvent défiler).
 - Recette automatisée faite le 2026-11-04 : tous les scénarios de la section Tests passent, console sans erreur, 360 px, clair/sombre.
+- iPhone (2026-11-04) : pas de vibration possible (Apple ne l'autorise pas au web ni aux applis installées depuis le navigateur). Bip présent dans Chrome mais absent dans l'appli installée : l'audio y passe à l'état « interrupted » (arrière-plan, verrouillage) ; il est maintenant relancé à chaque appui dès qu'il n'est pas « running », avec un son muet au premier appui pour le déverrouiller.
