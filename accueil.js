@@ -6,6 +6,7 @@
    et ses textes (name/desc) dans les deux langues. */
 const TOOLS = [
   { path: 'tirage/', icon: '🎲', name: 'tirage.name', desc: 'tirage.desc' },
+  { path: 'qui-commence/', icon: '👆', name: 'quiCommence.name', desc: 'quiCommence.desc' },
   { path: 'compteur/', icon: '🏆', name: 'compteur.name', desc: 'compteur.desc' },
   { path: 'undercover/', icon: '🕵️', name: 'undercover.name', desc: 'undercover.desc' },
   { path: 'codenames/', icon: '🗝️', name: 'codenames.name', desc: 'codenames.desc' }
@@ -23,6 +24,8 @@ const t = BoardBox.i18n({
     'install.dismiss': 'Masquer',
     'tirage.name': 'Tirage & Équipes',
     'tirage.desc': 'Tirez au sort dans une liste ou répartissez-la en équipes équilibrées.',
+    'quiCommence.name': 'Qui commence ?',
+    'quiCommence.desc': 'Chacun pose un doigt sur l\'écran : l\'appli désigne qui commence, ou tout l\'ordre de jeu.',
     'compteur.name': 'Compteur de points',
     'compteur.desc': 'Comptez les scores des soirées jeux : une tuile colorée par joueur, objectif et manches.',
     'undercover.name': 'Undercover',
@@ -41,6 +44,8 @@ const t = BoardBox.i18n({
     'install.dismiss': 'Hide',
     'tirage.name': 'Draw & Teams',
     'tirage.desc': 'Draw random picks from a list or split it into balanced teams.',
+    'quiCommence.name': 'Who goes first?',
+    'quiCommence.desc': 'Everyone puts a finger on the screen: the app picks who starts, or the whole turn order.',
     'compteur.name': 'Score counter',
     'compteur.desc': 'Keep score on game nights: one colour tile per player, target score and rounds.',
     'undercover.name': 'Undercover',

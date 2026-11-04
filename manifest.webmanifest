@@ -2,7 +2,7 @@
   "id": "./",
   "name": "BoardBox",
   "short_name": "BoardBox",
-  "description": "BoardBox : tirage au sort, compteur de points, Undercover, CodeName — vos soirées jeux dans la poche.",
+  "description": "BoardBox : tirage au sort, qui commence, compteur de points, Undercover, CodeName — vos soirées jeux dans la poche.",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",
@@ -17,6 +17,7 @@
   ],
   "shortcuts": [
     { "name": "Tirage & Équipes", "url": "tirage/", "icons": [{ "src": "commun/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Qui commence ?", "url": "qui-commence/", "icons": [{ "src": "commun/icons/icon-192.png", "sizes": "192x192" }] },
     { "name": "Compteur de points", "url": "compteur/", "icons": [{ "src": "commun/icons/icon-192.png", "sizes": "192x192" }] },
     { "name": "Undercover", "url": "undercover/", "icons": [{ "src": "commun/icons/icon-192.png", "sizes": "192x192" }] },
     { "name": "CodeName", "url": "codenames/", "icons": [{ "src": "commun/icons/icon-192.png", "sizes": "192x192" }] }

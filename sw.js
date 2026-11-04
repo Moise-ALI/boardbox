@@ -20,6 +20,7 @@ const PRECACHE = [
   'commun/fonts/jetbrains-mono-latin.woff2', 'commun/fonts/jetbrains-mono-latin-ext.woff2',
   'commun/icons/icon-192.png', 'commun/icons/icon-512.png', 'commun/icons/favicon.png', 'commun/icons/apple-touch-icon.png',
   'tirage/', 'tirage/app.js', 'tirage/i18n.js', 'tirage/de.js', 'tirage/ui.js',
+  'qui-commence/', 'qui-commence/app.js',
   'compteur/', 'compteur/app.js',
   'undercover/', 'undercover/app.js', 'undercover/i18n.js', 'undercover/mots.js', 'undercover/themes.js', 'undercover/donnees.js',
   'codenames/', 'codenames/app.js', 'codenames/i18n.js', 'codenames/mots.js', 'codenames/donnees.js',
