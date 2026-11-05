@@ -3,15 +3,18 @@
 'use strict';
 
 /* Registre des outils : pour en ajouter un, créez son dossier, ajoutez une ligne ici
-   et ses textes (name/desc) dans les deux langues. */
+   et ses textes (name/desc/keywords) dans les deux langues. Les mots-clés servent
+   seulement à la recherche : des mots qu'on taperait sans connaître le nom de l'outil. */
 const TOOLS = [
-  { path: 'tirage/', icon: '🎲', name: 'tirage.name', desc: 'tirage.desc' },
-  { path: 'qui-commence/', icon: '👆', name: 'quiCommence.name', desc: 'quiCommence.desc' },
-  { path: 'compteur/', icon: '🏆', name: 'compteur.name', desc: 'compteur.desc' },
-  { path: 'minuteur/', icon: '⏳', name: 'minuteur.name', desc: 'minuteur.desc' },
-  { path: 'undercover/', icon: '🕵️', name: 'undercover.name', desc: 'undercover.desc' },
-  { path: 'codenames/', icon: '🗝️', name: 'codenames.name', desc: 'codenames.desc' }
+  { path: 'tirage/', icon: '🎲', name: 'tirage.name', desc: 'tirage.desc', keywords: 'tirage.keywords' },
+  { path: 'qui-commence/', icon: '👆', name: 'quiCommence.name', desc: 'quiCommence.desc', keywords: 'quiCommence.keywords' },
+  { path: 'compteur/', icon: '🏆', name: 'compteur.name', desc: 'compteur.desc', keywords: 'compteur.keywords' },
+  { path: 'minuteur/', icon: '⏳', name: 'minuteur.name', desc: 'minuteur.desc', keywords: 'minuteur.keywords' },
+  { path: 'undercover/', icon: '🕵️', name: 'undercover.name', desc: 'undercover.desc', keywords: 'undercover.keywords' },
+  { path: 'codenames/', icon: '🗝️', name: 'codenames.name', desc: 'codenames.desc', keywords: 'codenames.keywords' }
 ];
+
+const SEARCH_MAX_LENGTH = 40;   // aussi en maxlength dans index.html
 
 const t = BoardBox.i18n({
   fr: {
@@ -23,18 +26,28 @@ const t = BoardBox.i18n({
     'install.ios': 'Sur iPhone : touchez Partager (carré avec une flèche), puis « Sur l\'écran d\'accueil ».',
     'install.button': 'Installer',
     'install.dismiss': 'Masquer',
+    'search.label': 'Rechercher un outil',
+    'search.placeholder': 'Rechercher un outil…',
+    'search.count': '{n} / {total} outils',
+    'search.empty': 'Aucun outil ne correspond.',
     'tirage.name': 'Tirage & Équipes',
     'tirage.desc': 'Tirez au sort dans une liste ou répartissez-la en équipes équilibrées.',
+    'tirage.keywords': 'hasard aléatoire random dé roue choisir décider groupes',
     'quiCommence.name': 'Qui commence ?',
     'quiCommence.desc': 'Chacun pose un doigt sur l\'écran : l\'appli désigne qui commence, ou tout l\'ordre de jeu.',
+    'quiCommence.keywords': 'premier joueur doigts hasard tirage ordre',
     'compteur.name': 'Compteur de points',
     'compteur.desc': 'Comptez les scores des soirées jeux : une tuile colorée par joueur, objectif et manches.',
+    'compteur.keywords': 'score marque points joueurs classement',
     'minuteur.name': 'Minuteur de tours',
     'minuteur.desc': 'Un sablier par tour ou une pendule par joueur : on touche l\'écran pour passer la main.',
+    'minuteur.keywords': 'chrono chronomètre temps timer horloge pendule échecs',
     'undercover.name': 'Undercover',
     'undercover.desc': 'Le jeu d\'ambiance sur un seul téléphone : civils, undercovers et Mister White.',
+    'undercover.keywords': 'jeu mots imposteur ambiance soirée',
     'codenames.name': 'CodeName',
-    'codenames.desc': 'Jeu d\'espions en équipes : vue espion et vue joueur synchronisées en direct sur vos téléphones.'
+    'codenames.desc': 'Jeu d\'espions en équipes : vue espion et vue joueur synchronisées en direct sur vos téléphones.',
+    'codenames.keywords': 'jeu mots espions grille indices'
   },
   en: {
     title: 'BoardBox',
@@ -45,24 +58,33 @@ const t = BoardBox.i18n({
     'install.ios': 'On iPhone: tap Share (square with an arrow), then "Add to Home Screen".',
     'install.button': 'Install',
     'install.dismiss': 'Hide',
+    'search.label': 'Search for a tool',
+    'search.placeholder': 'Search for a tool…',
+    'search.count': '{n} / {total} tools',
+    'search.empty': 'No tool matches.',
     'tirage.name': 'Draw & Teams',
     'tirage.desc': 'Draw random picks from a list or split it into balanced teams.',
+    'tirage.keywords': 'random dice wheel pick choose decide groups raffle',
     'quiCommence.name': 'Who goes first?',
     'quiCommence.desc': 'Everyone puts a finger on the screen: the app picks who starts, or the whole turn order.',
+    'quiCommence.keywords': 'first player fingers random pick order',
     'compteur.name': 'Score counter',
     'compteur.desc': 'Keep score on game nights: one colour tile per player, target score and rounds.',
+    'compteur.keywords': 'points tally scoreboard players ranking',
     'minuteur.name': 'Turn timer',
     'minuteur.desc': 'An hourglass per turn or a chess clock per player: tap the screen to pass the turn.',
+    'minuteur.keywords': 'stopwatch time clock countdown chess sand',
     'undercover.name': 'Undercover',
     'undercover.desc': 'The party game on a single phone: civilians, undercovers and Mr. White.',
+    'undercover.keywords': 'game words impostor party',
     'codenames.name': 'CodeName',
-    'codenames.desc': 'Team spy game: spymaster and player views synced live across your phones.'
+    'codenames.desc': 'Team spy game: spymaster and player views synced live across your phones.',
+    'codenames.keywords': 'game words spies grid clues'
   }
 });
 
 BoardBox.initTopbar();
 BoardBox.applyI18n(t);
-document.getElementById('count').textContent = t('count', { n: TOOLS.length });
 
 /* ---------- Encart « Installer l'appli » ---------- */
 (function installPrompt() {
@@ -97,7 +119,32 @@ document.getElementById('count').textContent = t('count', { n: TOOLS.length });
   };
 })();
 
+/* ---------- Recherche : préparation ---------- */
+// Petits mots de liaison ignorés dans les textes des outils : sinon « dé » (devenu « de »)
+// trouverait « Compteur de points », « Minuteur de tours »…
+const IGNORED_WORDS = new Set([
+  'de', 'du', 'des', 'la', 'le', 'les', 'l', 'd', 'un', 'une', 'et', 'ou', 'en', 'a', 'à', 'au', 'aux',
+  'sur', 'par', 'pour', 'the', 'of', 'an', 'and', 'or', 'per', 'to', 'on', 'in', 'your'
+]);
+
+// Minuscules et sans accents : « equipe » doit trouver « Équipes ».
+function normalize(text) {
+  return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+
+function splitWords(text) {
+  return text.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+}
+
+// Mots indexés d'un outil : nom, description et mots-clés, sans les mots de liaison
+function searchWordsOf(tool) {
+  const text = [t(tool.name), t(tool.desc), t(tool.keywords)].join(' ');
+  return splitWords(text).filter(word => !IGNORED_WORDS.has(word)).map(normalize);
+}
+
+/* ---------- Liste des outils ---------- */
 const list = document.getElementById('tools');
+const cards = [];   // { tool, item, searchWords } : une entrée par outil affiché
 for (const tool of TOOLS) {
   const li = document.createElement('li');
   const a = document.createElement('a');
@@ -109,5 +156,52 @@ for (const tool of TOOLS) {
   a.append(icon, h, p);
   li.append(a);
   list.append(li);
+  cards.push({ tool, item: li, searchWords: searchWordsOf(tool) });
 }
+
+/* ---------- Recherche ---------- */
+// Comparaison de chaînes uniquement (pas d'expression régulière construite depuis la saisie).
+// Un mot tapé de 3 lettres ou plus doit commencer un mot de l'outil (« chrono » → « chronomètre ») ;
+// un mot de 1 ou 2 lettres doit être un mot entier (« dé » ne doit pas trouver « décider »).
+function wordMatches(card, typedWord) {
+  if (typedWord.length <= 2) return card.searchWords.includes(typedWord);
+  return card.searchWords.some(word => word.startsWith(typedWord));
+}
+
+// Tous les mots tapés doivent correspondre
+function matches(card, typedWords) {
+  return typedWords.every(typedWord => wordMatches(card, typedWord));
+}
+
+const searchInput = document.getElementById('search');
+const emptyMessage = document.getElementById('searchEmpty');
+const countLabel = document.getElementById('count');
+
+function applySearch() {
+  const typedWords = splitWords(searchInput.value.slice(0, SEARCH_MAX_LENGTH))
+    .filter(word => !IGNORED_WORDS.has(word)).map(normalize);
+  let visibleCount = 0;
+  for (const card of cards) {
+    const visible = matches(card, typedWords);
+    card.item.hidden = !visible;
+    if (visible) visibleCount++;
+  }
+  emptyMessage.hidden = visibleCount > 0;
+  countLabel.textContent = typedWords.length === 0
+    ? t('count', { n: TOOLS.length })
+    : t('search.count', { n: visibleCount, total: TOOLS.length });
+}
+
+searchInput.addEventListener('input', applySearch);
+searchInput.addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    searchInput.value = '';
+    applySearch();
+  } else if (event.key === 'Enter') {
+    const visibleCards = cards.filter(card => !card.item.hidden);
+    if (visibleCards.length === 1) location.href = visibleCards[0].tool.path;
+  }
+});
+// Retour arrière du navigateur : le champ peut être pré-rempli par le navigateur
+applySearch();
 })();

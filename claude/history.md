@@ -21,3 +21,4 @@
 | 2026-11-04 | feature | Qui commence ? : un doigt désigné (ou l'ordre de jeu) après 2 s ; correctif hauteur iPhone, déplacement fluide des cercles |
 | 2026-11-04 | feature | Minuteur de tours : sablier ou pendule, précédent, pause, bip, écran allumé ; correctif du bip dans l'appli installée sur iPhone |
 | 2026-11-05 | fix | Tirage : three.js chargé après l'affichage (la page n'attend plus le CDN) ; test « téléphone lent » ajouté à la recette |
+| 2026-11-05 | feature | Accueil : recherche des outils (nom, description, mots-clés FR/EN), sans accents ni majuscules |

@@ -24,6 +24,7 @@
 
 | Date | Tâche |
 |---|---|
+| 2026-11-05 | Recherche sur l'accueil (`features/recherche-accueil.md`) |
 | 2026-11-04 | Minuteur de tours (`features/minuteur.md`) |
 | 2026-11-04 | Qui commence ? (`features/qui-commence.md`) |
 | 2026-11-03 | Compteur en tuiles colorées (`features/compteur.md`) |
