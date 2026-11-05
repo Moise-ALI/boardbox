@@ -483,17 +483,40 @@
         renderHistory();
 
         // --- Dé 3D (Three.js) ---
-        (function initDie() {
+        // three.js (≈ 600 Ko) n'est demandé qu'une fois la page affichée : la liste et les boutons
+        // n'attendent plus le CDN lors d'une première visite sur réseau lent. Le dé apparaît ensuite.
+        const THREE_URL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+        const THREE_SRI = 'sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==';
+
+        function loadThree() {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = THREE_URL;
+                script.integrity = THREE_SRI;
+                script.crossOrigin = 'anonymous';
+                script.referrerPolicy = 'no-referrer';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.body.appendChild(script);
+            });
+        }
+
+        // Hors connexion sans cache, ou CDN bloqué : un dé emoji à la place
+        function showDieFallback() {
             const container = document.getElementById('die3d');
-            if (!container || typeof THREE === 'undefined') {
-                if (container) {
-                    const fb = document.createElement('span');
-                    fb.className = 'logo-fallback';
-                    fb.textContent = '🎲';
-                    container.appendChild(fb);
-                }
-                return;
-            }
+            if (!container) return;
+            const fb = document.createElement('span');
+            fb.className = 'logo-fallback';
+            fb.textContent = '🎲';
+            container.appendChild(fb);
+        }
+
+        loadThree().then(initDie, showDieFallback);
+
+        function initDie() {
+            const container = document.getElementById('die3d');
+            if (!container) return;
+            if (typeof THREE === 'undefined') { showDieFallback(); return; }
 
             const SIZE = 150;
             const scene = new THREE.Scene();
@@ -706,5 +729,5 @@
             el.addEventListener('pointerdown', onDown);
             window.addEventListener('pointermove', onMove);
             window.addEventListener('pointerup', onUp);
-        })();
+        }
     

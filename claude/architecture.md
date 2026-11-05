@@ -60,7 +60,7 @@ supabase/                Scripts SQL de référence (undercover.sql, codenames.s
 ### Ajouter un outil
 1. Créer `nom-outil/index.html` + `nom-outil/app.js` sur le modèle de `compteur/` : CSP, topbar avec langue/thème, `base.css` et `commun.js` dans le head, store préfixé, dictionnaire FR/EN.
 2. Ajouter une ligne dans `TOOLS` de `accueil.js` (+ textes FR/EN), ses fichiers dans `PRECACHE` de `sw.js`, un raccourci dans `manifest.webmanifest`, une ligne dans `README.md`.
-3. Vérifier : mobile 360 px, thème clair et sombre, FR et EN, rechargement (données conservées), console sans erreur ni blocage CSP.
+3. Vérifier : mobile 360 px, thème clair et sombre, FR et EN, rechargement (données conservées), console sans erreur ni blocage CSP, téléphone lent (3G + processeur ralenti 4×, voir `claude/dev.md`).
 4. Commit puis push (avec accord).
 
 ### Renommer des clés de localStorage

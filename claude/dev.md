@@ -28,6 +28,8 @@ D:\IA\ComfyUI_windows_portable\python_embeded\python.exe -I -m http.server 8000
 
 Pas de tests automatisés versionnés. Recette avant chaque push : charger l'outil modifié, exercer ses actions principales, console sans erreur ni blocage CSP, 360 px, clair/sombre, FR/EN.
 
+Téléphone lent (nouvel outil, ou ajout d'une bibliothèque ou d'un gros fichier) : dans Edge, F12 > onglet Performance > roue dentée, choisir « Processeur : ralenti 4× » et « Réseau : 3G ». Vider le cache (clic droit sur le bouton Recharger > « Vider le cache et effectuer une actualisation forcée ») ou passer en navigation InPrivate pour une première visite. La page doit rester utilisable en quelques secondes, et un gros script tiers ne doit pas bloquer l'affichage (modèle : three.js chargé après coup dans `tirage/ui.js`).
+
 Recette automatisable par Claude (Edge sans fenêtre, sans dépendance) :
 - Une page de test temporaire à la racine (`_test.html` + `_test.js`, à supprimer ensuite) charge l'outil dans une `<iframe>` de 360 px, prépare le localStorage, clique sur les boutons via `contentDocument`, et écrit les résultats dans un `<pre>`.
 - `msedge --headless --disable-gpu --user-data-dir=<dossier temporaire> --virtual-time-budget=4000 --dump-dom http://localhost:8000/_test.html` renvoie le DOM avec les résultats ; `--enable-logging=stderr --v=0` donne la console (erreurs, CSP).

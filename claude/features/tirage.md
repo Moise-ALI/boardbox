@@ -24,7 +24,7 @@ Remplacer le papier dans le chapeau et le dé physique.
 ### Cas limites
 
 - Lien de partage : contenu limité en taille et jamais injecté en HTML (faille XSS corrigée le 2026-10-17).
-- three.js indisponible : le reste de l'outil fonctionne.
+- three.js indisponible : le reste de l'outil fonctionne (dé emoji à la place). Il est chargé par `ui.js` après l'affichage, pour ne pas retarder la page.
 - Une erreur JS en début de script casse le dé : vérifier la console.
 
 ## Tests
