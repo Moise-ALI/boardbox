@@ -1,6 +1,6 @@
 # Fonctionnalité : Minuteur de tours
 
-**Statut** : 🟡 En cours
+**Statut** : ✅ Terminé
 **Priorité** : normale
 **Dépend de** : socle-commun (reprend les joueurs de `compteur.partie` s'ils existent)
 
@@ -48,7 +48,7 @@ Recette automatisée (iframe + Edge sans fenêtre, horloge simulée par `--virtu
 - [x] Étape 1 — Écran de réglages : mode (Sablier / Pendule), durée en pastilles (sablier 15 s → 3 min, pendule 1 → 30 min), joueurs (nom, couleur, ajout, retrait, reprise du compteur), « Lancer » / « Reprendre la partie »
 - [x] Étape 2 — Écran de jeu plein écran : grande zone du joueur actif (nom, temps, barre de progression), file des joueurs suivants, Précédent / Pause / Réglages ; horloge sur l'heure réelle, partie enregistrée à chaque action ; bip (Web Audio) + vibration + clignotement à la fin du temps ; Wake Lock
 - [x] Étape 3 — Intégration : accueil, sw.js, manifeste, README
-- [ ] Étape 4 — Recette automatisée + captures, essai sur téléphone par Moïse, push avec accord
+- [x] Étape 4 — Recette automatisée + captures, essai sur iPhone par Moïse (Chrome et appli installée), push
 
 ## Notes / Décisions
 

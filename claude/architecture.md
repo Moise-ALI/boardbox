@@ -80,3 +80,4 @@ Modifier le `.sql` de `supabase/` (il doit rester ré-exécutable), puis l'exéc
 | 2026-10-18 | PWA avec précache complet | Utilisable en soirée sans réseau |
 | 2026-11-03 | Fond fixe, pas de verre dépoli sur les éléments nombreux | Fluidité sur téléphone d'entrée de gamme |
 | 2026-11-03 | Compteur en tuiles à ordre fixe (plus de tri par score) | Les boutons ne doivent pas bouger sous le doigt ; le rang reste affiché |
+| 2026-11-04 | Rester sur Supabase plutôt qu'un Postgres sur le Raspberry ; le Pi réveille Supabase chaque jour | Un Postgres seul n'est pas joignable depuis un navigateur : il faudrait reconstruire l'API, le temps réel de CodeName et la connexion admin par e-mail. Une base à la maison rendrait aussi tout BoardBox dépendant de la maison. Le seul vrai problème était la mise en pause après 7 jours d'inactivité |

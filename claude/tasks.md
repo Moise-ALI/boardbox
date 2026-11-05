@@ -5,12 +5,6 @@
 ## 🟡 En cours
 
 <!-- Une seule tâche à la fois -->
-- [ ] Minuteur de tours — voir `claude/features/minuteur.md`
-  - Périmètre : nouveau dossier `minuteur/` + intégration (accueil, sw.js, manifeste, README). Lecture seule de `compteur.partie`.
-  - [x] Étape 1 — Écran de réglages
-  - [x] Étape 2 — Écran de jeu (temps, tour suivant, précédent, pause, alertes, écran allumé)
-  - [x] Étape 3 — Intégration
-  - [ ] Étape 4 — Recette, essai par Moïse, push avec accord
 
 ## 🐛 Bugs ouverts
 
@@ -23,12 +17,14 @@
 
 ## 🔵 Backlog (priorisé)
 
-<!-- Vide : proposer une idée avec /kit:feature -->
+- [ ] Message secret (s'autodétruit après lecture) — priorité: normale — dépend de: exécution de supabase/message-secret.sql — voir `claude/features/message-secret.md`
+- [ ] Passe-Wi-Fi (QR code de connexion pour les invités) — priorité: basse — dépend de: rien — voir `claude/features/passe-wifi.md`
 
 ## ✅ Terminées récemment
 
 | Date | Tâche |
 |---|---|
+| 2026-11-04 | Minuteur de tours (`features/minuteur.md`) |
 | 2026-11-04 | Qui commence ? (`features/qui-commence.md`) |
 | 2026-11-03 | Compteur en tuiles colorées (`features/compteur.md`) |
 | 2026-11-03 | Fluidité mobile (fond fixe, dé 3D économe) |
