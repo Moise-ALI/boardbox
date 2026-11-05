@@ -24,7 +24,7 @@ Aucune logique existante ne fait déjà ce travail. Réutilisés : `commun/supab
 
 ### Expéditeur
 - Un champ texte (taille limitée) + durée de vie, bouton « Créer le lien ».
-- Chiffrement **dans le navigateur** (WebCrypto, AES-GCM 256 bits, clé aléatoire) ; seuls le texte chiffré et le vecteur d'initialisation partent vers Supabase.
+- Chiffrement **dans le navigateur** (WebCrypto, AES-GCM 256 bits, clé aléatoire) ; seuls le texte chiffré, le vecteur d'initialisation et l'empreinte du jeton de lecture partent vers Supabase.
 - Lien obtenu : `…/message-secret/#<id>.<clé>` ; boutons « Copier le lien » et « Partager » (`navigator.share` si disponible).
 - Le texte en clair est effacé de la page après création.
 
@@ -35,9 +35,8 @@ Aucune logique existante ne fait déjà ce travail. Réutilisés : `commun/supab
 - L'adresse est nettoyée (`history.replaceState`) pour que la clé ne reste pas dans l'historique du navigateur.
 
 ### Base (Supabase)
-- Table `message_secret_notes` (id aléatoire de 128 bits généré par la base, texte chiffré, iv, `expires_at`) : RLS activé, **aucun droit public**.
-- `message_secret_create(p_cipher, p_iv, p_ttl)` (`security definer`) : vérifie les tailles et la durée, supprime au passage les messages expirés, renvoie l'id.
-- `message_secret_read(p_id)` (`security definer`) : `delete … returning` sur une ligne non expirée ; renvoie rien si déjà lue, expirée ou inexistante.
+- Table `message_secret_notes` (id aléatoire généré par la base, texte chiffré, iv, empreinte du jeton de lecture, essais ratés, `expires_at`) : RLS activé, **aucun droit public**.
+- `message_secret_create(…)` et `message_secret_read(…)` (`security definer`) : détail dans le plan d'implémentation.
 - Appels par `fetch` sur `/rest/v1/rpc/…` (pas de supabase-js : pas besoin de temps réel, une dépendance CDN de moins). CSP `connect-src` limitée au projet Supabase ; `referrer: no-referrer`.
 
 ### Cas limites
@@ -46,7 +45,7 @@ Aucune logique existante ne fait déjà ce travail. Réutilisés : `commun/supab
 - Clé absente ou abîmée dans le lien (copie partielle) : message d'erreur, **sans** appeler la base (sinon le message serait détruit pour rien).
 - Hors connexion ou Supabase en pause : message clair ; c'est le seul outil qui ne peut pas fonctionner sans réseau (exception assumée à la règle du repli).
 - Anti-abus (dépôt public) : texte limité (quelques Ko après chiffrement), durée de vie maximale, nombre total de messages en attente plafonné côté base (création refusée au-delà).
-- Mot de passe erroné : le message ne doit **pas** être détruit (sinon une faute de frappe le perd). À trancher au plan : nombre d'essais limité côté base avant destruction, en gardant la suppression atomique une fois déchiffré.
+- Mot de passe erroné : le message n'est **pas** détruit (sinon une faute de frappe le perd). 5 essais, puis destruction (voir « Clés et jeton de lecture » dans le plan).
 - Presse-papiers refusé (ancien navigateur) : le texte reste sélectionnable à la main.
 
 ## Questions ouvertes
@@ -73,7 +72,42 @@ Recette manuelle par Moïse : envoi d'un message réel par WhatsApp à soi-même
 
 ## Plan d'implémentation
 
-- [ ] À proposer après réponse aux questions ouvertes.
+Proposé le 2026-11-05, à valider par Moïse.
+
+### Clés et jeton de lecture (règle le cas du mot de passe erroné)
+
+- Le lien contient 32 octets aléatoires `L` (base64url) ; un mot de passe éventuel est ajouté par un `.m` final : `#<id>.<L>` ou `#<id>.<L>.m`. Le destinataire sait donc s'il doit demander un mot de passe, sans interroger la base.
+- Le navigateur calcule `PBKDF2-SHA-256(mot de passe ou "", sel = L, 600 000 itérations)` → 64 octets : les 32 premiers forment la **clé AES-GCM**, les 32 suivants le **jeton de lecture**. Un seul chemin de code, avec ou sans mot de passe.
+- La base ne reçoit que l'empreinte `SHA-256(jeton)`. À la lecture, elle compare l'empreinte du jeton envoyé :
+  - bon jeton → `delete … returning` (lecture et destruction en une opération) ;
+  - mauvais jeton → compteur d'essais + 1, message conservé ; au 5ᵉ échec, destruction.
+- Conséquences : le mot de passe ne quitte jamais le téléphone ; connaître seulement l'`id` ne permet ni de lire ni de détruire le message ; la base ne peut rien déchiffrer.
+
+### Base (`supabase/message-secret.sql`, ré-exécutable)
+
+- Table `message_secret_notes` : `id uuid` aléatoire (122 bits), `cipher text`, `iv text`, `token_hash text`, `failed_attempts int`, `expires_at timestamptz`. RLS activé, aucune policy, `revoke all` pour `anon` et `authenticated`.
+- `message_secret_create(p_cipher, p_iv, p_token_hash, p_ttl_hours)` : `p_ttl_hours` ∈ {1, 24, 168} ; texte chiffré ≤ 11 000 caractères (2 000 caractères, emoji compris, une fois chiffrés en base64) ; supprime les messages expirés ; refuse au-delà de 5 000 messages en attente ; renvoie l'`id`.
+- `message_secret_read(p_id, p_token_hash)` : renvoie `(statut, cipher, iv, essais_restants)` avec statut `ok`, `mauvais_mot_de_passe` ou `introuvable` (lu, expiré ou inventé, sans distinction).
+
+### Fichiers
+
+- `message-secret/chiffrement.js` : WebCrypto seul, sans DOM (génération de `L`, dérivation, chiffrement, déchiffrement, lecture et écriture du lien).
+- `message-secret/donnees.js` : les deux appels `fetch` sur `/rest/v1/rpc/…` avec la clé publishable de `commun/supabase-config.js`.
+- `message-secret/app.js` : interface et dictionnaire FR/EN. `message-secret/index.html` : CSP (`connect-src` limité au projet Supabase), `meta referrer no-referrer`.
+- L'adresse est nettoyée (`history.replaceState`) **dès l'ouverture** : la clé est gardée en mémoire seulement. Un rechargement perd l'accès, pas le message : il suffit de rouvrir le lien.
+
+### Étapes
+
+- [ ] 1. Écrire `supabase/message-secret.sql`.
+- [ ] 2. **Moïse** l'exécute dans Supabase > SQL Editor ; je vérifie par appels REST directs : création, lecture, deuxième lecture `introuvable`, lecture directe de la table refusée, texte trop long et durée invalide refusés.
+- [ ] 3. `chiffrement.js` + test navigateur : aller-retour avec et sans mot de passe, mauvais mot de passe, lien abîmé, temps de dérivation mesuré (cible < 1 s sur téléphone, sinon baisser les itérations).
+- [ ] 4. `donnees.js`.
+- [ ] 5. `index.html` + `app.js` : écran de création (texte et compteur 2 000, durée 1 h / 24 h / 7 j, mot de passe facultatif) et écran du lien (Copier, Partager, Nouveau message).
+- [ ] 6. Écran de lecture : bouton « Afficher le message », champ mot de passe si `.m`, message + Copier + avertissement, essais restants, erreurs (lien abîmé sans appel à la base, introuvable, hors connexion).
+- [ ] 7. Intégration : `accueil.js` (🔒, FR/EN), `index.html` (`?v`), `sw.js` (PRECACHE), `manifest.webmanifest`, `README.md`.
+- [ ] 8. Recette automatisée (section Tests) + téléphone lent, 360 px, clair/sombre, FR/EN, console sans erreur ni blocage CSP.
+- [ ] 9. **Moïse** : recette manuelle (WhatsApp vers soi-même, l'aperçu ne détruit rien ; copie sur iPhone, avec et sans mot de passe).
+- [ ] 10. Documentation : `context.md` (table, rôle « destinataire »), `architecture.md` (décision : chiffrement dans le navigateur, jeton de lecture dérivé), `history.md`.
 
 ## Notes / Décisions
 
