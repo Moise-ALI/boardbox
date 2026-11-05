@@ -3,6 +3,8 @@
    - pages (navigation)      : réseau d'abord (toujours la dernière version en ligne), mémoire si hors ligne
    - scripts, styles, polices, icônes, bibliothèques CDN : mémoire d'abord ; chaque mise à jour change
      le « ?v=N » de l'URL, donc une nouvelle version est toujours téléchargée
+   - cartes du Brise-glace (brise-glace/cartes/*.txt, modifiées à la main sans ?v=N) : réseau d'abord,
+     comme les pages (isEditableContent)
    - Supabase (données de jeu) : jamais mis en mémoire
    Changer CACHE_VERSION uniquement pour forcer le rechargement complet (liste PRECACHE modifiée…). */
 const CACHE_VERSION = 'v1';
@@ -24,6 +26,9 @@ const PRECACHE = [
   'compteur/', 'compteur/app.js',
   'minuteur/', 'minuteur/app.js',
   'pere-noel/', 'pere-noel/tirage.js', 'pere-noel/app.js',
+  'brise-glace/', 'brise-glace/app.js',
+  'brise-glace/cartes/fr/legeres.txt', 'brise-glace/cartes/fr/souvenirs.txt', 'brise-glace/cartes/fr/profondes.txt', 'brise-glace/cartes/fr/famille.txt', 'brise-glace/cartes/fr/couple.txt', 'brise-glace/cartes/fr/amis.txt',
+  'brise-glace/cartes/en/legeres.txt', 'brise-glace/cartes/en/souvenirs.txt', 'brise-glace/cartes/en/profondes.txt', 'brise-glace/cartes/en/famille.txt', 'brise-glace/cartes/en/couple.txt', 'brise-glace/cartes/en/amis.txt',
   'undercover/', 'undercover/app.js', 'undercover/i18n.js', 'undercover/mots.js', 'undercover/themes.js', 'undercover/donnees.js',
   'codenames/', 'codenames/app.js', 'codenames/i18n.js', 'codenames/mots.js', 'codenames/donnees.js',
   'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
@@ -56,8 +61,15 @@ self.addEventListener('fetch', event => {
   const url = new URL(req.url);
   if (url.hostname.endsWith('.supabase.co')) return;                 // données en direct uniquement
   if (req.mode === 'navigate') { event.respondWith(networkFirst(req, url)); return; }
+  if (isEditableContent(url)) { event.respondWith(networkFirst(req, url)); return; }
   if (url.origin === location.origin || CDN_HOSTS.includes(url.hostname)) event.respondWith(cacheFirst(req, url));
 });
+
+/** Contenus modifiés à la main sans changer de ?v=N (cartes du Brise-glace, une question par ligne) :
+    traités comme les pages, pour qu'une carte ajoutée sur GitHub apparaisse au rechargement suivant. */
+function isEditableContent(url) {
+  return url.origin === location.origin && url.pathname.includes('/brise-glace/cartes/') && url.pathname.endsWith('.txt');
+}
 
 /** Pages : réseau d'abord (revalidé, délai max 4 s), sinon la version en mémoire.
     Clé sans paramètres : ?room=… ou ?items=… retombent sur la même page hors ligne. */

@@ -1,0 +1,43 @@
+# Paquet « Légères » : pour démarrer en douceur.
+# Une question par ligne. Les lignes vides et celles qui commencent par # sont ignorées.
+
+Si tu pouvais avoir un super-pouvoir complètement inutile, lequel choisirais-tu ?
+Quel est le plat que tu pourrais manger tous les jours sans t'en lasser ?
+Plutôt mer ou montagne ? Et pourquoi ?
+Quelle chanson te fait danser à coup sûr ?
+Quel est le dernier truc qui t'a fait rire aux éclats ?
+Si tu ouvrais un restaurant, quel serait son nom et sa spécialité ?
+Quel est ton petit plaisir coupable ?
+Tu gagnes une journée entièrement libre, sans obligation : tu fais quoi ?
+Quel animal te représente le mieux ?
+Quelle appli de ton téléphone pourrais-tu supprimer sans regret ?
+Si ta vie était un film, quel en serait le titre ?
+Quel est l'objet le plus inutile que tu possèdes, mais que tu gardes quand même ?
+Plutôt lève-tôt ou couche-tard ?
+Quel est le meilleur cadeau que tu aies jamais reçu ?
+Quelle est la chose la plus bizarre que tu aies déjà mangée ?
+Si tu pouvais parler une langue d'un claquement de doigts, laquelle ?
+Quel métier aurais-tu adoré faire dans une autre vie ?
+Quel est ton dessert préféré, sans hésiter ?
+Quel personnage de film ou de série aimerais-tu avoir comme ami ?
+Si tu devais vivre dans une autre ville, laquelle choisirais-tu ?
+Quelle expression utilises-tu beaucoup trop souvent ?
+Quel est ton jeu de société préféré, et pourquoi ?
+Tu pars sur une île déserte avec trois objets : lesquels ?
+Quelle tâche ménagère détestes-tu le plus ?
+Quel talent caché as-tu que peu de gens connaissent ?
+Plutôt chat ou chien ? Défends ton camp !
+Quel est le film que tu peux regarder encore et encore ?
+Si tu devais changer de prénom, lequel prendrais-tu ?
+Quelle est la meilleure invention de tous les temps, selon toi ?
+Quel est ton record de sommeil sans te réveiller ?
+Quel goût de glace choisis-tu à tous les coups ?
+Si tu pouvais dîner avec n'importe quelle personne célèbre, qui serait-ce ?
+Quel est le pire film que tu aies vu en entier ?
+Quelle saison préfères-tu, et qu'est-ce que tu y fais ?
+Si tu avais un robot à la maison, quelle serait sa première mission ?
+Quelle est ta façon préférée de perdre du temps ?
+Qu'est-ce qui te met de bonne humeur en moins de cinq minutes ?
+Quel est le dernier achat dont tu es vraiment content ?
+Si tu pouvais maîtriser un instrument du jour au lendemain, lequel ?
+Quelle est la chose la plus drôle qu'un enfant t'ait dite ?

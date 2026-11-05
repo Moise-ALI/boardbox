@@ -29,6 +29,7 @@ BoardBox regroupe de petites applis web pour les soirées jeux de société (tir
 | `boardbox.` | Préférences communes : `theme`, langue |
 | `tirage.` | Listes, historique des tirages |
 | `compteur.` | `partie` : objectif, manche, joueurs (`name`, `score`, `base` = score au début de la manche, `c` = couleur), historique d'annulation |
+| `brise-glace.` | `paquets` (choisis), `vues` (cartes déjà tirées, par paquet et par texte), `mesCartes` (cartes personnelles) |
 | `pere-noel.` | `organisation` : prénoms, exclusions (paires), budget, date — **jamais le résultat du tirage** |
 | `undercover.`, `codenames.` | Réglages et état local des jeux |
 
@@ -57,6 +58,7 @@ BoardBox regroupe de petites applis web pour les soirées jeux de société (tir
 - Le lien e-mail de connexion admin s'ouvre dans un nouvel onglet : `flowType: 'implicit'` obligatoire.
 - Le glisser-déposer HTML5 ne marche pas au doigt : événements pointer + poignée en `touch-action: none`.
 - **Page plein écran** (zone tactile qui remplit l'écran) : `height: 100dvh` **et** `min-height: 0` sur le `body`, sinon le `min-height: 100vh` de `base.css` l'emporte et, sur iPhone, la page passe sous la barre du navigateur (100vh ignore les barres). Modèle : `qui-commence/index.html`.
+- **Grille à une colonne** (`display: grid` qui empile des blocs) : écrire `grid-template-columns: minmax(0, 1fr)`, sinon la colonne s'élargit à la taille de son contenu (grille de boutons, champ + bouton) et la page déborde à 360 px. Cas vécu deux fois dans `brise-glace/`.
 - Élément qui suit le doigt : le déplacer par la propriété CSS `translate`, et mesurer la zone au contact plutôt qu'à chaque mouvement (fluidité).
 - **iPhone** : aucune vibration possible (`navigator.vibrate` absent) ; le son Web Audio passe à l'état « interrupted » dans l'appli installée : le relancer à chaque appui dès qu'il n'est pas « running » (modèle : `minuteur/app.js`).
 - Supabase gratuit se met en pause après une semaine d'inactivité : les outils doivent fonctionner avec leurs données intégrées. Depuis le 2026-11-04, le Raspberry de la maison (qui sert aussi https://boardbox.stream) fait une lecture par jour pour l'en empêcher : `supabase-eveil.timer`, documenté dans `D:\PROJET\raspberry-maison\claude\features\boardbox.md`. Il lit l'adresse et la clé dans `commun/supabase-config.js` : garder le format `url: '…'` / `key: '…'` (une valeur par ligne) si on modifie ce fichier.

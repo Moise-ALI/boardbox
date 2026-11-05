@@ -16,6 +16,7 @@ commun/vendor/           Bibliothèques hébergées (qrcode-generator) + licence
 tirage/                  Tirage au sort & équipes : app.js (logique sans DOM), ui.js (interface), de.js (dé 3D), i18n.js
 compteur/                Compteur de points : une tuile colorée par joueur (app.js)
 qui-commence/, minuteur/ Qui commence ? (doigts sur l'écran), Minuteur de tours (app.js)
+brise-glace/             Brise-glace : app.js, cartes/<langue>/<paquet>.txt (une question par ligne, lues « réseau d'abord »)
 pere-noel/               Père Noël secret : tirage.js (tirage sous contraintes, liens, sans DOM), app.js (interface)
 undercover/              Jeu sur un téléphone (app.js, mots.js, themes.js, donnees.js, i18n.js) + admin.html/admin.js (modération, FR seul)
 codenames/               Salle partagée par lien, vue espion / joueur, temps réel (app.js, mots.js, donnees.js, i18n.js)
@@ -57,6 +58,7 @@ supabase/                Scripts SQL de référence (undercover.sql, codenames.s
 ### PWA
 - Chaque page a dans son `<head>` : `rel="manifest"`, favicon, apple-touch-icon, `meta theme-color` (mise à jour par commun.js selon le thème).
 - `sw.js` : pages en réseau d'abord (4 s max, puis mémoire), fichiers statiques et CDN en mémoire d'abord (le `?v=N` garantit les mises à jour), Supabase jamais en mémoire. Caches préfixés `boardbox-`.
+- Exception : les contenus modifiés à la main sans `?v=N` (cartes du Brise-glace, `isEditableContent()` dans `sw.js`) sont traités comme les pages, en réseau d'abord.
 
 ## Procédures récurrentes
 
@@ -65,6 +67,10 @@ supabase/                Scripts SQL de référence (undercover.sql, codenames.s
 2. Ajouter une ligne dans `TOOLS` de `accueil.js` (+ nom, description et mots-clés de recherche, FR/EN), ses fichiers dans `PRECACHE` de `sw.js`, un raccourci dans `manifest.webmanifest`, une ligne dans `README.md`.
 3. Vérifier : mobile 360 px, thème clair et sombre, FR et EN, rechargement (données conservées), console sans erreur ni blocage CSP, téléphone lent (3G + processeur ralenti 4×, voir `claude/dev.md`).
 4. Commit puis push (avec accord).
+
+### Ajouter des cartes au Brise-glace
+- **Une carte** : ajouter une ligne dans `brise-glace/cartes/<fr|en>/<paquet>.txt` (possible directement sur GitHub, bouton crayon). Rien d'autre à changer : pas de `?v=N`. Lignes vides et lignes commençant par `#` ignorées ; 300 caractères au plus par carte.
+- **Un paquet** : créer `cartes/fr/<id>.txt` (et `cartes/en/<id>.txt`), ajouter `{ id, icon }` dans `PACKS` de `brise-glace/app.js` et son nom `'pack.<id>'` en FR/EN, ajouter les fichiers au `PRECACHE` de `sw.js`, puis incrémenter `app.js?v=N`.
 
 ### Renommer des clés de localStorage
 Écrire une migration (lire l'ancienne clé, écrire la nouvelle). Ne modifier que les appels `localStorage.*` : un remplacement global touche aussi les `id` HTML et les `getElementById` du même nom.
@@ -85,3 +91,4 @@ Modifier le `.sql` de `supabase/` (il doit rester ré-exécutable), puis l'exéc
 | 2026-11-03 | Compteur en tuiles à ordre fixe (plus de tri par score) | Les boutons ne doivent pas bouger sous le doigt ; le rang reste affiché |
 | 2026-11-04 | Rester sur Supabase plutôt qu'un Postgres sur le Raspberry ; le Pi réveille Supabase chaque jour | Un Postgres seul n'est pas joignable depuis un navigateur : il faudrait reconstruire l'API, le temps réel de CodeName et la connexion admin par e-mail. Une base à la maison rendrait aussi tout BoardBox dépendant de la maison. Le seul vrai problème était la mise en pause après 7 jours d'inactivité |
 | 2026-11-05 | Père Noël secret : le tirage de chacun est dans son lien (après le `#`, base64url, pas chiffré), sans serveur | Exception assumée à « un secret de jeu ne doit jamais être calculable côté client » : sans serveur, rien n'empêche l'organisateur d'ouvrir les liens des autres. Atténuation : le résultat n'est jamais affiché ni mémorisé chez lui. Un serveur n'apporterait que cette garantie, pour un échange entre proches |
+| 2026-11-06 | Brise-glace : cartes en fichiers texte lus « réseau d’abord » par le service worker | Moïse ajoute une carte en éditant une ligne sur GitHub, sans base de données ni numéro de version à changer ; la copie en mémoire ne sert qu’au mode hors connexion |

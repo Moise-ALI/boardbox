@@ -23,3 +23,4 @@
 | 2026-11-05 | fix | Tirage : three.js chargé après l'affichage (la page n'attend plus le CDN) ; test « téléphone lent » ajouté à la recette |
 | 2026-11-05 | feature | Accueil : recherche des outils (nom, description, mots-clés FR/EN), sans accents ni majuscules |
 | 2026-11-05 | feature | Père Noël secret : tirage sous exclusions, un lien (ou QR code) par participant ou téléphone passé de main en main, sans serveur ; résultat jamais affiché ni gardé |
+| 2026-11-06 | feature | Brise-glace : 6 paquets de questions FR/EN en fichiers texte modifiables sur GitHub, cartes personnelles importables (liste collée ou .txt), carte en verre dépoli, tirage sans répétition |
