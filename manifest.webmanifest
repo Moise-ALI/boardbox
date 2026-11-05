@@ -2,7 +2,7 @@
   "id": "./",
   "name": "BoardBox",
   "short_name": "BoardBox",
-  "description": "BoardBox : tirage au sort, qui commence, compteur de points, minuteur, Undercover, CodeName — vos soirées jeux dans la poche.",
+  "description": "BoardBox : tirage au sort, qui commence, compteur de points, minuteur, Père Noël secret, Undercover, CodeName — vos soirées jeux dans la poche.",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",
@@ -20,6 +20,7 @@
     { "name": "Qui commence ?", "url": "qui-commence/", "icons": [{ "src": "commun/icons/icon-192.png", "sizes": "192x192" }] },
     { "name": "Compteur de points", "url": "compteur/", "icons": [{ "src": "commun/icons/icon-192.png", "sizes": "192x192" }] },
     { "name": "Minuteur de tours", "url": "minuteur/", "icons": [{ "src": "commun/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Père Noël secret", "url": "pere-noel/", "icons": [{ "src": "commun/icons/icon-192.png", "sizes": "192x192" }] },
     { "name": "Undercover", "url": "undercover/", "icons": [{ "src": "commun/icons/icon-192.png", "sizes": "192x192" }] },
     { "name": "CodeName", "url": "codenames/", "icons": [{ "src": "commun/icons/icon-192.png", "sizes": "192x192" }] }
   ]

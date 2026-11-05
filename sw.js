@@ -14,7 +14,7 @@ const CDN_HOSTS = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net'];
 // Tout ce qu'il faut pour que chaque outil fonctionne hors connexion, même jamais ouvert
 const PRECACHE = [
   './', 'manifest.webmanifest', 'accueil.js',
-  'commun/base.css', 'commun/commun.js', 'commun/supabase-config.js', 'commun/vendor/qrcode.js',
+  'commun/base.css', 'commun/commun.js', 'commun/supabase-config.js', 'commun/vendor/qrcode.js', 'commun/qr.js',
   'commun/fonts/inter-latin.woff2', 'commun/fonts/inter-latin-ext.woff2',
   'commun/fonts/sora-latin.woff2', 'commun/fonts/sora-latin-ext.woff2',
   'commun/fonts/jetbrains-mono-latin.woff2', 'commun/fonts/jetbrains-mono-latin-ext.woff2',
@@ -23,6 +23,7 @@ const PRECACHE = [
   'qui-commence/', 'qui-commence/app.js',
   'compteur/', 'compteur/app.js',
   'minuteur/', 'minuteur/app.js',
+  'pere-noel/', 'pere-noel/tirage.js', 'pere-noel/app.js',
   'undercover/', 'undercover/app.js', 'undercover/i18n.js', 'undercover/mots.js', 'undercover/themes.js', 'undercover/donnees.js',
   'codenames/', 'codenames/app.js', 'codenames/i18n.js', 'codenames/mots.js', 'codenames/donnees.js',
   'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',

@@ -29,6 +29,7 @@ BoardBox regroupe de petites applis web pour les soirées jeux de société (tir
 | `boardbox.` | Préférences communes : `theme`, langue |
 | `tirage.` | Listes, historique des tirages |
 | `compteur.` | `partie` : objectif, manche, joueurs (`name`, `score`, `base` = score au début de la manche, `c` = couleur), historique d'annulation |
+| `pere-noel.` | `organisation` : prénoms, exclusions (paires), budget, date — **jamais le résultat du tirage** |
 | `undercover.`, `codenames.` | Réglages et état local des jeux |
 
 ### Supabase

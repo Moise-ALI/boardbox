@@ -8,10 +8,11 @@
 const TOOLS = [
   { path: 'tirage/', icon: '🎲', name: 'tirage.name', desc: 'tirage.desc', keywords: 'tirage.keywords' },
   { path: 'qui-commence/', icon: '👆', name: 'quiCommence.name', desc: 'quiCommence.desc', keywords: 'quiCommence.keywords' },
-  { path: 'compteur/', icon: '🏆', name: 'compteur.name', desc: 'compteur.desc', keywords: 'compteur.keywords' },
+  { path: 'compteur/', icon: '🧮', name: 'compteur.name', desc: 'compteur.desc', keywords: 'compteur.keywords' },
   { path: 'minuteur/', icon: '⏳', name: 'minuteur.name', desc: 'minuteur.desc', keywords: 'minuteur.keywords' },
-  { path: 'undercover/', icon: '🕵️', name: 'undercover.name', desc: 'undercover.desc', keywords: 'undercover.keywords' },
-  { path: 'codenames/', icon: '🗝️', name: 'codenames.name', desc: 'codenames.desc', keywords: 'codenames.keywords' }
+  { path: 'pere-noel/', icon: '🎅', name: 'pereNoel.name', desc: 'pereNoel.desc', keywords: 'pereNoel.keywords' },
+  { path: 'undercover/', icon: '🎭', name: 'undercover.name', desc: 'undercover.desc', keywords: 'undercover.keywords' },
+  { path: 'codenames/', icon: '🕵️', name: 'codenames.name', desc: 'codenames.desc', keywords: 'codenames.keywords' }
 ];
 
 const SEARCH_MAX_LENGTH = 40;   // aussi en maxlength dans index.html
@@ -42,6 +43,9 @@ const t = BoardBox.i18n({
     'minuteur.name': 'Minuteur de tours',
     'minuteur.desc': 'Un sablier par tour ou une pendule par joueur : on touche l\'écran pour passer la main.',
     'minuteur.keywords': 'chrono chronomètre temps timer horloge pendule échecs',
+    'pereNoel.name': 'Père Noël secret',
+    'pereNoel.desc': 'Tirage des cadeaux sans inscription : chacun reçoit un lien qui ne révèle que sa propre personne à gâter.',
+    'pereNoel.keywords': 'secret santa noël cadeaux échange famille amis tirage',
     'undercover.name': 'Undercover',
     'undercover.desc': 'Le jeu d\'ambiance sur un seul téléphone : civils, undercovers et Mister White.',
     'undercover.keywords': 'jeu mots imposteur ambiance soirée',
@@ -74,6 +78,9 @@ const t = BoardBox.i18n({
     'minuteur.name': 'Turn timer',
     'minuteur.desc': 'An hourglass per turn or a chess clock per player: tap the screen to pass the turn.',
     'minuteur.keywords': 'stopwatch time clock countdown chess sand',
+    'pereNoel.name': 'Secret Santa',
+    'pereNoel.desc': 'Gift draw with no sign-up: everyone gets a link that only reveals who they are buying for.',
+    'pereNoel.keywords': 'christmas gifts presents exchange family friends draw',
     'undercover.name': 'Undercover',
     'undercover.desc': 'The party game on a single phone: civilians, undercovers and Mr. White.',
     'undercover.keywords': 'game words impostor party',

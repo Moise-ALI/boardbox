@@ -9,11 +9,14 @@ sw.js                    Service worker (portée /boardbox/) : PRECACHE, straté
 commun/base.css          Design system « aurora » : variables clair/sombre, reset, .topbar, .btn-primary…
 commun/commun.js         window.BoardBox : createStore, thème, langue, i18n, cssVar, service worker
 commun/supabase-config.js  URL + clé publishable Supabase (window.BOARDBOX_SUPABASE)
+commun/qr.js             BoardBox.drawQr(canvas, texte, taille) : QR code net, couleurs du thème (après vendor/qrcode.js)
 commun/fonts/            WOFF2 variables + licences OFL
 commun/icons/            Icônes PWA générées aux couleurs de la charte
 commun/vendor/           Bibliothèques hébergées (qrcode-generator) + licences
 tirage/                  Tirage au sort & équipes : app.js (logique sans DOM), ui.js (interface), de.js (dé 3D), i18n.js
 compteur/                Compteur de points : une tuile colorée par joueur (app.js)
+qui-commence/, minuteur/ Qui commence ? (doigts sur l'écran), Minuteur de tours (app.js)
+pere-noel/               Père Noël secret : tirage.js (tirage sous contraintes, liens, sans DOM), app.js (interface)
 undercover/              Jeu sur un téléphone (app.js, mots.js, themes.js, donnees.js, i18n.js) + admin.html/admin.js (modération, FR seul)
 codenames/               Salle partagée par lien, vue espion / joueur, temps réel (app.js, mots.js, donnees.js, i18n.js)
 supabase/                Scripts SQL de référence (undercover.sql, codenames.sql)
@@ -81,3 +84,4 @@ Modifier le `.sql` de `supabase/` (il doit rester ré-exécutable), puis l'exéc
 | 2026-11-03 | Fond fixe, pas de verre dépoli sur les éléments nombreux | Fluidité sur téléphone d'entrée de gamme |
 | 2026-11-03 | Compteur en tuiles à ordre fixe (plus de tri par score) | Les boutons ne doivent pas bouger sous le doigt ; le rang reste affiché |
 | 2026-11-04 | Rester sur Supabase plutôt qu'un Postgres sur le Raspberry ; le Pi réveille Supabase chaque jour | Un Postgres seul n'est pas joignable depuis un navigateur : il faudrait reconstruire l'API, le temps réel de CodeName et la connexion admin par e-mail. Une base à la maison rendrait aussi tout BoardBox dépendant de la maison. Le seul vrai problème était la mise en pause après 7 jours d'inactivité |
+| 2026-11-05 | Père Noël secret : le tirage de chacun est dans son lien (après le `#`, base64url, pas chiffré), sans serveur | Exception assumée à « un secret de jeu ne doit jamais être calculable côté client » : sans serveur, rien n'empêche l'organisateur d'ouvrir les liens des autres. Atténuation : le résultat n'est jamais affiché ni mémorisé chez lui. Un serveur n'apporterait que cette garantie, pour un échange entre proches |

@@ -269,33 +269,10 @@ async function startGame(code, token) {
   }
 
   /* ---------- Partage ---------- */
-  /** Dessine le QR code d'une URL dans un canvas (net sur écran haute densité, couleurs --qr-fg / --qr-bg). */
-  function drawQr(canvas, text, cssSize) {
-    const qr = window.qrcode(0, 'M');
-    qr.addData(text);
-    qr.make();
-    const quiet = 4;                                    // marge blanche réglementaire autour du code
-    const modules = qr.getModuleCount() + quiet * 2;
-    const dpr = Math.min(window.devicePixelRatio || 1, 3);
-    const cell = Math.max(1, Math.floor(cssSize * dpr / modules));
-    const px = cell * modules;
-    canvas.width = canvas.height = px;
-    canvas.style.width = canvas.style.height = (px / dpr) + 'px';
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = BoardBox.cssVar('--qr-bg');
-    ctx.fillRect(0, 0, px, px);
-    ctx.fillStyle = BoardBox.cssVar('--qr-fg');
-    for (let r = 0; r < qr.getModuleCount(); r++) {
-      for (let c = 0; c < qr.getModuleCount(); c++) {
-        if (qr.isDark(r, c)) ctx.fillRect((c + quiet) * cell, (r + quiet) * cell, cell, cell);
-      }
-    }
-  }
-
   function openShare() {
     const dlg = document.getElementById('shareDlg');
     const qrSize = Math.min(240, window.innerWidth - 120);
-    drawQr(document.getElementById('playerQr'), playerUrl(code), qrSize);
+    BoardBox.drawQr(document.getElementById('playerQr'), playerUrl(code), qrSize);
     // QR espion : jamais affiché d'office (il révèle les couleurs à qui le scanne)
     const spyBox = document.getElementById('spyQrBox');
     const toggle = document.getElementById('toggleSpyQr');
@@ -304,7 +281,7 @@ async function startGame(code, token) {
     toggle.onclick = () => {
       spyBox.hidden = !spyBox.hidden;
       toggle.textContent = spyBox.hidden ? t('share.showSpyQr') : t('share.hideSpyQr');
-      if (!spyBox.hidden) drawQr(document.getElementById('spyQr'), spyUrl(code, token), qrSize);
+      if (!spyBox.hidden) BoardBox.drawQr(document.getElementById('spyQr'), spyUrl(code, token), qrSize);
     };
     const links = [['player', playerUrl(code)], ['spy', isSpy ? spyUrl(code, token) : null]];
     document.getElementById('spyShare').hidden = !isSpy;
