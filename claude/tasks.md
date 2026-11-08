@@ -15,9 +15,18 @@
   - Plan : 1. … 2. …
 -->
 
+- [ ] 🐛 Minuteur : la page déborde de 7 px à 360 px de large — identifié le 2026-11-08 — priorité: normale
+  - Symptôme : sur l'écran de réglage, `.block.card` et le bouton de départ vont jusqu'à 367 px, défilement horizontal. Présent aussi avant l'audit (version du commit 114edf7 identique). Disparaît dès 385 px utiles.
+  - Fichiers probables : `minuteur/index.html` (styles de `.block`, `.start-row`)
+  - Plan : à diagnostiquer avec `/kit:bug` (piste : grille sans `minmax(0, 1fr)`, voir `claude/context.md`).
+- [ ] 🐛 Écran noir et lenteur à l'ouverture de l'appli installée sur iPhone — identifié le 2026-11-08 — priorité: normale
+  - Symptôme : signalé par Moïse, dans l'appli de l'écran d'accueil, en Wi-Fi. Le serveur n'est pas en cause (accueil en moins de 100 ms mesuré depuis un PC de la maison).
+  - Fichiers probables : `<head>` des pages (aucune `apple-touch-startup-image`), `sw.js` (`networkFirst`), `commun/base.css` (`body::before`, animation `aurora`)
+  - Plan : à diagnostiquer avec `/kit:bug` ; à tester sur l'iPhone, rien ne le reproduit depuis le PC.
+
 ## 🔵 Backlog (priorisé)
 
-- [ ] Corrections de l'audit (doc d'hébergement, accueil sans JS, aperçus de lien, canonique, sitemap, bouton de langue) — priorité: haute — dépend de: bascule sur le ThinkPad — voir `claude/features/audit-2026-11.md`
+- [ ] `robots.txt` déclarant le sitemap (`Sitemap: https://boardbox.stream/sitemap.xml`), pour les moteurs sans déclaration manuelle — priorité: basse — dépend de: rien
 - [ ] Mes rangements (où j'ai rangé quoi, recherche, photos, local) — priorité: normale — dépend de: rien — fiche à créer après le Père Noël secret
 - [ ] Message secret (s'autodétruit après lecture) — priorité: normale — dépend de: exécution de supabase/message-secret.sql — voir `claude/features/message-secret.md`
 - [ ] Passe-Wi-Fi (QR code de connexion pour les invités) — priorité: basse — dépend de: rien — voir `claude/features/passe-wifi.md`
@@ -30,6 +39,7 @@ Voir `claude/idees.md`.
 
 | Date | Tâche |
 |---|---|
+| 2026-11-08 | Corrections de l'audit : doc d'hébergement, accueil sans JS, aperçus de lien, sitemap (`features/audit-2026-11.md`) |
 | 2026-11-06 | Brise-glace : cartes de questions, import, verre dépoli (`features/brise-glace.md`) |
 | 2026-11-05 | Père Noël secret, QR codes, nouvelles icônes (`features/pere-noel-secret.md`) |
 | 2026-11-05 | Recherche sur l'accueil (`features/recherche-accueil.md`) |
@@ -39,4 +49,3 @@ Voir `claude/idees.md`.
 | 2026-11-03 | Fluidité mobile (fond fixe, dé 3D économe) |
 | 2026-10-18 | Renommage BoardBox, PWA (`features/socle-commun.md`) |
 | 2026-10-17 | CodeName (`features/codenames.md`) |
-| 2026-10-17 | Undercover (`features/undercover.md`) |

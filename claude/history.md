@@ -24,3 +24,5 @@
 | 2026-11-05 | feature | Accueil : recherche des outils (nom, description, mots-clés FR/EN), sans accents ni majuscules |
 | 2026-11-05 | feature | Père Noël secret : tirage sous exclusions, un lien (ou QR code) par participant ou téléphone passé de main en main, sans serveur ; résultat jamais affiché ni gardé |
 | 2026-11-06 | feature | Brise-glace : 6 paquets de questions FR/EN en fichiers texte modifiables sur GitHub, cartes personnelles importables (liste collée ou .txt), carte en verre dépoli, tirage sans répétition |
+| 2026-11-08 | suivi | Audit de novembre 2026 : corrections inscrites au backlog (`features/audit-2026-11.md`), plus de dépendance depuis le déménagement du site |
+| 2026-11-08 | feature | Corrections de l'audit : doc passée sur boardbox.stream, cartes de l'accueil en dur, canonique et aperçus de lien, sitemap, favicon.ico, bouton de langue et contour de recherche accessibles ; .nojekyll retiré |

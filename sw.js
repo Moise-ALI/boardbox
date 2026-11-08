@@ -8,8 +8,8 @@
    - Supabase (données de jeu) : jamais mis en mémoire
    Changer CACHE_VERSION uniquement pour forcer le rechargement complet (liste PRECACHE modifiée…). */
 const CACHE_VERSION = 'v1';
-// Préfixe propre à BoardBox : le domaine moise-ali.github.io (et donc son stockage) est partagé
-// avec les autres dépôts du compte, le nettoyage ne touche qu'aux caches « boardbox- ».
+// Préfixe propre à BoardBox : le nettoyage ne touche qu'aux caches « boardbox- », jamais à ceux
+// d'une autre appli qui serait servie un jour sur le même domaine.
 const CACHE = 'boardbox-' + CACHE_VERSION;
 const CDN_HOSTS = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net'];
 
@@ -66,7 +66,7 @@ self.addEventListener('fetch', event => {
 });
 
 /** Contenus modifiés à la main sans changer de ?v=N (cartes du Brise-glace, une question par ligne) :
-    traités comme les pages, pour qu'une carte ajoutée sur GitHub apparaisse au rechargement suivant. */
+    traités comme les pages, pour qu'une carte publiée apparaisse au rechargement suivant. */
 function isEditableContent(url) {
   return url.origin === location.origin && url.pathname.includes('/brise-glace/cartes/') && url.pathname.endsWith('.txt');
 }

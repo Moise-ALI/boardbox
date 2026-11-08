@@ -2,7 +2,7 @@
 
 > Chargé automatiquement à chaque session. C'est un aiguillage : le détail est dans `claude/`.
 
-Petites applis web pour les soirées jeux, publiées sur GitHub Pages : https://moise-ali.github.io/boardbox/ — **dépôt public**.
+Petites applis web pour les soirées jeux, en ligne sur https://boardbox.stream/ — **dépôt public**.
 
 ## Démarrage
 
@@ -26,11 +26,11 @@ Brouillon d'idée : déposer un `.md` libre dans `claude/inbox/`, puis `/kit:fea
 
 ## Source de vérité
 
-`commun/base.css` (design), `commun/commun.js` (socle JS), `supabase/*.sql` (base), `sw.js` + `manifest.webmanifest` + `accueil.js` (registre des outils). Séquence obligatoire après modification (`?v=N`, précache, recette) : `claude/rules.md`.
+`commun/base.css` (design), `commun/commun.js` (socle JS), `supabase/*.sql` (base), `sw.js` + `manifest.webmanifest` + `index.html` + `accueil.js` + `sitemap.xml` (registre des outils). Séquence obligatoire après modification (`?v=N`, précache, recette, publication) : `claude/rules.md`.
 
 ## Stack
 
-HTML, CSS, JavaScript natif sans build ni npm ; GitHub Pages ; Supabase (Undercover, CodeName) ; PWA hors connexion.
+HTML, CSS, JavaScript natif sans build ni npm ; serveur personnel (nginx, tunnel Cloudflare) ; Supabase (Undercover, CodeName) ; PWA hors connexion.
 
 ## Fichiers clés
 

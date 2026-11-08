@@ -1,6 +1,6 @@
 /* Utilitaires communs à tous les outils. Chargé dans le <head> : il applique le thème
    et la langue AVANT l'affichage (pas de flash).
-   Tous les outils partagent le même localStorage (même domaine github.io) :
+   Tous les outils partagent le même localStorage (même domaine) :
    chaque outil DOIT passer par createStore('<nom-outil>') pour préfixer ses clés. */
 (function () {
   'use strict';
@@ -105,6 +105,8 @@
     if (!button) return;
     const other = lang === 'fr' ? 'en' : 'fr';
     button.textContent = other.toUpperCase();
+    // Texte et libellé sont dans la langue d'arrivée : le lecteur d'écran doit les prononcer ainsi
+    button.lang = other;
     button.setAttribute('aria-label', COMMON[lang]['common.lang']);
     button.addEventListener('click', () => { prefs.set('lang', other); location.reload(); });
   }

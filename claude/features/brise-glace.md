@@ -24,7 +24,7 @@ Aucune logique existante ne fait ce travail. Le tirage sans répétition reprend
 ## Comportement attendu
 
 ### Ajouter des cartes (Moïse)
-- Chaque paquet est un simple fichier texte, une question par ligne, modifiable **directement sur GitHub** (bouton crayon, même depuis le téléphone) : on ajoute une ligne, on enregistre, c'est en ligne en une minute.
+- Chaque paquet est un simple fichier texte, une question par ligne, modifiable **directement sur GitHub** (bouton crayon, même depuis le téléphone) : on ajoute une ligne, on enregistre. Depuis le passage sur boardbox.stream (2026-11-08), il faut ensuite publier sur le serveur (`git pull`).
 - Pas de `?v=N` à changer : le service worker lit ces fichiers « réseau d'abord » (copie en mémoire seulement pour le hors connexion), comme les pages.
 - Lignes vides et lignes commençant par `#` ignorées (commentaires, titres de section).
 - Ajouter un **paquet** = un nouveau fichier + une ligne dans la liste des paquets de `app.js` (nom, emoji, FR/EN).

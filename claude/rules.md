@@ -21,7 +21,7 @@
 - Mettre à jour `claude/context.md` si un comportement global change.
 - Message de commit en français qui dit **quoi** (titre ≤ 72 caractères) et **pourquoi** (corps). Ne pas committer ni pousser sans l'accord de Moïse.
 - Interface en **français et anglais**, utilisable au doigt : cibles ≥ 44 px, pas de défilement horizontal à 360 px de large.
-- **Chemins relatifs** uniquement (`../commun/...`) : le site est servi sous `/boardbox/`.
+- **Chemins relatifs** uniquement (`../commun/...`) : le site doit pouvoir changer d'adresse sans retouche (il l'a déjà fait). Seule exception : les balises qui exigent une adresse complète (`canonical`, `og:*`, `sitemap.xml`), en `https://boardbox.stream/…`.
 - **Stockage** : clés préfixées par le dossier de l'outil, via `BoardBox.createStore('<dossier>')`. Lire avec garde (`try/catch`, vérifier le type) : une donnée corrompue ne doit pas casser la page.
 - **Limiter la taille des entrées** (longueur, nombre d'éléments), surtout celles venant d'un lien ou d'un fichier.
 - Chaque page a une **CSP** en `<meta>` (`script-src 'self'` + CDN strictement nécessaires, `connect-src` limité) : la recopier depuis une page existante.
@@ -45,13 +45,13 @@ Un développeur qui découvre le projet doit pouvoir s'y retrouver seul, avec `c
 - **Design** : `commun/base.css` (couleurs, ombres, boutons, couleurs des joueurs, thèmes clair/sombre).
 - **Socle JS** : `commun/commun.js` (`window.BoardBox` : stockage, thème, langue, i18n, service worker).
 - **Base de données** : `supabase/*.sql`, la référence ré-exécutable (Supabase > SQL Editor).
-- **Hors connexion** : `PRECACHE` de `sw.js` ; **raccourcis** : `manifest.webmanifest` ; **accueil** : `TOOLS` de `accueil.js`.
+- **Hors connexion** : `PRECACHE` de `sw.js` ; **raccourcis** : `manifest.webmanifest` ; **accueil** : cartes dans `index.html`, textes FR/EN dans `accueil.js` ; **référencement** : `sitemap.xml`.
 
-**Séquence obligatoire après toute modification d'un fichier `.js` ou `.css`** (GitHub Pages sert avec `max-age=600`, le service worker garde les fichiers en mémoire) :
+**Séquence obligatoire après toute modification d'un fichier `.js` ou `.css`** (le serveur envoie `max-age=600`, le service worker garde les fichiers en mémoire) :
 1. Incrémenter son `?v=N` dans **toutes** les pages qui l'incluent (`base.css` et `commun.js` sont inclus par toutes les pages). Cas vécu : `config.js` vide resté en cache.
 2. Nouveau fichier nécessaire hors connexion → l'ajouter à `PRECACHE` de `sw.js` (chemin sans `?v=`). Incrémenter `CACHE_VERSION` seulement pour forcer un re-téléchargement complet.
 3. Charger l'outil (voir `claude/dev.md`) et exercer ses actions principales, console sans erreur ni blocage CSP. Une erreur JS en début de script casse tout ce qui suit.
-4. Commit puis push (avec accord) : GitHub Pages republie en ~1 minute.
+4. Commit puis push (avec accord), puis publier sur le serveur : `git pull --ff-only` dans son clone du dépôt (la procédure détaillée est gardée hors de ce dépôt public). Le push seul ne met rien en ligne.
 
 ## Garde-fous automatiques (candidats aux hooks)
 

@@ -1,25 +1,15 @@
-/* Page d'accueil : registre des outils + traductions. */
+/* Page d'accueil : traduit et filtre les cartes des outils, écrites en dur dans index.html.
+   Pour ajouter un outil : sa carte dans index.html (data-tool="<id>") et ses textes ici,
+   <id>.name, <id>.desc, <id>.keywords, dans les deux langues. Les mots-clés servent
+   seulement à la recherche : des mots qu'on taperait sans connaître le nom de l'outil. */
 (() => {
 'use strict';
-
-/* Registre des outils : pour en ajouter un, créez son dossier, ajoutez une ligne ici
-   et ses textes (name/desc/keywords) dans les deux langues. Les mots-clés servent
-   seulement à la recherche : des mots qu'on taperait sans connaître le nom de l'outil. */
-const TOOLS = [
-  { path: 'tirage/', icon: '🎲', name: 'tirage.name', desc: 'tirage.desc', keywords: 'tirage.keywords' },
-  { path: 'qui-commence/', icon: '👆', name: 'quiCommence.name', desc: 'quiCommence.desc', keywords: 'quiCommence.keywords' },
-  { path: 'compteur/', icon: '🧮', name: 'compteur.name', desc: 'compteur.desc', keywords: 'compteur.keywords' },
-  { path: 'minuteur/', icon: '⏳', name: 'minuteur.name', desc: 'minuteur.desc', keywords: 'minuteur.keywords' },
-  { path: 'brise-glace/', icon: '💬', name: 'briseGlace.name', desc: 'briseGlace.desc', keywords: 'briseGlace.keywords' },
-  { path: 'pere-noel/', icon: '🎅', name: 'pereNoel.name', desc: 'pereNoel.desc', keywords: 'pereNoel.keywords' },
-  { path: 'undercover/', icon: '🎭', name: 'undercover.name', desc: 'undercover.desc', keywords: 'undercover.keywords' },
-  { path: 'codenames/', icon: '🕵️', name: 'codenames.name', desc: 'codenames.desc', keywords: 'codenames.keywords' }
-];
 
 const SEARCH_MAX_LENGTH = 40;   // aussi en maxlength dans index.html
 
 const t = BoardBox.i18n({
   fr: {
+    pageTitle: 'BoardBox — outils et jeux de soirée',
     title: 'BoardBox',
     lead: 'Mes petites applis du quotidien, utilisables depuis n\'importe quel appareil. Les données restent dans votre navigateur.',
     count: '{n} outils',
@@ -58,6 +48,7 @@ const t = BoardBox.i18n({
     'codenames.keywords': 'jeu mots espions grille indices'
   },
   en: {
+    pageTitle: 'BoardBox — party tools and games',
     title: 'BoardBox',
     lead: 'My everyday little apps, available from any device. Your data stays in your browser.',
     count: '{n} tools',
@@ -151,27 +142,17 @@ function splitWords(text) {
 }
 
 // Mots indexés d'un outil : nom, description et mots-clés, sans les mots de liaison
-function searchWordsOf(tool) {
-  const text = [t(tool.name), t(tool.desc), t(tool.keywords)].join(' ');
+function searchWordsOf(toolId) {
+  const text = [t(toolId + '.name'), t(toolId + '.desc'), t(toolId + '.keywords')].join(' ');
   return splitWords(text).filter(word => !IGNORED_WORDS.has(word)).map(normalize);
 }
 
 /* ---------- Liste des outils ---------- */
-const list = document.getElementById('tools');
-const cards = [];   // { tool, item, searchWords } : une entrée par outil affiché
-for (const tool of TOOLS) {
-  const li = document.createElement('li');
-  const a = document.createElement('a');
-  a.className = 'tool glass';
-  a.href = tool.path;
-  const icon = document.createElement('span'); icon.className = 'tool-icon'; icon.setAttribute('aria-hidden', 'true'); icon.textContent = tool.icon;
-  const h = document.createElement('h2'); h.textContent = t(tool.name);
-  const p = document.createElement('p'); p.textContent = t(tool.desc);
-  a.append(icon, h, p);
-  li.append(a);
-  list.append(li);
-  cards.push({ tool, item: li, searchWords: searchWordsOf(tool) });
-}
+const cards = [...document.querySelectorAll('#tools > li')].map(item => ({
+  item,
+  link: item.querySelector('a'),
+  searchWords: searchWordsOf(item.dataset.tool)
+}));
 
 /* ---------- Recherche ---------- */
 // Comparaison de chaînes uniquement (pas d'expression régulière construite depuis la saisie).
@@ -202,8 +183,8 @@ function applySearch() {
   }
   emptyMessage.hidden = visibleCount > 0;
   countLabel.textContent = typedWords.length === 0
-    ? t('count', { n: TOOLS.length })
-    : t('search.count', { n: visibleCount, total: TOOLS.length });
+    ? t('count', { n: cards.length })
+    : t('search.count', { n: visibleCount, total: cards.length });
 }
 
 searchInput.addEventListener('input', applySearch);
@@ -213,7 +194,7 @@ searchInput.addEventListener('keydown', event => {
     applySearch();
   } else if (event.key === 'Enter') {
     const visibleCards = cards.filter(card => !card.item.hidden);
-    if (visibleCards.length === 1) location.href = visibleCards[0].tool.path;
+    if (visibleCards.length === 1) location.href = visibleCards[0].link.href;
   }
 });
 // Retour arrière du navigateur : le champ peut être pré-rempli par le navigateur

@@ -3,8 +3,8 @@
    Chaque association existe en FR et en EN : les deux versions partagent un group_id. */
 (() => {
 'use strict';
-// Anti-clickjacking : GitHub Pages ne permet ni X-Frame-Options ni CSP frame-ancestors
-// (ignoré dans une balise <meta>). Chargée dans un cadre, la page se vide et ne fait rien.
+// Anti-clickjacking : le serveur envoie déjà X-Frame-Options et frame-ancestors. Cette protection
+// reste au cas où le site changerait d'hébergeur : chargée dans un cadre, la page se vide et ne fait rien.
 if (window.top !== window.self) {
   document.body.replaceChildren();
   return;
