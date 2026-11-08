@@ -17,6 +17,7 @@
 
 ## 🔵 Backlog (priorisé)
 
+- [ ] Corrections de l'audit (doc d'hébergement, accueil sans JS, aperçus de lien, canonique, sitemap, bouton de langue) — priorité: haute — dépend de: bascule sur le ThinkPad — voir `claude/features/audit-2026-11.md`
 - [ ] Mes rangements (où j'ai rangé quoi, recherche, photos, local) — priorité: normale — dépend de: rien — fiche à créer après le Père Noël secret
 - [ ] Message secret (s'autodétruit après lecture) — priorité: normale — dépend de: exécution de supabase/message-secret.sql — voir `claude/features/message-secret.md`
 - [ ] Passe-Wi-Fi (QR code de connexion pour les invités) — priorité: basse — dépend de: rien — voir `claude/features/passe-wifi.md`
