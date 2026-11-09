@@ -22,7 +22,12 @@
 - [ ] 🐛 Écran noir et lenteur à l'ouverture de l'appli installée sur iPhone — identifié le 2026-11-08 — priorité: normale
   - Symptôme : signalé par Moïse, dans l'appli de l'écran d'accueil, en Wi-Fi. Le serveur n'est pas en cause (accueil en moins de 100 ms mesuré depuis un PC de la maison).
   - Fichiers probables : `<head>` des pages (aucune `apple-touch-startup-image`), `sw.js` (`networkFirst`), `commun/base.css` (`body::before`, animation `aurora`)
-  - Plan : à diagnostiquer avec `/kit:bug` ; à tester sur l'iPhone, rien ne le reproduit depuis le PC.
+  - 2026-11-09 : toujours présent ; Moïse a l'impression qu'il date de Brise-glace / Père Noël secret (même semaine que le passage sur boardbox.stream). Depuis le PC : pages en 60-100 ms, GitHub Pages en 404.
+  - Piste principale : `networkFirst` des pages attend le réseau jusqu'à 4 s avant la copie en mémoire ; au lancement à froid de l'appli iPhone, le réseau tarde souvent, d'où un écran vide (couleur de fond sombre).
+  - Plan : 1. tests sur l'iPhone (mode avion, Safari vs appli, durée) pour trancher réseau / rendu ; 2. si réseau : pages servies depuis la mémoire tout de suite, mises à jour en arrière-plan.
+- [ ] 🐛 Durcir les accès publics à Supabase contre les usages abusifs — identifié le 2026-11-08 — priorité: normale
+  - Symptôme : relevé en revue, sans abus constaté ; les écritures publiques manquent de limites.
+  - Fichiers probables : `supabase/*.sql`, `codenames/donnees.js`, `undercover/donnees.js`
 
 ## 🔵 Backlog (priorisé)
 

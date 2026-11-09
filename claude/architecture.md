@@ -62,8 +62,8 @@ supabase/                Scripts SQL de référence (undercover.sql, codenames.s
 
 ### PWA
 - Chaque page a dans son `<head>` : `rel="manifest"`, favicon, apple-touch-icon, `meta theme-color` (mise à jour par commun.js selon le thème).
-- `sw.js` : pages en réseau d'abord (4 s max, puis mémoire), fichiers statiques et CDN en mémoire d'abord (le `?v=N` garantit les mises à jour), Supabase jamais en mémoire. Caches préfixés `boardbox-`.
-- Exception : les contenus modifiés à la main sans `?v=N` (cartes du Brise-glace, `isEditableContent()` dans `sw.js`) sont traités comme les pages, en réseau d'abord.
+- `sw.js` : pages en mémoire d'abord, revalidées en arrière-plan (`cacheThenUpdate`), donc **une publication s'affiche à la deuxième ouverture** ; fichiers statiques et CDN en mémoire d'abord (le `?v=N` garantit les mises à jour), Supabase jamais en mémoire. Caches préfixés `boardbox-`.
+- Exception : les contenus modifiés à la main sans `?v=N` (cartes du Brise-glace, `isEditableContent()` dans `sw.js`) sont en réseau d'abord (4 s max, puis mémoire).
 
 ## Procédures récurrentes
 
@@ -98,5 +98,7 @@ Modifier le `.sql` de `supabase/` (il doit rester ré-exécutable), puis l'exéc
 | 2026-11-05 | Père Noël secret : le tirage de chacun est dans son lien (après le `#`, base64url, pas chiffré), sans serveur | Exception assumée à « un secret de jeu ne doit jamais être calculable côté client » : sans serveur, rien n'empêche l'organisateur d'ouvrir les liens des autres. Atténuation : le résultat n'est jamais affiché ni mémorisé chez lui. Un serveur n'apporterait que cette garantie, pour un échange entre proches |
 | 2026-11-06 | Brise-glace : cartes en fichiers texte lus « réseau d’abord » par le service worker | Moïse ajoute une carte en éditant une ligne sur GitHub, sans base de données ni numéro de version à changer ; la copie en mémoire ne sert qu’au mode hors connexion |
 | 2026-11-08 | Site sur boardbox.stream (serveur personnel, nginx, tunnel Cloudflare), GitHub Pages coupé, publication manuelle par `git pull` | Un seul site officiel, et des en-têtes de sécurité que GitHub Pages ne permet pas |
+| 2026-11-08 | Pas de framework ni de base sur le serveur pour l'instant (Astro + API + Postgres envisagés puis écartés) | Le site reste simple et chaque outil autonome : en ajouter ne complique pas les autres. À rouvrir si Supabase ne suffit plus à un besoin réel, ou si des comptes utilisateurs deviennent nécessaires |
+| 2026-11-09 | Pages servies par le service worker depuis la mémoire, mises à jour en arrière-plan (au lieu de « réseau d'abord, 4 s max ») | Dans l'appli installée sur iPhone, le réseau met ~5 s à répondre au lancement : écran noir à chaque ouverture (rien en mode avion). Contrepartie : une nouvelle version n'apparaît qu'à l'ouverture suivante |
 | 2026-11-08 | Cartes de l'accueil en dur dans `index.html`, plus de registre `TOOLS` en JS | Sans JavaScript, moteurs de recherche et aperçus de lien ne voyaient aucun outil. Le JS traduit et filtre ce qui existe déjà |
 | 2026-11-08 | Bouton de langue : libellé dans la langue d'arrivée (« Switch to English », avec `lang="en"`), pas « Passer en anglais » comme le proposait l'audit | Celui qui atterrit sur une page dans une langue qu'il ne lit pas doit comprendre le bouton qui l'en sort |

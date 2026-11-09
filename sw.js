@@ -1,10 +1,11 @@
 /* Service worker de BoardBox : appli installable, utilisable hors connexion.
    Stratégies :
-   - pages (navigation)      : réseau d'abord (toujours la dernière version en ligne), mémoire si hors ligne
+   - pages (navigation)      : mémoire d'abord, mise à jour en arrière-plan (la nouvelle version s'affiche
+     à l'ouverture suivante) ; réseau seulement à la première visite (cacheThenUpdate)
    - scripts, styles, polices, icônes, bibliothèques CDN : mémoire d'abord ; chaque mise à jour change
      le « ?v=N » de l'URL, donc une nouvelle version est toujours téléchargée
-   - cartes du Brise-glace (brise-glace/cartes/*.txt, modifiées à la main sans ?v=N) : réseau d'abord,
-     comme les pages (isEditableContent)
+   - cartes du Brise-glace (brise-glace/cartes/*.txt, modifiées à la main sans ?v=N) : réseau d'abord
+     (isEditableContent, networkFirst)
    - Supabase (données de jeu) : jamais mis en mémoire
    Changer CACHE_VERSION uniquement pour forcer le rechargement complet (liste PRECACHE modifiée…). */
 const CACHE_VERSION = 'v1';
@@ -60,19 +61,46 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.hostname.endsWith('.supabase.co')) return;                 // données en direct uniquement
-  if (req.mode === 'navigate') { event.respondWith(networkFirst(req, url)); return; }
+  if (req.mode === 'navigate') { event.respondWith(cacheThenUpdate(event, req, url)); return; }
   if (isEditableContent(url)) { event.respondWith(networkFirst(req, url)); return; }
   if (url.origin === location.origin || CDN_HOSTS.includes(url.hostname)) event.respondWith(cacheFirst(req, url));
 });
 
 /** Contenus modifiés à la main sans changer de ?v=N (cartes du Brise-glace, une question par ligne) :
-    traités comme les pages, pour qu'une carte publiée apparaisse au rechargement suivant. */
+    réseau d'abord, pour qu'une carte publiée apparaisse au rechargement suivant. */
 function isEditableContent(url) {
   return url.origin === location.origin && url.pathname.includes('/brise-glace/cartes/') && url.pathname.endsWith('.txt');
 }
 
-/** Pages : réseau d'abord (revalidé, délai max 4 s), sinon la version en mémoire.
-    Clé sans paramètres : ?room=… ou ?items=… retombent sur la même page hors ligne. */
+/** Pages : la version en mémoire tout de suite, et la page est revalidée en arrière-plan pour
+    l'ouverture suivante. Pourquoi : au lancement de l'appli installée sur iPhone, le réseau met
+    plusieurs secondes à répondre ; attendre le réseau d'abord donnait 5 s d'écran noir à chaque lancement.
+    Clé sans paramètres : ?room=… ou ?items=… retombent sur la même page. */
+async function cacheThenUpdate(event, req, url) {
+  const cache = await caches.open(CACHE);
+  const key = new Request(url.origin + url.pathname);
+  const cached = await cache.match(key);
+  const update = fetchAndStorePage(cache, req, key);
+  if (cached) {
+    event.waitUntil(update.catch(() => { /* hors ligne : la copie en mémoire suffit */ }));
+    return cached;
+  }
+  try {
+    return await update;
+  } catch (e) {
+    return (await cache.match(req, { ignoreSearch: true })) || Response.error();
+  }
+}
+
+/** Télécharge une page (revalidée) et la garde en mémoire. Une réponse issue d'une redirection
+    n'est pas gardée : Safari refuse de l'afficher si elle est resservie depuis la mémoire. */
+async function fetchAndStorePage(cache, req, key) {
+  const res = await fetch(req, { cache: 'no-cache' });
+  if (res.ok && !res.redirected) await cache.put(key, res.clone());
+  return res;
+}
+
+/** Cartes du Brise-glace : réseau d'abord (revalidé, délai max 4 s), sinon la version en mémoire. */
 async function networkFirst(req, url) {
   const cache = await caches.open(CACHE);
   const key = new Request(url.origin + url.pathname);
