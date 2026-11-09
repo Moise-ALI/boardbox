@@ -19,12 +19,6 @@
   - Symptôme : sur l'écran de réglage, `.block.card` et le bouton de départ vont jusqu'à 367 px, défilement horizontal. Présent aussi avant l'audit (version du commit 114edf7 identique). Disparaît dès 385 px utiles.
   - Fichiers probables : `minuteur/index.html` (styles de `.block`, `.start-row`)
   - Plan : à diagnostiquer avec `/kit:bug` (piste : grille sans `minmax(0, 1fr)`, voir `claude/context.md`).
-- [ ] 🐛 Écran noir et lenteur à l'ouverture de l'appli installée sur iPhone — identifié le 2026-11-08 — priorité: normale
-  - Symptôme : signalé par Moïse, dans l'appli de l'écran d'accueil, en Wi-Fi. Le serveur n'est pas en cause (accueil en moins de 100 ms mesuré depuis un PC de la maison).
-  - Fichiers probables : `<head>` des pages (aucune `apple-touch-startup-image`), `sw.js` (`networkFirst`), `commun/base.css` (`body::before`, animation `aurora`)
-  - 2026-11-09 : toujours présent ; Moïse a l'impression qu'il date de Brise-glace / Père Noël secret (même semaine que le passage sur boardbox.stream). Depuis le PC : pages en 60-100 ms, GitHub Pages en 404.
-  - Piste principale : `networkFirst` des pages attend le réseau jusqu'à 4 s avant la copie en mémoire ; au lancement à froid de l'appli iPhone, le réseau tarde souvent, d'où un écran vide (couleur de fond sombre).
-  - Plan : 1. tests sur l'iPhone (mode avion, Safari vs appli, durée) pour trancher réseau / rendu ; 2. si réseau : pages servies depuis la mémoire tout de suite, mises à jour en arrière-plan.
 - [ ] 🐛 Durcir les accès publics à Supabase contre les usages abusifs — identifié le 2026-11-08 — priorité: normale
   - Symptôme : relevé en revue, sans abus constaté ; les écritures publiques manquent de limites.
   - Fichiers probables : `supabase/*.sql`, `codenames/donnees.js`, `undercover/donnees.js`
@@ -44,6 +38,7 @@ Voir `claude/idees.md`.
 
 | Date | Tâche |
 |---|---|
+| 2026-11-09 | 🐛 Écran noir au lancement de l'appli iPhone : pages servies depuis la mémoire (`archive/2026.md`) |
 | 2026-11-08 | Corrections de l'audit : doc d'hébergement, accueil sans JS, aperçus de lien, sitemap (`features/audit-2026-11.md`) |
 | 2026-11-06 | Brise-glace : cartes de questions, import, verre dépoli (`features/brise-glace.md`) |
 | 2026-11-05 | Père Noël secret, QR codes, nouvelles icônes (`features/pere-noel-secret.md`) |
@@ -53,4 +48,3 @@ Voir `claude/idees.md`.
 | 2026-11-03 | Compteur en tuiles colorées (`features/compteur.md`) |
 | 2026-11-03 | Fluidité mobile (fond fixe, dé 3D économe) |
 | 2026-10-18 | Renommage BoardBox, PWA (`features/socle-commun.md`) |
-| 2026-10-17 | CodeName (`features/codenames.md`) |
